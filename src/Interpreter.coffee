@@ -14,7 +14,7 @@ Interpreter = ->
 
 Interpreter::_getPath = (x, y, dir) ->
   path = new bef.Path()
-  pointer = new bef.Pointer x, y, dir
+  pointer = new bef.Pointer x, y, dir, @playfield.getSize()
 
   loop
     if not @playfield.isInside pointer.x, pointer.y
@@ -33,7 +33,7 @@ Interpreter::_getPath = (x, y, dir) ->
       else
         return [path]
 
-    if currentChar == '|' or currentChar == '_' or currentChar == '?'
+    if currentChar == '|' or currentChar == '_' or currentChar == '?' or currentChar == '@'
       return [path]
 
     path.push pointer.x, pointer.y, pointer.dir, currentChar
@@ -99,7 +99,7 @@ Interpreter::execute = (@playfield, options) ->
 
   @pathSet = new bef.PathSet()
   @runtime = new bef.Runtime @
-  pointer = new bef.Pointer 0, 0, '>'
+  pointer = new bef.Pointer 0, 0, '>', @playfield.getSize()
 
   loop
     if @stats.jumpsPerformed == options.jumpLimit
@@ -113,25 +113,23 @@ Interpreter::execute = (@playfield, options) ->
       newPaths.forEach (newPath) =>
         @stats.compileCalls++
         options.compiler.compile newPath
-        @pathSet.add newPath
-        playfield.addPath newPath
+        if newPath.list.length
+          @pathSet.add newPath
+          playfield.addPath newPath
 
     @currentPath ?= newPaths[0]
-    @currentPath.body @runtime
+    @currentPath.body @runtime # executing the compiled path
     if @runtime.flags.pathInvalidatedAhead
       @runtime.flags.pathInvalidatedAhead = false
       exitPoint = @runtime.flags.exitPoint
       pointer.set exitPoint.x, exitPoint.y, exitPoint.dir
       pointer.advance()
       continue
-    else if @currentPath.endingOutside
-      break # program ended
-      # in befunge 93 the funge-space is toroidal, so this will have to change
 
-    pathEndPoint = @currentPath.getEndPoint()
-    pointer.set pathEndPoint.x, pathEndPoint.y, pathEndPoint.dir
-
-    pointer.advance()
+    if @currentPath.list.length
+      pathEndPoint = @currentPath.getEndPoint()
+      pointer.set pathEndPoint.x, pathEndPoint.y, pathEndPoint.dir
+      pointer.advance()
     currentChar = @playfield.getAt pointer.x, pointer.y
 
     if currentChar == '|'
@@ -146,8 +144,15 @@ Interpreter::execute = (@playfield, options) ->
       else
         pointer.turn '>'
       pointer.advance()
+    else if currentChar == '?'
+      pointer.turn '^<v>'[Math.random() * 4 | 0]
+      pointer.advance()
+    else if currentChar == '@'
+      break # program ended
     else
       pointer.turn currentChar
+
+  return
 
 
 window.bef ?= {}

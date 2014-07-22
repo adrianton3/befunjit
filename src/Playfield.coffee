@@ -76,5 +76,10 @@ Playfield::removePath = (path) ->
     delete cell[path.id]
 
 
+Playfield::getSize = ->
+  width: @width
+  height: @height
+
+
 window.bef ?= {}
 window.bef.Playfield = Playfield

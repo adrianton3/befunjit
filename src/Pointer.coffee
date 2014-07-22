@@ -7,7 +7,7 @@ dirTable =
   '>': { x:  1, y:  0 }
 
 
-Pointer = (@x, @y, @dir) ->
+Pointer = (@x, @y, @dir, @space) ->
   @_updateDir(@dir)
   return
 
@@ -24,8 +24,9 @@ Pointer::turn = (dir) ->
 
 
 Pointer::advance = ->
-  @x += @ax
-  @y += @ay
+  @x = (@x + @ax + @space.width) % @space.width
+  @y = (@y + @ay + @space.height) % @space.height
+
   @
 
 
