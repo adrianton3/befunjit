@@ -273,3 +273,30 @@ describe 'Interpreter', ->
       expectedHits[4] = true
       expectedHits[5] = true
       (expect hits).toEqual expectedHits
+
+    it 'duplicates the value on the stack', ->
+      interpreter = execute '''
+        7:@
+      ''', 10, 1
+
+      (expect interpreter.runtime.stack).toEqual [7, 7]
+      (expect interpreter.runtime.outRecord).toEqual []
+      (expect interpreter.stats.compileCalls).toEqual 1
+
+    it 'swaps the first two values on the stack', ->
+      interpreter = execute '''
+        275\\@
+      ''', 10, 1
+
+      (expect interpreter.runtime.stack).toEqual [2, 5, 7]
+      (expect interpreter.runtime.outRecord).toEqual []
+      (expect interpreter.stats.compileCalls).toEqual 1
+
+    it 'discards the first value on the stack', ->
+      interpreter = execute '''
+        27$@
+      ''', 10, 1
+
+      (expect interpreter.runtime.stack).toEqual [2]
+      (expect interpreter.runtime.outRecord).toEqual []
+      (expect interpreter.stats.compileCalls).toEqual 1

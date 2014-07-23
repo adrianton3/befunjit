@@ -38,5 +38,17 @@ Runtime::put = (e, y, x, currentX, currentY, currentDir, index) ->
   @interpreter.put x, y, (String.fromCharCode e), currentX, currentY, currentDir, index
 
 
+Runtime::duplicate = ->
+  e = @stack[@stack.length - 1]
+  @stack.push e
+
+
+Runtime::swap = ->
+  e1 = @stack[@stack.length - 1]
+  e2 = @stack[@stack.length - 2]
+  @stack[@stack.length - 1] = e2
+  @stack[@stack.length - 2] = e1
+
+
 window.bef ?= {}
 window.bef.Runtime = Runtime
