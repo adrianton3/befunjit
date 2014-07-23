@@ -38,6 +38,10 @@ Runtime::put = (e, y, x, currentX, currentY, currentDir, index) ->
   @interpreter.put x, y, (String.fromCharCode e), currentX, currentY, currentDir, index
 
 
+Runtime::get = (y, x) ->
+  @interpreter.get x, y
+
+
 Runtime::duplicate = ->
   e = @stack[@stack.length - 1]
   @stack.push e

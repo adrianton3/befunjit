@@ -300,3 +300,12 @@ describe 'Interpreter', ->
       (expect interpreter.runtime.stack).toEqual [2]
       (expect interpreter.runtime.outRecord).toEqual []
       (expect interpreter.stats.compileCalls).toEqual 1
+
+    it 'can get a value from the playfield', ->
+      interpreter = execute '''
+        20g@
+      ''', 10, 1
+
+      (expect interpreter.runtime.stack).toEqual ['g'.charCodeAt 0]
+      (expect interpreter.runtime.outRecord).toEqual []
+      (expect interpreter.stats.compileCalls).toEqual 1

@@ -89,6 +89,11 @@ Interpreter::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
       return
 
 
+Interpreter::get = (x, y) ->
+  char = @playfield.getAt x, y
+  char.charCodeAt 0
+
+
 Interpreter::execute = (@playfield, options) ->
   options ?= {}
   options.jumpLimit ?= -1
