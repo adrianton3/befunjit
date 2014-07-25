@@ -6,6 +6,9 @@ Befunge-93 just-in-time compiler
 Changelog
 ---------
 
+####v0.3.0 --- 25 jul 2014
+ + added support for `:\$`, `g` and strings
+
 ####v0.2.0 --- 22 jul 2014
  + funge-space is now toroidal
  + added support for `@` and `?`
