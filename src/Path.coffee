@@ -7,8 +7,8 @@ getId = ->
   idCounter++
 
 
-getHash = (x, y, dir) ->
-  "#{x}_#{y}_#{dir}"
+getHash = (x, y, dir, string) ->
+  "#{x}_#{y}_#{dir}#{if string then '_s' else ''}"
 
 
 Path = (list = []) ->
@@ -17,23 +17,25 @@ Path = (list = []) ->
   @list = []
 
   list.forEach (entry) =>
-    @push entry.x, entry.y, entry.dir, entry.char
+    @push entry.x, entry.y, entry.dir, entry.char, entry.string
 
   return
 
 
-Path::push = (x, y, dir, char) ->
-  hash = getHash x, y, dir
+Path::push = (x, y, dir, char, string = false) ->
+  hash = getHash x, y, dir, string
 
   @entries[hash] =
     char: char
     index: @list.length
+    string: string
 
   @list.push
     x: x
     y: y
     dir: dir
     char: char
+    string: string
 
 
 Path::prefix = (length) ->
@@ -47,6 +49,12 @@ Path::suffix = (length) ->
 
 
 Path::has = (x, y, dir) ->
+  hash1 = getHash x, y, dir
+  hash2 = getHash x, y, dir, true
+  @entries[hash1]? or @entries[hash2]?
+
+
+Path::hasNonString = (x, y, dir) ->
   hash = getHash x, y, dir
   @entries[hash]?
 
@@ -54,6 +62,30 @@ Path::has = (x, y, dir) ->
 Path::getEntryAt = (x, y, dir) ->
   hash = getHash x, y, dir
   @entries[hash]
+
+
+Path::getLastEntryThrough = (x, y) ->
+  possibleEntries = [
+    getHash x, y, '^'
+    getHash x, y, '<'
+    getHash x, y, 'V'
+    getHash x, y, '>'
+
+    getHash x, y, '^', true
+    getHash x, y, '<', true
+    getHash x, y, 'V', true
+    getHash x, y, '>', true
+  ]
+
+  max = -1
+  lastEntry = null
+  possibleEntries.forEach (hash) =>
+    entry = @entries[hash]
+    if entry?.index > max
+      max = entry.index
+      lastEntry = entry
+
+  lastEntry
 
 
 Path::getAsList = ->

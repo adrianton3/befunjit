@@ -7,8 +7,8 @@ describe 'Path', ->
       path.push 10, 20, 3, 'z'
       path.push 1, 2, 0, 't'
       (expect path.getAsList()).toEqual [
-        { x: 10, y: 20, dir: 3, char: 'z' }
-        { x: 1, y: 2, dir: 0, char: 't' }
+        { x: 10, y: 20, dir: 3, char: 'z', string: false }
+        { x: 1, y: 2, dir: 0, char: 't', string: false }
       ]
 
 
@@ -30,8 +30,8 @@ describe 'Path', ->
 
       prefixPath = path.prefix 2
       (expect prefixPath.getAsList()).toEqual [
-        { x: 11, y: 20, dir: 3, char: 'a' },
-        { x: 12, y: 20, dir: 3, char: 'b' }
+        { x: 11, y: 20, dir: 3, char: 'a', string: false }
+        { x: 12, y: 20, dir: 3, char: 'b', string: false }
       ]
 
     it 'gets the prefix of the same length as the source path', ->
@@ -42,9 +42,9 @@ describe 'Path', ->
 
       prefixPath = path.prefix 3
       (expect prefixPath.getAsList()).toEqual [
-        { x: 11, y: 20, dir: 3, char: 'a' },
-        { x: 12, y: 20, dir: 3, char: 'b' }
-        { x: 13, y: 20, dir: 3, char: 'c' }
+        { x: 11, y: 20, dir: 3, char: 'a', string: false }
+        { x: 12, y: 20, dir: 3, char: 'b', string: false }
+        { x: 13, y: 20, dir: 3, char: 'c', string: false }
       ]
 
   describe 'suffix', ->
@@ -56,9 +56,9 @@ describe 'Path', ->
 
       suffixPath = path.suffix 0
       (expect suffixPath.getAsList()).toEqual [
-        { x: 11, y: 20, dir: 3, char: 'a' },
-        { x: 12, y: 20, dir: 3, char: 'b' }
-        { x: 13, y: 20, dir: 3, char: 'c' }
+        { x: 11, y: 20, dir: 3, char: 'a', string: false }
+        { x: 12, y: 20, dir: 3, char: 'b', string: false }
+        { x: 13, y: 20, dir: 3, char: 'c', string: false }
       ]
 
     it 'gets the suffix of an arbitrary length', ->
@@ -69,7 +69,7 @@ describe 'Path', ->
 
       suffixPath = path.suffix 2
       (expect suffixPath.getAsList()).toEqual [
-        { x: 13, y: 20, dir: 3, char: 'c' }
+        { x: 13, y: 20, dir: 3, char: 'c', string: false }
       ]
 
     it 'gets the suffix of the same length as the source path', ->

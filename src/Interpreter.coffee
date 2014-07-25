@@ -17,14 +17,24 @@ Interpreter::_getPath = (x, y, dir) ->
   pointer = new bef.Pointer x, y, dir, @playfield.getSize()
 
   loop
-    if not @playfield.isInside pointer.x, pointer.y
-      path.endingOutside = true
-      return [path]
-
     currentChar = @playfield.getAt pointer.x, pointer.y
+
+    # processing string
+    if currentChar == '"'
+      path.push pointer.x, pointer.y, pointer.dir, currentChar
+      loop
+        pointer.advance()
+        currentChar = @playfield.getAt pointer.x, pointer.y
+        if currentChar == '"'
+          path.push pointer.x, pointer.y, pointer.dir, currentChar
+          break
+        path.push pointer.x, pointer.y, pointer.dir, currentChar, true
+      pointer.advance()
+      continue
+
     pointer.turn currentChar
 
-    if path.has pointer.x, pointer.y, pointer.dir
+    if path.hasNonString pointer.x, pointer.y, pointer.dir
       splitPosition = (path.getEntryAt pointer.x, pointer.y, pointer.dir).index
       if splitPosition > 0
         initialPath = path.prefix splitPosition
@@ -48,45 +58,13 @@ Interpreter::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
     @playfield.removePath path
   @playfield.setAt x, y, e
 
-  if @currentPath.has x, y, '^'
-    index = (@currentPath.getEntryAt x, y, '^').index
-    if index > currentIndex
-      @runtime.flags.pathInvalidatedAhead = true
-      @runtime.flags.exitPoint =
-        x: currentX
-        y: currentY
-        dir: currentDir
-      return
-
-  if @currentPath.has x, y, '<'
-    index = (@currentPath.getEntryAt x, y, '<').index
-    if index > currentIndex
-      @runtime.flags.pathInvalidatedAhead = true
-      @runtime.flags.exitPoint =
-        x: currentX
-        y: currentY
-        dir: currentDir
-      return
-
-  if @currentPath.has x, y, 'v'
-    index = (@currentPath.getEntryAt x, y, 'v').index
-    if index > currentIndex
-      @runtime.flags.pathInvalidatedAhead = true
-      @runtime.flags.exitPoint =
-        x: currentX
-        y: currentY
-        dir: currentDir
-      return
-
-  if @currentPath.has x, y, '>'
-    index = (@currentPath.getEntryAt x, y, '>').index
-    if index > currentIndex
-      @runtime.flags.pathInvalidatedAhead = true
-      @runtime.flags.exitPoint =
-        x: currentX
-        y: currentY
-        dir: currentDir
-      return
+  lastEntry = @currentPath.getLastEntryThrough x, y
+  if lastEntry?.index > currentIndex
+    @runtime.flags.pathInvalidatedAhead = true
+    @runtime.flags.exitPoint =
+      x: currentX
+      y: currentY
+      dir: currentDir
 
 
 Interpreter::get = (x, y) ->

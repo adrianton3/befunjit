@@ -26,6 +26,7 @@ codeMap =
   '?': -> '/* ? */'
   '_': -> '/* _ */  return;'
   '|': -> '/* | */  return;'
+  '"': -> '/* " */'
   ':': -> '/* : */  runtime.duplicate()'
   '\\': -> '/* \\ */  runtime.swap()'
   '$': -> '/* $ */  runtime.pop()'
@@ -45,10 +46,13 @@ BasicCompiler.compile = (path) ->
   charList = path.getAsList()
 
   lines = charList.map (entry, i) ->
-    codeGenerator = codeMap[entry.char]
-    codeGenerator entry.x, entry.y, entry.dir, i
+    if entry.string
+      "/* '#{entry.char}' */  runtime.push(#{entry.char.charCodeAt 0})"
+    else
+      codeGenerator = codeMap[entry.char]
+      codeGenerator entry.x, entry.y, entry.dir, i
 
-  code = lines.join('\n')
+  code = lines.join '\n'
   compiled = new Function 'runtime', code
   path.body = compiled
 
