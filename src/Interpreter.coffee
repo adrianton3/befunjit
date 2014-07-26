@@ -72,7 +72,7 @@ Interpreter::get = (x, y) ->
   char.charCodeAt 0
 
 
-Interpreter::execute = (@playfield, options) ->
+Interpreter::execute = (@playfield, options, input = []) ->
   options ?= {}
   options.jumpLimit ?= -1
   options.compiler ?= bef.BasicCompiler
@@ -82,6 +82,7 @@ Interpreter::execute = (@playfield, options) ->
 
   @pathSet = new bef.PathSet()
   @runtime = new bef.Runtime @
+  @runtime.setInput input
   pointer = new bef.Pointer 0, 0, '>', @playfield.getSize()
 
   loop

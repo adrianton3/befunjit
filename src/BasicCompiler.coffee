@@ -31,13 +31,15 @@ codeMap =
   '\\': -> '/* \\ */  runtime.swap()'
   '$': -> '/* $ */  runtime.pop()'
   '.': -> '/* . */  runtime.out(runtime.pop())'
+  ',': -> '/* , */  runtime.out(String.fromCharCode(runtime.pop()))'
   '#': -> '/* # */'
   'p': (x, y, dir, index) ->
     "/* p */  runtime.put(runtime.pop(), runtime.pop(), runtime.pop(), #{x}, #{y}, '#{dir}', #{index})\n" +
     "if (runtime.flags.pathInvalidatedAhead) { return; }"
   'g': -> '/* g */  runtime.push(runtime.get(runtime.pop(), runtime.pop()))'
-  '&': -> '/* & */  runtime.push(runtime.input.next())'
-  '@': '/* @ */  return;'
+  '&': -> '/* & */  runtime.push(runtime.next())'
+  '~': -> '/* ~ */  runtime.push(runtime.nextChar())'
+  '@': -> '/* @ */  return;'
 
 BasicCompiler = ->
 

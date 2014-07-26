@@ -149,12 +149,12 @@ describe 'Interpreter', ->
       ]
 
   describe 'execute', ->
-    execute = (string, width, height, options) ->
+    execute = (string, width, height, options, input = []) ->
       playfield = new Playfield()
       playfield.fromString string, width, height
 
       interpreter = new Interpreter()
-      interpreter.execute playfield, options
+      interpreter.execute playfield, options, input
 
       interpreter
 
@@ -174,6 +174,15 @@ describe 'Interpreter', ->
 
       (expect interpreter.runtime.stack).toEqual []
       (expect interpreter.runtime.outRecord).toEqual [5]
+      (expect interpreter.stats.compileCalls).toEqual 1
+
+    it 'outputs a character', ->
+      interpreter = execute '''
+        77*,@
+      ''', 5, 1
+
+      (expect interpreter.runtime.stack).toEqual []
+      (expect interpreter.runtime.outRecord).toEqual ['1']
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'loops forever (or until the too-many-jumps condition holds)', ->
@@ -350,6 +359,24 @@ describe 'Interpreter', ->
       ''', 10, 1
 
       (expect interpreter.runtime.stack).toEqual ['g'.charCodeAt 0]
+      (expect interpreter.runtime.outRecord).toEqual []
+      (expect interpreter.stats.compileCalls).toEqual 1
+
+    it 'can get read an integer', ->
+      interpreter = execute '''
+        &@
+      ''', 10, 1, null, [123]
+
+      (expect interpreter.runtime.stack).toEqual [123]
+      (expect interpreter.runtime.outRecord).toEqual []
+      (expect interpreter.stats.compileCalls).toEqual 1
+
+    it 'can get read a char', ->
+      interpreter = execute '''
+        ~@
+      ''', 10, 1, null, ['a']
+
+      (expect interpreter.runtime.stack).toEqual ['a'.charCodeAt 0]
       (expect interpreter.runtime.outRecord).toEqual []
       (expect interpreter.stats.compileCalls).toEqual 1
 

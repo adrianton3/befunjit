@@ -34,6 +34,13 @@ Runtime::next = ->
   ret
 
 
+Runtime::nextChar = ->
+  ret = @inputList[@inputPointer].charCodeAt 0
+  if @inputPointer < @inputList.length
+    @inputPointer++
+  ret
+
+
 Runtime::put = (e, y, x, currentX, currentY, currentDir, index) ->
   @interpreter.put x, y, (String.fromCharCode e), currentX, currentY, currentDir, index
 
