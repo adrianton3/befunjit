@@ -105,6 +105,35 @@ describe 'Interpreter', ->
         { x: 2, y: 1, dir: '^', char: 'f', string: false }
       ]
 
+    it 'can jump over a cell', ->
+      interpreter = getInterpreter '''
+        a#bc@
+      ''', 5, 1
+
+      paths = interpreter._getPath 0, 0, '>'
+
+      pathAsList = paths[0].getAsList()
+      (expect pathAsList).toEqual [
+        { x: 0, y: 0, dir: '>', char: 'a', string: false }
+        { x: 1, y: 0, dir: '>', char: '#', string: false }
+        { x: 3, y: 0, dir: '>', char: 'c', string: false }
+      ]
+
+    it 'can jump repeatedly', ->
+      interpreter = getInterpreter '''
+        a#b#cd@
+      ''', 7, 1
+
+      paths = interpreter._getPath 0, 0, '>'
+
+      pathAsList = paths[0].getAsList()
+      (expect pathAsList).toEqual [
+        { x: 0, y: 0, dir: '>', char: 'a', string: false }
+        { x: 1, y: 0, dir: '>', char: '#', string: false }
+        { x: 3, y: 0, dir: '>', char: '#', string: false }
+        { x: 5, y: 0, dir: '>', char: 'd', string: false }
+      ]
+
     it 'parses a string', ->
       interpreter = getInterpreter '''
         12"34"56

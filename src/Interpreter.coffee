@@ -48,6 +48,9 @@ Interpreter::_getPath = (x, y, dir) ->
 
     path.push pointer.x, pointer.y, pointer.dir, currentChar
 
+    if currentChar == '#'
+      pointer.advance()
+
     pointer.advance()
 
 
