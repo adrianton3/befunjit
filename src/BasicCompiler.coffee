@@ -52,7 +52,10 @@ BasicCompiler.compile = (path) ->
       "/* '#{entry.char}' */  runtime.push(#{entry.char.charCodeAt 0})"
     else
       codeGenerator = codeMap[entry.char]
-      codeGenerator entry.x, entry.y, entry.dir, i
+      if codeGenerator?
+        codeGenerator entry.x, entry.y, entry.dir, i
+      else
+        "/* __ #{entry.char} */"
 
   code = lines.join '\n'
   compiled = new Function 'runtime', code

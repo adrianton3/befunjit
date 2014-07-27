@@ -55,6 +55,8 @@ Interpreter::_getPath = (x, y, dir) ->
 
 
 Interpreter::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
+  return if not @playfield.isInside x, y # exit early
+
   paths = @playfield.getPathsThrough x, y
   paths.forEach (path) =>
     @pathSet.remove path
@@ -71,6 +73,8 @@ Interpreter::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
 
 
 Interpreter::get = (x, y) ->
+  return 0 if not @playfield.isInside x, y
+
   char = @playfield.getAt x, y
   char.charCodeAt 0
 

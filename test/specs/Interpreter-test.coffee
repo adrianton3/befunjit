@@ -391,7 +391,7 @@ describe 'Interpreter', ->
       (expect interpreter.runtime.outRecord).toEqual []
       (expect interpreter.stats.compileCalls).toEqual 1
 
-    it 'can get read an integer', ->
+    it 'can read an integer', ->
       interpreter = execute '''
         &@
       ''', 10, 1, null, [123]
@@ -400,7 +400,7 @@ describe 'Interpreter', ->
       (expect interpreter.runtime.outRecord).toEqual []
       (expect interpreter.stats.compileCalls).toEqual 1
 
-    it 'can get read a char', ->
+    it 'can read a char', ->
       interpreter = execute '''
         ~@
       ''', 10, 1, null, ['a']
@@ -445,6 +445,52 @@ describe 'Interpreter', ->
         interpreter = execute '''
           ""@
         ''', 5, 1
+
+        (expect interpreter.runtime.stack).toEqual []
+        (expect interpreter.runtime.outRecord).toEqual []
+        (expect interpreter.stats.compileCalls).toEqual 1
+
+    describe 'edge cases', ->
+      it 'pops 0 from an empty stack', ->
+        interpreter = execute '''
+          .@
+        ''', 5, 1
+
+        (expect interpreter.runtime.stack).toEqual []
+        (expect interpreter.runtime.outRecord).toEqual [0]
+        (expect interpreter.stats.compileCalls).toEqual 1
+
+      it 'ignores non-instructions', ->
+        interpreter = execute '''
+          abc@
+        ''', 5, 1
+
+        (expect interpreter.runtime.stack).toEqual []
+        (expect interpreter.runtime.outRecord).toEqual []
+        (expect interpreter.stats.compileCalls).toEqual 1
+
+      it 'gets 0 if input is empty', ->
+        interpreter = execute '''
+          &&&&&@
+        ''', 6, 1, {}, [1, 2, 3]
+
+        (expect interpreter.runtime.stack).toEqual [1, 2, 3, 0, 0]
+        (expect interpreter.runtime.outRecord).toEqual []
+        (expect interpreter.stats.compileCalls).toEqual 1
+
+      it 'gets 0 when trying to access cells outside of the playfield', ->
+        interpreter = execute '''
+          99g@
+        ''', 6, 1
+
+        (expect interpreter.runtime.stack).toEqual [0]
+        (expect interpreter.runtime.outRecord).toEqual []
+        (expect interpreter.stats.compileCalls).toEqual 1
+
+      it 'does not crash when trying to write outside of the playfield', ->
+        interpreter = execute '''
+          999p@
+        ''', 6, 1
 
         (expect interpreter.runtime.stack).toEqual []
         (expect interpreter.runtime.outRecord).toEqual []

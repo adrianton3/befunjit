@@ -15,6 +15,7 @@ Runtime::push = (e) ->
 
 
 Runtime::pop = ->
+  return 0 if @stack.length < 1
   @stack.pop()
 
 
@@ -31,14 +32,18 @@ Runtime::next = ->
   ret = @inputList[@inputPointer]
   if @inputPointer < @inputList.length
     @inputPointer++
-  ret
+    ret
+  else
+    0
 
 
 Runtime::nextChar = ->
   ret = @inputList[@inputPointer].charCodeAt 0
   if @inputPointer < @inputList.length
     @inputPointer++
-  ret
+    ret
+  else
+    0
 
 
 Runtime::put = (e, y, x, currentX, currentY, currentDir, index) ->
