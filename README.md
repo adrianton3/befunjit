@@ -6,6 +6,10 @@ Befunge-93 just-in-time compiler
 Changelog
 ---------
 
+####v0.4.0 --- 27 jul 2014
+ + added support for `&~,` and `#`
+ + handles edge cases (empty stack/input, writing/reading outside of the playfield)
+
 ####v0.3.0 --- 25 jul 2014
  + added support for `:\$`, `g` and strings
 
