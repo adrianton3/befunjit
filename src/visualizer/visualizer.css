@@ -1,0 +1,75 @@
+body {
+    background-color: #131411;
+    color: #F3F4F1;
+    font-family: Cabin, sans-serif;
+}
+
+.title {
+    font-size: small;
+    font-weight: normal;
+}
+
+.desc {
+    font-size: medium;
+    font-weight: normal;
+}
+
+#container {
+    width: 100%;
+    font-family: Cabin, sans-serif;
+}
+
+#container .group {
+    float: left;
+    margin-right: 40px;
+}
+
+div .editor {
+    width: 300px;
+    height: 70px;
+}
+
+#source-editor {
+    height: 300px;
+}
+
+#can {
+    border: 1px solid black;
+    position: relative;
+    float: left;
+    top: 20px;
+    background-color: white;
+}
+
+#js-editor {
+    width: 300px;
+    height: 500px;
+    float: left;
+}
+
+.group .spaced {
+    margin-top: 10px;
+}
+
+button {
+    position: relative;
+    width: 300px;
+    top: 20px;
+    clear: both;
+    background-color: rgb(16, 67, 174);
+    color: #F3F4F1;
+    font-weight: bold;
+    font-size: 16px;
+    border-width: 2px 0 3px 0;
+    border-bottom-color: rgb(19, 88, 144);
+    border-top-color: rgb(56, 181, 255);
+    height: 35px;
+    margin-bottom: 20px;
+}
+
+button:hover {
+    background-color: rgb(23, 90, 201);
+    border-width: 2px 0 3px 0;
+    border-top-color: rgb(24, 155, 230);
+    border-bottom-color: rgb(17, 78, 245);
+}

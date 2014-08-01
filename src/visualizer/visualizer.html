@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Befunjit</title>
+    <link href='http://fonts.googleapis.com/css?family=Cabin' rel='stylesheet' type='text/css'>
+    <link href="visualizer.css" rel="stylesheet" type="text/css" media="all">
+</head>
+<body>
+    <!--GitHub ribbon -->
+    <a href="https://github.com/madflame991/befunjit"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"></a>
+    <!-- --------------- -->
+
+    <h1 class="title">befunjit &#8212 Befunge-93 just-in-time compiler</h1>
+
+    <div id="container">
+        <div class="group">
+            <div>
+                Source<br>
+                <div class= "editor" id="source-editor">0&quot;!dlroW&quot; v
+v&quot;Hello, &quot;&lt;
+&gt;:#,_@</div>
+            </div>
+            <div class="spaced">
+                Input<br>
+                <div class= "editor" id="input-editor"></div>
+            </div>
+            <div class="spaced">
+                Output<br>
+                <div class= "editor" id="output-editor"></div>
+            </div>
+            <div>
+                <button id="run">Run</button><br>
+            </div>
+        </div>
+
+        <!-- column -->
+        <div class="group">
+            <canvas id="can" width="0" height="0"></canvas>
+        </div>
+        <!-- column -->
+
+        <div class="group">
+            JS Source<br>
+            <div id="js-editor"></div>
+        </div>
+
+
+
+
+        <!-- libs -->
+        <script src="../../lib/ace/ace.js"></script>
+        <script src="../../lib/ace/mode-javascript.js"></script>
+        <script src="../../lib/ace/theme-monokai.js"></script>
+        <script src="../../lib/ace/worker-javascript.js"></script>
+
+        <!-- core -->
+        <script src="../core/Playfield.js"></script>
+        <script src="../core/Path.js"></script>
+        <script src="../core/Interpreter.js"></script>
+        <script src="../core/BasicCompiler.js"></script>
+        <script src="../core/Pointer.js"></script>
+        <script src="../core/Runtime.js"></script>
+        <script src="../core/PathSet.js"></script>
+
+        <!-- visualizer -->
+        <script src="Grid.js"></script>
+
+        <script src="visualizer.js"></script>
+    </div>
+</body>
+</html>
