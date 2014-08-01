@@ -1,10 +1,14 @@
 befunjit
 ========
 
-Befunge-93 just-in-time compiler
+Befunge-93 just-in-time compiler. [Try it!](http://madflame991.github.io/befunjit/src/visualizer/visualizer.html)
 
 Changelog
 ---------
+
+####v0.4.1 --- 1 aug 2014
+ + `_|` outcomes have been swapped
+ + released a visualizer for the runtime-generated code paths 
 
 ####v0.4.0 --- 27 jul 2014
  + added support for `&~,` and `#`
