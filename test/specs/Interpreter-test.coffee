@@ -242,7 +242,7 @@ describe 'Interpreter', ->
       ''', 7, 2
 
       (expect interpreter.runtime.stack).toEqual []
-      (expect interpreter.runtime.outRecord).toEqual [7]
+      (expect interpreter.runtime.outRecord).toEqual [9]
       (expect interpreter.stats.compileCalls).toEqual 2
 
     it 'mutates the current path, before the current index', ->

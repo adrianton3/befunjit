@@ -1,3 +1,3 @@
 .idea
-src/*.js
-test/specs/*.js
+src/**/*.js
+test/specs/**/*.js

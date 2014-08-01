@@ -15,6 +15,11 @@ PathSet::add = (path) ->
   @
 
 
+PathSet::has = (x, y, dir) ->
+  hash = getHash x, y, dir
+  @set[hash]?
+
+
 PathSet::getStartingFrom = (x, y, dir) ->
   hash = getHash x, y, dir
   @set[hash]

@@ -44,7 +44,7 @@ codeMap =
 BasicCompiler = ->
 
 
-BasicCompiler.compile = (path) ->
+BasicCompiler.assemble = (path) ->
   charList = path.getAsList()
 
   lines = charList.map (entry, i) ->
@@ -57,7 +57,12 @@ BasicCompiler.compile = (path) ->
       else
         "/* __ #{entry.char} */"
 
-  code = lines.join '\n'
+  lines.join '\n'
+
+
+BasicCompiler.compile = (path) ->
+  code = BasicCompiler.assemble path
+  path.code = code #storing this just for debugging
   compiled = new Function 'runtime', code
   path.body = compiled
 

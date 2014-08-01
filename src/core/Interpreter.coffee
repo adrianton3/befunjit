@@ -125,15 +125,15 @@ Interpreter::execute = (@playfield, options, input = []) ->
 
     if currentChar == '|'
       if @runtime.pop() == 0
-        pointer.turn '^'
-      else
         pointer.turn 'v'
+      else
+        pointer.turn '^'
       pointer.advance()
     else if currentChar == '_'
       if @runtime.pop() == 0
-        pointer.turn '<'
-      else
         pointer.turn '>'
+      else
+        pointer.turn '<'
       pointer.advance()
     else if currentChar == '?'
       pointer.turn '^<v>'[Math.random() * 4 | 0]
