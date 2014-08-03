@@ -15,6 +15,8 @@ Every jump befunjit will check its cache of compiled static paths starting from 
 
 A "static path" is just the list of commands the instruction pointer (IP) encounters while running through the playfield until an instruction which conditionally changes the direction of the PC is encountered (`|`, `_` or `?`) or a cycle is detected. [This visualizer](http://madflame991.github.io/befunjit/src/visualizer/visualizer.html) shows what static paths remained cached after the execution of a program (hover the small arrows).
 
+One of the advantages of compiling paths over interpreting them is that some instructions don't generate any code: `^<v>`, `#`, `"` and whitespace. Even more, once isolated, a static path can be optimised using constant folding for ex.
+
 The reflective instruction `p` is the only thing that makes it very hard (if not impossible) to write an ahead-of-time compiler for befunge. befunjit is a JIT compiler for exactly the same reason: to allow handling of the `p` command. When executed (from a compiled path), the `p` will alter the contents of the playfield and invalidate any paths that pass through the affected cell. All these paths will be eventually recompiled if and when the IP gets to them. If the current executing path happens to be invalidated then it will continue executing only if the affected cell comes before the current `p` instruction in the path. Otherwise, the compiled code ceases control back to the compiler immediately which will in turn have to compile and execute the path starting from the current IP.
 
 *Note: the IP in the context of the befunjit runtime is composed of (line, colon and direction).
