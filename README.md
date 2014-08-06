@@ -25,6 +25,9 @@ The reflective instruction `p` is the only thing that makes it very hard (if not
 Changelog
 ---------
 
+####v0.5.0 --- 6 aug 2014
+ + replaced BasicCompiler with OptimizingCompiler
+
 ####v0.4.1 --- 1 aug 2014
  + `_|` outcomes have been swapped
  + released a visualizer for the runtime-generated code paths 

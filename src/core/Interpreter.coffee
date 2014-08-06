@@ -82,7 +82,7 @@ Interpreter::get = (x, y) ->
 Interpreter::execute = (@playfield, options, input = []) ->
   options ?= {}
   options.jumpLimit ?= -1
-  options.compiler ?= bef.BasicCompiler
+  options.compiler ?= bef.OptimizinsCompiler
 
   @stats.compileCalls = 0
   @stats.jumpsPerformed = 0

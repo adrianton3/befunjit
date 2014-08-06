@@ -22,15 +22,18 @@ describe 'OptimizingCompiler', ->
 
     (spyOn runtime, 'push').and.callThrough()
     (spyOn runtime, 'pop').and.callThrough()
+    spyOn runtime, 'put'
+    (spyOn runtime, 'get').and.returnValue 55
 
     runtime
 
 
-  execute = (string, stack, input) ->
+  execute = (string, stack, input, pathInvalidatedAhead = false) ->
     path = getPath string
     OptimizinsCompiler.compile path
 
     runtime = getRuntime stack, input
+    runtime.flags.pathInvalidatedAhead = pathInvalidatedAhead
     path.body runtime
 
     runtime
@@ -62,6 +65,44 @@ describe 'OptimizingCompiler', ->
         (expect runtime.push.calls.count()).toEqual 1
         (expect runtime.pop.calls.count()).toEqual 2
         (expect runtime.stack).toEqual [3]
+
+    describe '-', ->
+      it 'resolves entirely at compile time', ->
+        runtime = execute '23-'
+        (expect runtime.push.calls.count()).toEqual 1
+        (expect runtime.pop.calls.count()).toEqual 0
+        (expect runtime.stack).toEqual [1]
+
+      it 'resolves partially at compile time', ->
+        runtime = execute '3-', [2]
+        (expect runtime.push.calls.count()).toEqual 1
+        (expect runtime.pop.calls.count()).toEqual 1
+        (expect runtime.stack).toEqual [1]
+
+      it 'does not resolve at compile time', ->
+        runtime = execute '-', [2, 3]
+        (expect runtime.push.calls.count()).toEqual 1
+        (expect runtime.pop.calls.count()).toEqual 2
+        (expect runtime.stack).toEqual [1]
+
+    describe '*', ->
+      it 'resolves entirely at compile time', ->
+        runtime = execute '23*'
+        (expect runtime.push.calls.count()).toEqual 1
+        (expect runtime.pop.calls.count()).toEqual 0
+        (expect runtime.stack).toEqual [6]
+
+      it 'resolves partially at compile time', ->
+        runtime = execute '3*', [2]
+        (expect runtime.push.calls.count()).toEqual 1
+        (expect runtime.pop.calls.count()).toEqual 1
+        (expect runtime.stack).toEqual [6]
+
+      it 'does not resolve at compile time', ->
+        runtime = execute '*', [2, 3]
+        (expect runtime.push.calls.count()).toEqual 1
+        (expect runtime.pop.calls.count()).toEqual 2
+        (expect runtime.stack).toEqual [6]
 
     describe '/', ->
       it 'resolves entirely at compile time', ->
@@ -101,6 +142,18 @@ describe 'OptimizingCompiler', ->
         (expect runtime.pop.calls.count()).toEqual 2
         (expect runtime.stack).toEqual [1]
 
+  describe '!', ->
+    it 'resolves at compile time', ->
+      runtime = execute '2!'
+      (expect runtime.push.calls.count()).toEqual 1
+      (expect runtime.pop.calls.count()).toEqual 0
+      (expect runtime.stack).toEqual [0]
+
+    it 'does not resolve at compile time', ->
+      runtime = execute '!', [2]
+      (expect runtime.push.calls.count()).toEqual 1
+      (expect runtime.pop.calls.count()).toEqual 1
+      (expect runtime.stack).toEqual [0]
 
   describe 'literals', ->
     describe '0..9', ->
@@ -251,3 +304,45 @@ describe 'OptimizingCompiler', ->
         (expect runtime.push.calls.count()).toEqual 1
         (expect runtime.pop.calls.count()).toEqual 0
         (expect runtime.stack).toEqual [52]
+
+  describe 'p', ->
+    it 'gets stack entries at compile time', ->
+      runtime = execute '123p'
+      (expect runtime.push.calls.count()).toEqual 0
+      (expect runtime.pop.calls.count()).toEqual 0
+      (expect runtime.put.calls.count()).toEqual 1
+
+    it 'gets no stack entries at compile time', ->
+      runtime = execute 'p', [1, 2, 3]
+      (expect runtime.push.calls.count()).toEqual 0
+      (expect runtime.pop.calls.count()).toEqual 3
+      (expect runtime.put.calls.count()).toEqual 1
+
+    it 'dumps the stack if path was invalidated ahead', ->
+      runtime = execute '123456p789', [], [], true
+      (expect runtime.push.calls.count()).toEqual 1
+      (expect runtime.pop.calls.count()).toEqual 0
+      (expect runtime.put.calls.count()).toEqual 1
+      (expect runtime.stack).toEqual [1, 2, 3]
+
+  describe 'g', ->
+    it 'gets all stack entries at compile time', ->
+      runtime = execute '12g'
+      (expect runtime.push.calls.count()).toEqual 1
+      (expect runtime.pop.calls.count()).toEqual 0
+      (expect runtime.get.calls.count()).toEqual 1
+      (expect runtime.stack).toEqual [55]
+
+    it 'gets some stack entries at compile time', ->
+      runtime = execute '2g', [1]
+      (expect runtime.push.calls.count()).toEqual 1
+      (expect runtime.pop.calls.count()).toEqual 1
+      (expect runtime.get.calls.count()).toEqual 1
+      (expect runtime.stack).toEqual [55]
+
+    it 'gets some stack entries at compile time', ->
+      runtime = execute 'g', [1, 2]
+      (expect runtime.push.calls.count()).toEqual 1
+      (expect runtime.pop.calls.count()).toEqual 2
+      (expect runtime.get.calls.count()).toEqual 1
+      (expect runtime.stack).toEqual [55]
