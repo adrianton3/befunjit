@@ -10,8 +10,8 @@ Runtime = (@interpreter) ->
   return
 
 
-Runtime::push = (e) ->
-  @stack.push e
+Runtime::push = ->
+  @stack.push.apply @stack, arguments
 
 
 Runtime::pop = ->
