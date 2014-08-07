@@ -14,8 +14,8 @@
     this.outRecord = [];
   };
 
-  Runtime.prototype.push = function(e) {
-    return this.stack.push(e);
+  Runtime.prototype.push = function() {
+    return this.stack.push.apply(this.stack, arguments);
   };
 
   Runtime.prototype.pop = function() {

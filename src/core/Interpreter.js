@@ -100,7 +100,7 @@
       options.jumpLimit = -1;
     }
     if (options.compiler == null) {
-      options.compiler = bef.BasicCompiler;
+      options.compiler = bef.OptimizinsCompiler;
     }
     this.stats.compileCalls = 0;
     this.stats.jumpsPerformed = 0;
