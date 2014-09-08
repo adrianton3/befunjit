@@ -4,14 +4,21 @@ body {
     font-family: Cabin, sans-serif;
 }
 
-.title {
+.text {
     font-size: small;
     font-weight: normal;
 }
 
+.title {
+    margin-bottom: 2px;
+}
+
 .desc {
-    font-size: medium;
-    font-weight: normal;
+    margin: 0 0 24px 0;
+}
+
+.desc a {
+    color: white;
 }
 
 #container {
@@ -56,20 +63,18 @@ button {
     width: 300px;
     top: 20px;
     clear: both;
-    background-color: rgb(16, 67, 174);
     color: #F3F4F1;
     font-weight: bold;
     font-size: 16px;
-    border-width: 2px 0 3px 0;
-    border-bottom-color: rgb(19, 88, 144);
-    border-top-color: rgb(56, 181, 255);
+    border-width: 0px 0 4px 0;
+    background-color: hsl(220, 100%, 50%);
+    border-bottom-color: hsl(220, 100%, 40%);
     height: 35px;
     margin-bottom: 20px;
+    padding: 2px 0 0 0;
 }
 
 button:hover {
-    background-color: rgb(23, 90, 201);
-    border-width: 2px 0 3px 0;
-    border-top-color: rgb(24, 155, 230);
-    border-bottom-color: rgb(17, 78, 245);
+    background-color: hsl(220, 100%, 60%);
+    border-bottom-color: hsl(220, 100%, 45%);
 }
