@@ -1,7 +1,7 @@
 befunjit
 ========
 
-befunjit is a just-in-time compiler for the befunge-93 language. [Try it!](http://madflame991.github.io/befunjit/src/visualizer/visualizer.html)
+befunjit is a just-in-time compiler for the befunge-93 language. [Try it!](http://adrianton3.github.io/befunjit/src/visualizer/visualizer.html)
 
 
 ###Under the hood
@@ -13,7 +13,7 @@ Every jump befunjit will check its cache of compiled static paths starting from 
 + If a precompiled path is found then it will get executed. The compiler will cease control to the compiled code (which too can be thought of as a jump). Once the path is executed control comes back to the compiler, the IP is updated to point to where the path ends and the process repeats - a new jump is ready to occur.
 + If however, a precompiled path is not found then the “static path compiler” will be called. This will seek out the longest static path, compile it, store it and execute it as in the previous case.
 
-A "static path" is just the list of commands the instruction pointer (IP) encounters while running through the playfield until an instruction which conditionally changes the direction of the PC is encountered (`|`, `_` or `?`) or a cycle is detected. [This visualizer](http://madflame991.github.io/befunjit/src/visualizer/visualizer.html) shows what static paths remained cached after the execution of a program (hover the small arrows).
+A "static path" is just the list of commands the instruction pointer (IP) encounters while running through the playfield until an instruction which conditionally changes the direction of the PC is encountered (`|`, `_` or `?`) or a cycle is detected. [This visualizer](http://adrianton3.github.io/befunjit/src/visualizer/visualizer.html) shows what static paths remained cached after the execution of a program (hover the small arrows).
 
 One of the advantages of compiling paths over interpreting them is that some instructions don't generate any code: `^<v>`, `#`, `"` and whitespace. Even more, once isolated, a static path can be optimised using constant folding for ex.
 
