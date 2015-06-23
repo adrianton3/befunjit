@@ -30,7 +30,7 @@ compile = (graph) ->
 					branch2 = df neighbours[1].to, newStack
 
 					"""
-						while (true) _#{node}: {
+						while (runtime.isAlive()) _#{node}: {
 							if (runtime.pop()) {
 								#{neighbours[0].path};
 								#{branch1}
@@ -45,13 +45,13 @@ compile = (graph) ->
 					branch = df neighbours[0].to, newStack
 
 					"""
-						while (true) _#{node}: {
+						while (runtime.isAlive()) _#{node}: {
 							#{neighbours[0].path};
 							#{branch}
 						}
 					"""
 				when 0
-					'runtime.exit()'
+					'runtime.exit(); return;'
 
 	df graph.start, List.EMPTY
 
