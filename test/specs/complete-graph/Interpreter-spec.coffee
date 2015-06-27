@@ -94,3 +94,17 @@ describe 'Interpreter', ->
 			(expect graph['2_0'].length).toEqual 2
 			(expect graph['2_0'][0].to).toEqual '1_0'
 			(expect graph['2_0'][1].to).toEqual '1_0'
+
+		it 'handles conditionals in the starting location', ->
+			interpreter = getInterpreter '_ab'
+
+			graph = interpreter.buildGraph()
+
+			(expect graph['start']).toBeDefined()
+			(expect graph['start'].length).toEqual 1
+			(expect graph['start'][0].to).toEqual '0_0'
+
+			(expect graph['0_0']).toBeDefined()
+			(expect graph['0_0'].length).toEqual 2
+			(expect graph['0_0'][0].to).toEqual '0_0'
+			(expect graph['0_0'][1].to).toEqual '0_0'
