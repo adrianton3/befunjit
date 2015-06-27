@@ -159,7 +159,6 @@ describe 'Interpreter', ->
 
       paths = interpreter._getPath 0, 0, '>'
       pathAsList = paths[0].getAsList()
-#      console.log pathAsList
       (expect pathAsList).toEqual [
         { x: 0, y: 0, dir: '>', char: '1', string: false }
         { x: 1, y: 0, dir: '>', char: '2', string: false }
@@ -176,6 +175,14 @@ describe 'Interpreter', ->
         { x: 3, y: 0, dir: '>', char: '3', string: false }
         { x: 4, y: 0, dir: '>', char: '4', string: false }
       ]
+
+		it 'gets an empty path', ->
+			interpreter = getInterpreter '__'
+
+			paths = interpreter._getPath 0, 0, '>'
+			pathAsList = paths[0].getAsList()
+			(expect pathAsList).toEqual []
+
 
   describe 'execute', ->
     execute = (string, width, height, options, input = []) ->

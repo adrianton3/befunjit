@@ -17,14 +17,6 @@ describe 'Interpreter', ->
 		interpreter.playfield = playfield
 		interpreter
 
-	describe 'getPath', ->
-		it 'gets an empty path', ->
-			interpreter = getInterpreter '__'
-
-			paths = interpreter._getPath 0, 0, '>'
-			pathAsList = paths[0].getAsList()
-			(expect pathAsList).toEqual []
-
 
 	describe 'buildGraph', ->
 		it 'builds a graph from a simple path', ->
