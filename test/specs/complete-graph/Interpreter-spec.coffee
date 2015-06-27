@@ -17,13 +17,22 @@ describe 'Interpreter', ->
 		interpreter.playfield = playfield
 		interpreter
 
+	describe 'getPath', ->
+		it 'gets an empty path', ->
+			interpreter = getInterpreter '__'
+
+			paths = interpreter._getPath 0, 0, '>'
+			pathAsList = paths[0].getAsList()
+			(expect pathAsList).toEqual []
+
+
 	describe 'buildGraph', ->
 		it 'builds a graph from a simple path', ->
 			interpreter = getInterpreter 'abc@'
 			graph = interpreter.buildGraph()
 
-			(expect graph['0_0']).toBeDefined()
-			(expect graph['0_0'].length).toEqual 1
+			(expect graph['start']).toBeDefined()
+			(expect graph['start'].length).toEqual 1
 
 		it 'builds a graph from a branching path', ->
 			interpreter = getInterpreter '''
@@ -32,9 +41,9 @@ describe 'Interpreter', ->
 			'''
 			graph = interpreter.buildGraph()
 
-			(expect graph['0_0']).toBeDefined()
-			(expect graph['0_0'].length).toEqual 1
-			(expect graph['0_0'][0].to).toEqual '2_1'
+			(expect graph['start']).toBeDefined()
+			(expect graph['start'].length).toEqual 1
+			(expect graph['start'][0].to).toEqual '2_1'
 
 			(expect graph['2_1']).toBeDefined()
 			(expect graph['2_1'].length).toEqual 2
@@ -47,11 +56,49 @@ describe 'Interpreter', ->
 			'''
 			graph = interpreter.buildGraph()
 
-			(expect graph['0_0']).toBeDefined()
-			(expect graph['0_0'].length).toEqual 1
-			(expect graph['0_0'][0].to).toEqual '2_1'
+			(expect graph['start']).toBeDefined()
+			(expect graph['start'].length).toEqual 1
+			(expect graph['start'][0].to).toEqual '2_1'
 
 			(expect graph['2_1']).toBeDefined()
 			(expect graph['2_1'].length).toEqual 2
 			(expect graph['2_1'][0].to).toEqual '2_1'
 			(expect graph['2_1'][1].to).toEqual '2_1'
+
+		it 'builds a graph from a doubly cycling path', ->
+			interpreter = getInterpreter 'a_b_c'
+
+			graph = interpreter.buildGraph()
+
+			(expect graph['start']).toBeDefined()
+			(expect graph['start'].length).toEqual 1
+			(expect graph['start'][0].to).toEqual '1_0'
+
+			(expect graph['1_0']).toBeDefined()
+			(expect graph['1_0'].length).toEqual 2
+			(expect graph['1_0'][0].to).toEqual '3_0'
+			(expect graph['1_0'][1].to).toEqual '3_0'
+
+			(expect graph['3_0']).toBeDefined()
+			(expect graph['3_0'].length).toEqual 2
+			(expect graph['3_0'][0].to).toEqual '1_0'
+			(expect graph['3_0'][1].to).toEqual '1_0'
+
+		it 'handles adjacent conditionals', ->
+			interpreter = getInterpreter 'a__b'
+
+			graph = interpreter.buildGraph()
+
+			(expect graph['start']).toBeDefined()
+			(expect graph['start'].length).toEqual 1
+			(expect graph['start'][0].to).toEqual '1_0'
+
+			(expect graph['1_0']).toBeDefined()
+			(expect graph['1_0'].length).toEqual 2
+			(expect graph['1_0'][0].to).toEqual '2_0'
+			(expect graph['1_0'][1].to).toEqual '2_0'
+
+			(expect graph['2_0']).toBeDefined()
+			(expect graph['2_0'].length).toEqual 2
+			(expect graph['2_0'][0].to).toEqual '1_0'
+			(expect graph['2_0'][1].to).toEqual '1_0'

@@ -79,10 +79,11 @@ Interpreter::get = (x, y) ->
   char.charCodeAt 0
 
 
-getHash = (pointer) -> "#{pointer.x}_#{pointer.y}"
+getHash = (pointer) ->
+	"#{pointer.x}_#{pointer.y}"
 
 
-getPointer = (point, dir, space) ->
+getPointer = (point, space, dir) ->
 	pointer = new bef.Pointer point.x, point.y, dir, space
 	pointer.advance()
 
@@ -90,46 +91,56 @@ getPointer = (point, dir, space) ->
 Interpreter::buildGraph = ->
 	graph = {}
 
-	df = (hash, pointer) =>
+	dispatch = (hash, destination) =>
+		currentChar = @playfield.getAt destination.x, destination.y
+		partial = getPointer.bind null, destination, @playfield.getSize()
+		if currentChar == '_'
+			buildEdge hash, partial '<'
+			buildEdge hash, partial '>'
+		else if currentChar == '|'
+			buildEdge hash, partial '^'
+			buildEdge hash, partial 'v'
+		else if currentChar == '?'
+			buildEdge hash, partial '^'
+			buildEdge hash, partial 'v'
+			buildEdge hash, partial '<'
+			buildEdge hash, partial '>'
+		else if currentChar == '@'
+			console.log 'exit'
+		else
+			console.log "unknown char #{currentChar}"
+		return
+
+
+	buildEdge = (hash, pointer) =>
+		# seek out a path
 		newPaths = @_getPath pointer.x, pointer.y, pointer.dir
 
 		if newPaths.length == 2
-			console.log 'loop'
-			graph[hash].push { path: newPaths, to: '_' }
+			# cyclic path
+			graph[hash].push { path: newPaths, to: null }
 		else
+			# simple path
 			newPath = newPaths[0]
-			pathEndPoint = newPath.getEndPoint()
-			destination = new bef.Pointer pathEndPoint.x, pathEndPoint.y, pathEndPoint.dir, @playfield.getSize()
-			destination.advance()
+
+			destination = if newPath.getAsList().length > 0
+				pathEndPoint = newPath.getEndPoint()
+				getPointer pathEndPoint, @playfield.getSize(), pathEndPoint.dir
+			else
+				pointer
 
 			newHash = getHash destination
 			graph[hash].push { path: newPath, to: newHash }
 			return if graph[newHash]?
 			graph[newHash] = []
-
-			currentChar = @playfield.getAt destination.x, destination.y
-			if currentChar == '|'
-				df newHash, getPointer destination, '^', @playfield.getSize()
-				df newHash, getPointer destination, 'v', @playfield.getSize()
-			else if currentChar == '_'
-				df newHash, getPointer destination, '<', @playfield.getSize()
-				df newHash, getPointer destination, '>', @playfield.getSize()
-			else if currentChar == '?'
-				df newHash, getPointer destination, '^', @playfield.getSize()
-				df newHash, getPointer destination, 'v', @playfield.getSize()
-				df newHash, getPointer destination, '<', @playfield.getSize()
-				df newHash, getPointer destination, '>', @playfield.getSize()
-			else if currentChar == '@'
-				return
-			else
-				console.log "unknown char #{currentChar}"
-
+			dispatch newHash, destination
 		return
 
+
 	start = new bef.Pointer 0, 0, '>', @playfield.getSize()
-	hash = getHash start
+	hash = 'start'
 	graph[hash] = []
-	df hash, start
+	buildEdge hash, start
 	graph
 
 
