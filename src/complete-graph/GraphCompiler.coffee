@@ -17,41 +17,61 @@ computeIndegree = (nodes) ->
 compile = (graph) ->
 	indegree = computeIndegree graph.nodes
 
+	cycledNodes = new Set
+
 	df = (node, stack) ->
+		# for debugging only
+		return '' unless graph.nodes[node]?
+
 		if (stack.find node)?
+			cycledNodes.add node
 			"break _#{node};"
 		else
 			neighbours = graph.nodes[node]
 
+			# all nodes of a befunge program have 2 outgoing edges
+			# except the initial node
+			newStack = stack.con node
+
 			switch neighbours.length
 				when 2
-					newStack = stack.con node
 					branch1 = df neighbours[0].to, newStack
 					branch2 = df neighbours[1].to, newStack
 
-					"""
-						while (runtime.isAlive()) _#{node}: {
-							if (runtime.pop()) {
-								#{neighbours[0].path};
-								#{branch1}
-							} else {
-								#{neighbours[1].path};
-								#{branch2}
-							}
+					selectCode = """
+						if (runtime.pop()) {
+							#{neighbours[0].path}
+							#{branch1}
+						} else {
+							#{neighbours[1].path}
+							#{branch2}
 						}
 					"""
+
+					if cycledNodes.has node
+						"""
+							while (runtime.isAlive()) _#{node}: {
+								#{selectCode}
+							}
+						"""
+					else
+						selectCode
 				when 1
-					newStack = stack.con node
 					branch = df neighbours[0].to, newStack
 
+					edgeCode = """
+						#{neighbours[0].path}
+						#{branch}
 					"""
-						while (runtime.isAlive()) _#{node}: {
-							#{neighbours[0].path};
-							#{branch}
-						}
-					"""
-				when 0
-					'runtime.exit(); return;'
+
+					if cycledNodes.has node
+						"""
+							while (runtime.isAlive()) _#{node}: {
+								#{edgeCode}
+							}
+						"""
+					else
+						edgeCode
 
 	df graph.start, List.EMPTY
 

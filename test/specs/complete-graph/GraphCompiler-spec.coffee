@@ -27,15 +27,14 @@ describe 'GraphCompiler', ->
 			runtime
 
 
-		it 'compiles a circular graph', ->
+		it 'compiles a tree', ->
 			graph =
 				start: 'a'
 				nodes:
 					a: [{ path: 'runtime.emit("p1")', to: 'b' }]
-					b: [{ path: 'runtime.emit("p2")', to: 'c' }]
-					c: [{ path: 'return;', to: 'a' }]
+					b: [{ path: 'runtime.emit("p2")', to: 'c' }, { path: 'runtime.emit("p3")', to: 'd' }]
 
-			runtime = execute (compile graph), [true, false]
+			runtime = execute (compile graph), [true]
 
 			expect runtime.messages
 			.toEqual ['p1', 'p2']
