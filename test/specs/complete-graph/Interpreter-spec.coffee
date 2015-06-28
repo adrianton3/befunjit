@@ -19,19 +19,22 @@ describe 'Interpreter', ->
 
 
 	describe 'buildGraph', ->
+		buildGraph = (string) ->
+			interpreter = getInterpreter string
+			start = new bef.Pointer 0, 0, '>', interpreter.playfield.getSize()
+			interpreter.buildGraph start
+
 		it 'builds a graph from a simple path', ->
-			interpreter = getInterpreter 'abc@'
-			graph = interpreter.buildGraph()
+			graph = buildGraph 'abc@'
 
 			(expect graph['start']).toBeDefined()
 			(expect graph['start'].length).toEqual 1
 
 		it 'builds a graph from a branching path', ->
-			interpreter = getInterpreter '''
+			graph = buildGraph '''
 				abv
 				@c_d@
 			'''
-			graph = interpreter.buildGraph()
 
 			(expect graph['start']).toBeDefined()
 			(expect graph['start'].length).toEqual 1
@@ -41,12 +44,11 @@ describe 'Interpreter', ->
 			(expect graph['2_1'].length).toEqual 2
 
 		it 'builds a graph from a cycling path', ->
-			interpreter = getInterpreter '''
+			graph = buildGraph '''
 				abv
 				vc_dv
 				>e^g<
 			'''
-			graph = interpreter.buildGraph()
 
 			(expect graph['start']).toBeDefined()
 			(expect graph['start'].length).toEqual 1
@@ -58,9 +60,7 @@ describe 'Interpreter', ->
 			(expect graph['2_1'][1].to).toEqual '2_1'
 
 		it 'builds a graph from a doubly cycling path', ->
-			interpreter = getInterpreter 'a_b_c'
-
-			graph = interpreter.buildGraph()
+			graph = buildGraph 'a_b_c'
 
 			(expect graph['start']).toBeDefined()
 			(expect graph['start'].length).toEqual 1
@@ -77,9 +77,7 @@ describe 'Interpreter', ->
 			(expect graph['3_0'][1].to).toEqual '1_0'
 
 		it 'handles adjacent conditionals', ->
-			interpreter = getInterpreter 'a__b'
-
-			graph = interpreter.buildGraph()
+			graph = buildGraph 'a__b'
 
 			(expect graph['start']).toBeDefined()
 			(expect graph['start'].length).toEqual 1
@@ -96,9 +94,7 @@ describe 'Interpreter', ->
 			(expect graph['2_0'][1].to).toEqual '1_0'
 
 		it 'handles conditionals in the starting location', ->
-			interpreter = getInterpreter '_ab'
-
-			graph = interpreter.buildGraph()
+			graph = buildGraph '_ab'
 
 			(expect graph['start']).toBeDefined()
 			(expect graph['start'].length).toEqual 1

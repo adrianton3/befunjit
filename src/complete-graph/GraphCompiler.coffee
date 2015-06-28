@@ -2,6 +2,7 @@
 
 List = bef.List
 
+# obsolete?
 computeIndegree = (nodes) ->
 	(Object.keys nodes).reduce (indegree, nodeName) ->
 		nodes[nodeName].forEach (edge) ->
@@ -14,9 +15,7 @@ computeIndegree = (nodes) ->
 	, new Map
 
 
-compile = (graph) ->
-	indegree = computeIndegree graph.nodes
-
+assemble = (graph) ->
 	cycledNodes = new Set
 
 	df = (node, stack) ->
@@ -40,10 +39,10 @@ compile = (graph) ->
 
 					selectCode = """
 						if (runtime.pop()) {
-							#{neighbours[0].path}
+							#{neighbours[0].code}
 							#{branch1}
 						} else {
-							#{neighbours[1].path}
+							#{neighbours[1].code}
 							#{branch2}
 						}
 					"""
@@ -60,7 +59,7 @@ compile = (graph) ->
 					branch = df neighbours[0].to, newStack
 
 					edgeCode = """
-						#{neighbours[0].path}
+						#{neighbours[0].code}
 						#{branch}
 					"""
 
@@ -77,7 +76,7 @@ compile = (graph) ->
 
 
 GraphCompiler =
-	compile: compile
+	assemble: assemble
 
 
 window.bef ?= {}

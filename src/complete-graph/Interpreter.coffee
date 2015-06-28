@@ -88,7 +88,7 @@ getPointer = (point, space, dir) ->
 	pointer.advance()
 
 
-Interpreter::buildGraph = ->
+Interpreter::buildGraph = (start) ->
 	graph = {}
 
 	dispatch = (hash, destination) =>
@@ -137,78 +137,63 @@ Interpreter::buildGraph = ->
 		return
 
 
-	start = new bef.Pointer 0, 0, '>', @playfield.getSize()
 	hash = 'start'
 	graph[hash] = []
 	buildEdge hash, start
 	graph
 
 
+Interpreter::compile = (graph) ->
+	assemble = @options.compiler.assemble
+
+	# generate code for all paths
+	Object.keys.forEach (nodeName) ->
+		edges = graph[nodeName]
+		edges.forEach (edge) ->
+			if edge.paths?
+				initial = assemble edge.paths[0]
+				cycle = assemble edge.paths[1]
+				edge.code = """
+					#{initial}
+					while (runtime.isAlive()) {
+						#{cycle}
+					}
+				"""
+			else if edge.path?
+				edge.code = edge.path
+
+	# generate code for the whole graph
+	code = bef.GraphCompiler.assemble
+		start: 'start'
+		nodes: graph
+
+	new Function 'runtime', code
+
+
 Interpreter::execute = (@playfield, options, input = []) ->
-  options ?= {}
-  options.jumpLimit ?= -1
-  options.compiler ?= bef.OptimizinsCompiler
+	options ?= {}
+	options.jumpLimit ?= -1
+	options.compiler ?= bef.OptimizinsCompiler
 
-  @stats.compileCalls = 0
-  @stats.jumpsPerformed = 0
+	@stats.compileCalls = 0
+	@stats.jumpsPerformed = 0
 
-  @pathSet = new bef.PathSet()
-  @runtime = new bef.Runtime @
-  @runtime.setInput input
-  pointer = new bef.Pointer 0, 0, '>', @playfield.getSize()
+	@pathSet = new bef.PathSet()
+	@runtime = new bef.Runtime @
+	@runtime.setInput input
 
-  ###loop
-    if @stats.jumpsPerformed == options.jumpLimit
-      break # artificial limit to prevent potentially non-breaking loops
-    else
-      @stats.jumpsPerformed++
+	start = new bef.Pointer 0, 0, '>', @playfield.getSize()
 
-    @currentPath = @pathSet.getStartingFrom pointer.x, pointer.y, pointer.dir
-    if not @currentPath
-      newPaths = @_getPath pointer.x, pointer.y, pointer.dir
-      newPaths.forEach (newPath) =>
-        @stats.compileCalls++
-        options.compiler.compile newPath
-        if newPath.list.length
-          @pathSet.add newPath
-          playfield.addPath newPath
+	# loop
+	graph = @buildGraph start
+	program = @compile graph
 
-    @currentPath ?= newPaths[0]
-    @currentPath.body @runtime # executing the compiled path
-    if @runtime.flags.pathInvalidatedAhead
-      @runtime.flags.pathInvalidatedAhead = false
-      exitPoint = @runtime.flags.exitPoint
-      pointer.set exitPoint.x, exitPoint.y, exitPoint.dir
-      pointer.advance()
-      continue
+	program @runtime
+	# if path invalidated ahead
+	# start = exit point
+	# else break
 
-    if @currentPath.list.length
-      pathEndPoint = @currentPath.getEndPoint()
-      pointer.set pathEndPoint.x, pathEndPoint.y, pathEndPoint.dir
-      pointer.advance()
-    currentChar = @playfield.getAt pointer.x, pointer.y
-
-    if currentChar == '|'
-      if @runtime.pop() == 0
-        pointer.turn 'v'
-      else
-        pointer.turn '^'
-      pointer.advance()
-    else if currentChar == '_'
-      if @runtime.pop() == 0
-        pointer.turn '>'
-      else
-        pointer.turn '<'
-      pointer.advance()
-    else if currentChar == '?'
-      pointer.turn '^<v>'[Math.random() * 4 | 0]
-      pointer.advance()
-    else if currentChar == '@'
-      break # program ended
-    else
-      pointer.turn currentChar###
-
-  return
+	return
 
 
 window.bef ?= {}
