@@ -104,3 +104,32 @@ describe 'Interpreter', ->
 			(expect graph['0_0'].length).toEqual 2
 			(expect graph['0_0'][0].to).toEqual '0_0'
 			(expect graph['0_0'][1].to).toEqual '0_0'
+
+
+	describe 'compile', ->
+		Runtime = bef.Runtime
+		Runtime::isAlive = ->	not @exitRequest
+
+		compile = (string) ->
+			interpreter = getInterpreter string
+			start = new bef.Pointer 0, 0, '>', interpreter.playfield.getSize()
+			graph = interpreter.buildGraph start
+			interpreter.compile graph, { compiler: bef.BasicCompiler }
+
+		execute = (string, stack) ->
+			thunk = compile string
+			runtime = new Runtime stack
+			thunk runtime
+			runtime
+
+		it 'adds 2 numbers', ->
+			{ stack, outRecord } = execute '37+@'
+
+			(expect stack).toEqual [10]
+			(expect outRecord).toEqual []
+
+		it 'performs arithmetic operations', ->
+			{ stack, outRecord } = execute '2357*+-@'
+
+			(expect stack).toEqual [5 * 7 + 3 - 2]
+			(expect outRecord).toEqual []

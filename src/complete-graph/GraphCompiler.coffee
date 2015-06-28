@@ -71,6 +71,8 @@ assemble = (graph) ->
 						"""
 					else
 						edgeCode
+				when 0
+					'return;'
 
 	df graph.start, List.EMPTY
 

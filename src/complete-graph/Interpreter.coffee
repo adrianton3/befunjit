@@ -143,11 +143,11 @@ Interpreter::buildGraph = (start) ->
 	graph
 
 
-Interpreter::compile = (graph) ->
-	assemble = @options.compiler.assemble
+Interpreter::compile = (graph, options) ->
+	assemble = options.compiler.assemble
 
 	# generate code for all paths
-	Object.keys.forEach (nodeName) ->
+	(Object.keys graph).forEach (nodeName) ->
 		edges = graph[nodeName]
 		edges.forEach (edge) ->
 			if edge.paths?
@@ -160,7 +160,7 @@ Interpreter::compile = (graph) ->
 					}
 				"""
 			else if edge.path?
-				edge.code = edge.path
+				edge.code = assemble edge.path
 
 	# generate code for the whole graph
 	code = bef.GraphCompiler.assemble
