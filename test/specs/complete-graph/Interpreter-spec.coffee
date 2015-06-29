@@ -108,7 +108,14 @@ describe 'Interpreter', ->
 
 	describe 'compile', ->
 		Runtime = bef.Runtime
-		Runtime::isAlive = ->	not @exitRequest
+		Runtime::isAlive = ->
+			return false if @exitRequest
+			if @maxChecks?
+				@checks ?= 0
+				@checks++
+				@checks < @maxChecks
+			else
+				true
 
 		compile = (string) ->
 			interpreter = getInterpreter string
@@ -116,9 +123,11 @@ describe 'Interpreter', ->
 			graph = interpreter.buildGraph start
 			interpreter.compile graph, { compiler: bef.BasicCompiler }
 
-		execute = (string, stack) ->
+		execute = (string, stack = [], maxChecks = 100) ->
 			thunk = compile string
-			runtime = new Runtime stack
+			runtime = new Runtime null # interpreter
+			runtime.stack = stack
+			runtime.maxChecks = maxChecks
 			thunk runtime
 			runtime
 
@@ -133,3 +142,39 @@ describe 'Interpreter', ->
 
 			(expect stack).toEqual [5 * 7 + 3 - 2]
 			(expect outRecord).toEqual []
+
+		it 'branches to the left', ->
+			{ stack, outRecord } = execute '''
+				1 v
+				@2_3@
+			'''
+
+			(expect stack).toEqual [2]
+			(expect outRecord).toEqual []
+
+		it 'branches to the right', ->
+			{ stack, outRecord } = execute '''
+				0 v
+				@2_3@
+			'''
+
+			(expect stack).toEqual [3]
+			(expect outRecord).toEqual []
+
+		it 'executes a looping path indefinitely', ->
+			{ stack, outRecord } = execute '''
+				>.v
+				^ <
+			''', [11, 22, 33, 44, 55, 66, 77, 88, 99, 110], 6
+
+			(expect stack).toEqual [11, 22, 33, 44, 55]
+			(expect outRecord).toEqual [110, 99, 88, 77, 66]
+
+		it 'executes a composed path indefinitely', ->
+			{ stack, outRecord } = execute '''
+				>>.v
+				 ^ <
+			''', [11, 22, 33, 44, 55, 66, 77, 88, 99, 110], 6
+
+			(expect stack).toEqual [11, 22, 33, 44, 55]
+			(expect outRecord).toEqual [110, 99, 88, 77, 66]

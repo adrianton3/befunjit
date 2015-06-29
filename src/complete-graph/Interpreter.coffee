@@ -1,82 +1,92 @@
 'use strict'
 
 Interpreter = ->
-  @playfield = null
-  @pathSet = null
+	@playfield = null
+	@pathSet = null
 
-  # used for statistics/debugging
-  @stats =
-    compileCalls: 0
-    jumpsPerformed: 0
+	# used for statistics/debugging
+	@stats =
+		compileCalls: 0
+		jumpsPerformed: 0
 
-  return
+	return
 
 
 Interpreter::_getPath = (x, y, dir) ->
-  path = new bef.Path()
-  pointer = new bef.Pointer x, y, dir, @playfield.getSize()
+	path = new bef.Path()
+	pointer = new bef.Pointer x, y, dir, @playfield.getSize()
 
-  loop
-    currentChar = @playfield.getAt pointer.x, pointer.y
+	loop
+		currentChar = @playfield.getAt pointer.x, pointer.y
 
-    # processing string
-    if currentChar == '"'
-      path.push pointer.x, pointer.y, pointer.dir, currentChar
-      loop
-        pointer.advance()
-        currentChar = @playfield.getAt pointer.x, pointer.y
-        if currentChar == '"'
-          path.push pointer.x, pointer.y, pointer.dir, currentChar
-          break
-        path.push pointer.x, pointer.y, pointer.dir, currentChar, true
-      pointer.advance()
-      continue
+		# processing string
+		if currentChar == '"'
+			path.push pointer.x, pointer.y, pointer.dir, currentChar
+			loop
+				pointer.advance()
+				currentChar = @playfield.getAt pointer.x, pointer.y
+				if currentChar == '"'
+					path.push pointer.x, pointer.y, pointer.dir, currentChar
+					break
+				path.push pointer.x, pointer.y, pointer.dir, currentChar, true
+			pointer.advance()
+			continue
 
-    pointer.turn currentChar
+		pointer.turn currentChar
 
-    if path.hasNonString pointer.x, pointer.y, pointer.dir
-      splitPosition = (path.getEntryAt pointer.x, pointer.y, pointer.dir).index
-      if splitPosition > 0
-        initialPath = path.prefix splitPosition
-        loopingPath = path.suffix splitPosition
-        return [initialPath, loopingPath]
-      else
-        return [path]
+		if path.hasNonString pointer.x, pointer.y, pointer.dir
+			splitPosition = (path.getEntryAt pointer.x, pointer.y, pointer.dir).index
+			if splitPosition > 0
+				initialPath = path.prefix splitPosition
+				loopingPath = path.suffix splitPosition
+				return {
+					type: 'composed'
+					initialPath: initialPath
+					loopingPath: loopingPath
+				}
+			else
+				return {
+					type: 'looping'
+					loopingPath: path
+				}
 
-    if currentChar == '|' or currentChar == '_' or currentChar == '?' or currentChar == '@'
-      return [path]
+		if currentChar in ['|', '_', '?', '@']
+			return {
+				type: 'simple'
+				path: path
+			}
 
-    path.push pointer.x, pointer.y, pointer.dir, currentChar
+		path.push pointer.x, pointer.y, pointer.dir, currentChar
 
-    if currentChar == '#'
-      pointer.advance()
+		if currentChar == '#'
+			pointer.advance()
 
-    pointer.advance()
+		pointer.advance()
 
 
 Interpreter::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
-  return if not @playfield.isInside x, y # exit early
+	return if not @playfield.isInside x, y # exit early
 
-  paths = @playfield.getPathsThrough x, y
-  paths.forEach (path) =>
-    @pathSet.remove path
-    @playfield.removePath path
-  @playfield.setAt x, y, e
+	paths = @playfield.getPathsThrough x, y
+	paths.forEach (path) =>
+		@pathSet.remove path
+		@playfield.removePath path
+	@playfield.setAt x, y, e
 
-  lastEntry = @currentPath.getLastEntryThrough x, y
-  if lastEntry?.index > currentIndex
-    @runtime.flags.pathInvalidatedAhead = true
-    @runtime.flags.exitPoint =
-      x: currentX
-      y: currentY
-      dir: currentDir
+	lastEntry = @currentPath.getLastEntryThrough x, y
+	if lastEntry?.index > currentIndex
+		@runtime.flags.pathInvalidatedAhead = true
+		@runtime.flags.exitPoint =
+			x: currentX
+			y: currentY
+			dir: currentDir
 
 
 Interpreter::get = (x, y) ->
-  return 0 if not @playfield.isInside x, y
+	return 0 if not @playfield.isInside x, y
 
-  char = @playfield.getAt x, y
-  char.charCodeAt 0
+	char = @playfield.getAt x, y
+	char.charCodeAt 0
 
 
 getHash = (pointer) ->
@@ -114,17 +124,15 @@ Interpreter::buildGraph = (start) ->
 
 	buildEdge = (hash, pointer) =>
 		# seek out a path
-		newPaths = @_getPath pointer.x, pointer.y, pointer.dir
+		newPath = @_getPath pointer.x, pointer.y, pointer.dir
 
-		if newPaths.length == 2
+		if newPath.type != 'simple'
 			# cyclic path
-			graph[hash].push { path: newPaths, to: null }
+			graph[hash].push { path: newPath, to: null }
 		else
 			# simple path
-			newPath = newPaths[0]
-
-			destination = if newPath.getAsList().length > 0
-				pathEndPoint = newPath.getEndPoint()
+			destination = if newPath.path.getAsList().length > 0
+				pathEndPoint = newPath.path.getEndPoint()
 				getPointer pathEndPoint, @playfield.getSize(), pathEndPoint.dir
 			else
 				pointer
@@ -150,17 +158,23 @@ Interpreter::compile = (graph, options) ->
 	(Object.keys graph).forEach (nodeName) ->
 		edges = graph[nodeName]
 		edges.forEach (edge) ->
-			if edge.paths?
-				initial = assemble edge.paths[0]
-				cycle = assemble edge.paths[1]
-				edge.code = """
-					#{initial}
-					while (runtime.isAlive()) {
-						#{cycle}
-					}
-				"""
-			else if edge.path?
-				edge.code = assemble edge.path
+			{ path, path: { type }} = edge
+			edge.code = switch type
+				when 'composed'
+					"""
+						#{assemble path.initialPath}
+						while (runtime.isAlive()) {
+							#{assemble path.loopingPath}
+						}
+					"""
+				when 'looping'
+					"""
+						while (runtime.isAlive()) {
+							#{assemble path.loopingPath}
+						}
+					"""
+				when 'simple'
+					assemble path.path
 
 	# generate code for the whole graph
 	code = bef.GraphCompiler.assemble
