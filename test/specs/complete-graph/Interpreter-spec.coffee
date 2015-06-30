@@ -18,6 +18,18 @@ describe 'Interpreter', ->
 		interpreter
 
 
+	describe 'getPath', ->
+		it 'can handle jumps on path endings', ->
+			interpreter = getInterpreter 'a_b#c_d'
+
+			path = interpreter._getPath 2, 0, '>'
+			pathAsList = path.path.getAsList()
+			(expect pathAsList).toEqual [
+				{ x: 2, y: 0, dir: '>', char: 'b', string: false }
+				{ x: 3, y: 0, dir: '>', char: '#', string: false }
+				{ x: 5, y: 0, dir: '>', char: '_', string: false }
+			]
+
 	describe 'buildGraph', ->
 		buildGraph = (string) ->
 			interpreter = getInterpreter string
@@ -27,6 +39,8 @@ describe 'Interpreter', ->
 		it 'builds a graph from a simple path', ->
 			graph = buildGraph 'abc@'
 
+			(expect Object.keys graph).toEqual ['start', '3_0']
+
 			(expect graph['start']).toBeDefined()
 			(expect graph['start'].length).toEqual 1
 
@@ -35,6 +49,8 @@ describe 'Interpreter', ->
 				abv
 				@c_d@
 			'''
+
+			(expect Object.keys graph).toEqual ['start', '2_1', '0_1', '4_1']
 
 			(expect graph['start']).toBeDefined()
 			(expect graph['start'].length).toEqual 1
@@ -50,6 +66,8 @@ describe 'Interpreter', ->
 				>e^g<
 			'''
 
+			(expect Object.keys graph).toEqual ['start', '2_1']
+
 			(expect graph['start']).toBeDefined()
 			(expect graph['start'].length).toEqual 1
 			(expect graph['start'][0].to).toEqual '2_1'
@@ -61,6 +79,8 @@ describe 'Interpreter', ->
 
 		it 'builds a graph from a doubly cycling path', ->
 			graph = buildGraph 'a_b_c'
+
+			(expect Object.keys graph).toEqual ['start', '1_0', '3_0']
 
 			(expect graph['start']).toBeDefined()
 			(expect graph['start'].length).toEqual 1
@@ -79,6 +99,8 @@ describe 'Interpreter', ->
 		it 'handles adjacent conditionals', ->
 			graph = buildGraph 'a__b'
 
+			(expect Object.keys graph).toEqual ['start', '1_0', '2_0']
+
 			(expect graph['start']).toBeDefined()
 			(expect graph['start'].length).toEqual 1
 			(expect graph['start'][0].to).toEqual '1_0'
@@ -96,6 +118,8 @@ describe 'Interpreter', ->
 		it 'handles conditionals in the starting location', ->
 			graph = buildGraph '_ab'
 
+			(expect Object.keys graph).toEqual ['start', '0_0']
+
 			(expect graph['start']).toBeDefined()
 			(expect graph['start'].length).toEqual 1
 			(expect graph['start'][0].to).toEqual '0_0'
@@ -104,6 +128,25 @@ describe 'Interpreter', ->
 			(expect graph['0_0'].length).toEqual 2
 			(expect graph['0_0'][0].to).toEqual '0_0'
 			(expect graph['0_0'][1].to).toEqual '0_0'
+
+		it 'handles skip instructions', ->
+			graph = buildGraph ' _ # _'
+
+			(expect Object.keys graph).toEqual ['start', '1_0', '5_0']
+
+			(expect graph['start']).toBeDefined()
+			(expect graph['start'].length).toEqual 1
+			(expect graph['start'][0].to).toEqual '1_0'
+
+			(expect graph['1_0']).toBeDefined()
+			(expect graph['1_0'].length).toEqual 2
+			(expect graph['1_0'][0].to).toEqual '5_0'
+			(expect graph['1_0'][1].to).toEqual '5_0'
+
+			(expect graph['5_0']).toBeDefined()
+			(expect graph['5_0'].length).toEqual 2
+			(expect graph['5_0'][0].to).toEqual '1_0'
+			(expect graph['5_0'][1].to).toEqual '1_0'
 
 
 	describe 'compile', ->

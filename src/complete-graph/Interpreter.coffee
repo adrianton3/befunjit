@@ -50,13 +50,13 @@ Interpreter::_getPath = (x, y, dir) ->
 					loopingPath: path
 				}
 
+		path.push pointer.x, pointer.y, pointer.dir, currentChar
+
 		if currentChar in ['|', '_', '?', '@']
 			return {
 				type: 'simple'
 				path: path
 			}
-
-		path.push pointer.x, pointer.y, pointer.dir, currentChar
 
 		if currentChar == '#'
 			pointer.advance()
@@ -132,8 +132,7 @@ Interpreter::buildGraph = (start) ->
 		else
 			# simple path
 			destination = if newPath.path.getAsList().length > 0
-				pathEndPoint = newPath.path.getEndPoint()
-				getPointer pathEndPoint, @playfield.getSize(), pathEndPoint.dir
+				newPath.path.getEndPoint()
 			else
 				pointer
 
