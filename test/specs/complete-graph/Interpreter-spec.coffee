@@ -178,3 +178,9 @@ describe 'Interpreter', ->
 
 			(expect stack).toEqual [11, 22, 33, 44, 55]
 			(expect outRecord).toEqual [110, 99, 88, 77, 66]
+
+		it 'ping-pongs between 2 nodes indefinitely', ->
+			{ stack, outRecord } = execute '0_._', [1, 11, 0, 22, 1, 33, 0, 44], 4
+
+			(expect stack).toEqual []
+			(expect outRecord).toEqual [44, 33, 22, 11, 0] # 0 ?
