@@ -227,3 +227,32 @@ describe 'Interpreter', ->
 
 			(expect stack).toEqual []
 			(expect outRecord).toEqual [44, 33, 22, 11, 0] # 0 ?
+
+		it 'changes direction randomly', ->
+			source = '''
+				?2.@.3
+				4
+				.
+				@
+				.
+				5
+			'''
+
+			thunk = execute.bind null, source
+
+			sum = 0
+			hits = []
+			# run for a couple of times
+			# just enough so all directions should be hit
+			for i in [1..20]
+				runtime = thunk()
+				output = runtime.outRecord[0]
+				sum += output
+				hits[output] = true
+
+			expectedHits = []
+			expectedHits[2] = true
+			expectedHits[3] = true
+			expectedHits[4] = true
+			expectedHits[5] = true
+			(expect hits).toEqual expectedHits

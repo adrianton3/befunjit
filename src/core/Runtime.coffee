@@ -66,5 +66,9 @@ Runtime::swap = ->
   @stack[@stack.length - 2] = e1
 
 
+Runtime::randInt = (max) ->
+	Math.floor Math.random() * max
+
+
 window.bef ?= {}
 window.bef.Runtime = Runtime

@@ -33,17 +33,54 @@ assemble = (graph) ->
 			newStack = stack.con node
 
 			switch neighbours.length
+				when 4
+					# only '?'
+					branch0 = df neighbours[0].to, newStack
+					branch1 = df neighbours[1].to, newStack
+					branch2 = df neighbours[2].to, newStack
+					branch3 = df neighbours[3].to, newStack
+
+					randomCode = """
+						var choice = runtime.randInt(4);
+						switch (choice) {
+							case 0:
+								#{neighbours[0].code}
+								#{branch0}
+								break;
+							case 1:
+								#{neighbours[1].code}
+								#{branch1}
+								break;
+							case 2:
+								#{neighbours[2].code}
+								#{branch2}
+								break;
+							case 3:
+								#{neighbours[3].code}
+								#{branch3}
+								break;
+						}
+					"""
+
+					if cycledNodes.has node
+						"""
+							while (runtime.isAlive()) _#{node}: {
+								#{randomCode}
+							}
+						"""
+					else
+						randomCode
 				when 2
-					branch1 = df neighbours[0].to, newStack
-					branch2 = df neighbours[1].to, newStack
+					branch0 = df neighbours[0].to, newStack
+					branch1 = df neighbours[1].to, newStack
 
 					selectCode = """
 						if (runtime.pop()) {
 							#{neighbours[0].code}
-							#{branch1}
+							#{branch0}
 						} else {
 							#{neighbours[1].code}
-							#{branch2}
+							#{branch1}
 						}
 					"""
 
@@ -63,6 +100,8 @@ assemble = (graph) ->
 						#{branch}
 					"""
 
+					# this might not be necessary if only
+					# the starting node can have a single neighbour
 					if cycledNodes.has node
 						"""
 							while (runtime.isAlive()) _#{node}: {
