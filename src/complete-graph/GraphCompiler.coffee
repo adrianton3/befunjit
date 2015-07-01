@@ -18,6 +18,17 @@ computeIndegree = (nodes) ->
 assemble = (graph) ->
 	cycledNodes = new Set
 
+	wrapIfLooping = (stack, node, code) ->
+		if cycledNodes.has node
+			"""
+				while (runtime.isAlive()) _#{node}: {
+					#{code}
+				}
+			"""
+		else
+			code
+
+
 	df = (node, stack) ->
 		# for debugging only
 		return '' unless graph.nodes[node]?
@@ -62,14 +73,8 @@ assemble = (graph) ->
 						}
 					"""
 
-					if cycledNodes.has node
-						"""
-							while (runtime.isAlive()) _#{node}: {
-								#{randomCode}
-							}
-						"""
-					else
-						randomCode
+					wrapIfLooping cycledNodes, node, randomCode
+
 				when 2
 					branch0 = df neighbours[0].to, newStack
 					branch1 = df neighbours[1].to, newStack
@@ -84,14 +89,8 @@ assemble = (graph) ->
 						}
 					"""
 
-					if cycledNodes.has node
-						"""
-							while (runtime.isAlive()) _#{node}: {
-								#{selectCode}
-							}
-						"""
-					else
-						selectCode
+					wrapIfLooping cycledNodes, node, selectCode
+
 				when 1
 					branch = df neighbours[0].to, newStack
 
@@ -102,14 +101,8 @@ assemble = (graph) ->
 
 					# this might not be necessary if only
 					# the starting node can have a single neighbour
-					if cycledNodes.has node
-						"""
-							while (runtime.isAlive()) _#{node}: {
-								#{edgeCode}
-							}
-						"""
-					else
-						edgeCode
+					wrapIfLooping cycledNodes, node, edgeCode
+
 				when 0
 					'return;'
 
