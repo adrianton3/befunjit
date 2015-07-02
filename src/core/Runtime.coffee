@@ -70,5 +70,9 @@ Runtime::randInt = (max) ->
 	Math.floor Math.random() * max
 
 
+Runtime::exit = ->
+	@flags.exitRequest = true
+
+
 window.bef ?= {}
 window.bef.Runtime = Runtime

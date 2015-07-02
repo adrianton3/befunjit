@@ -65,14 +65,28 @@ Interpreter::_getPath = (x, y, dir) ->
 
 
 Interpreter::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
-	return if not @playfield.isInside x, y # exit early
+	# exit early if the coordinates are not valid
+	return if not @playfield.isInside x, y
 
+	# erase all paths that pass through the coordinates
 	paths = @playfield.getPathsThrough x, y
 	paths.forEach (path) =>
 		@pathSet.remove path
 		@playfield.removePath path
+
+	# write to the cell
 	@playfield.setAt x, y, e
 
+	# figure out if the current path is invalidated
+	# for now it's always invalidated
+	@runtime.flags.pathInvalidatedAhead = true
+	@runtime.flags.exitPoint =
+		x: currentX
+		y: currentY
+		dir: currentDir
+
+	# should check if the affected edges are reachable
+	###
 	lastEntry = @currentPath.getLastEntryThrough x, y
 	if lastEntry?.index > currentIndex
 		@runtime.flags.pathInvalidatedAhead = true
@@ -80,6 +94,7 @@ Interpreter::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
 			x: currentX
 			y: currentY
 			dir: currentDir
+	###
 
 
 Interpreter::get = (x, y) ->
@@ -197,14 +212,24 @@ Interpreter::execute = (@playfield, options, input = []) ->
 
 	start = new bef.Pointer 0, 0, '>', @playfield.getSize()
 
-	# loop
-	graph = @buildGraph start
-	program = @compile graph
+	loop
+		@stats.compileCalls++
+		graph = @buildGraph start
+		program = @compile graph, options
 
-	program @runtime
-	# if path invalidated ahead
-	# start = exit point
-	# else break
+		program @runtime
+
+		if @runtime.flags.pathInvalidatedAhead
+			@runtime.flags.pathInvalidatedAhead = false
+			{ x, y, dir } = @runtime.flags.exitPoint
+			start.set x, y, dir
+
+		if @runtime.flags.exitRequest
+			break
+
+		@stats.jumpsPerformed++
+		if @stats.jumpsPerformed > options.jumpLimit
+			break
 
 	return
 

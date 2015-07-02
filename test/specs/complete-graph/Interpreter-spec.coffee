@@ -256,3 +256,25 @@ describe 'Interpreter', ->
 			expectedHits[4] = true
 			expectedHits[5] = true
 			(expect hits).toEqual expectedHits
+
+	describe 'execute', ->
+		execute = (string, options = {}, input = []) ->
+			lines = string.split '\n'
+			width = Math.max (lines.map (line) -> line.length)...
+			height = lines.length
+
+			playfield = new Playfield width, height
+			playfield.fromString string, width, height
+
+			options.jumpLimit ?= 10
+			options.compiler ?= bef.BasicCompiler
+
+			interpreter = new bef.Interpreter2
+			interpreter.execute playfield, options, input
+			interpreter.runtime
+
+		it 'adds 2 numbers', ->
+			{ stack, outRecord } = execute '89+@'
+
+			(expect stack).toEqual [8 + 9]
+			(expect outRecord).toEqual []

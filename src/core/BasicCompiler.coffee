@@ -39,7 +39,7 @@ codeMap =
   'g': -> '/* g */  runtime.push(runtime.get(runtime.pop(), runtime.pop()))'
   '&': -> '/* & */  runtime.push(runtime.next())'
   '~': -> '/* ~ */  runtime.push(runtime.nextChar())'
-  '@': -> '/* @ */  return;'
+  '@': -> '/* @ */  runtime.exit(); /*return;*/'
 
 BasicCompiler = ->
 
