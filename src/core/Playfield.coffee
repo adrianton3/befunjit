@@ -81,5 +81,11 @@ Playfield::getSize = ->
   height: @height
 
 
+Playfield::clearPaths = ->
+	for i in [0...@height]
+		for j in [0...@width]
+			@pathPlane[i][j] = {}
+
+
 window.bef ?= {}
 window.bef.Playfield = Playfield

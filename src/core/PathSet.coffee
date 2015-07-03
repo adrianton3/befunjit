@@ -31,5 +31,10 @@ PathSet::remove = (path) ->
   @
 
 
+PathSet::clear = ->
+	@set = {}
+	@
+
+
 window.bef ?= {}
 window.bef.PathSet = PathSet

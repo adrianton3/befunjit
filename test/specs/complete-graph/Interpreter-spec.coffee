@@ -278,3 +278,15 @@ describe 'Interpreter', ->
 
 			(expect stack).toEqual [8 + 9]
 			(expect outRecord).toEqual []
+
+		it 'mutates the current path, before the current index', ->
+			{ stack, outRecord } = execute '2077*p5.@'
+
+			(expect stack).toEqual []
+			(expect outRecord).toEqual [5]
+
+		it 'mutates the current path, after the current index', ->
+			{ stack, outRecord } = execute '6077*p5.@'
+
+			(expect stack).toEqual []
+			(expect outRecord).toEqual [1]

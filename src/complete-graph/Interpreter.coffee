@@ -198,6 +198,28 @@ Interpreter::compile = (graph, options) ->
 	new Function 'runtime', code
 
 
+registerGraph = (graph, playfield, pathSet) ->
+	playfield.clearPaths()
+	pathSet.clear()
+	(Object.keys graph).forEach (node) ->
+		edges = graph[node]
+		edges.forEach ({ path }) ->
+			if path.type == 'simple'
+				pathSet.add path.path
+				playfield.addPath path.path
+			else if path.type == 'looping'
+				pathSet.add path.loopingPath
+				playfield.addPath path.loopingPath
+			else if path.type == 'composed'
+				pathSet.add path.loopingPath
+				pathSet.add path.initialPath
+				playfield.addPath path.loopingPath
+				playfield.addPath path.initialPath
+			return
+		return
+	return
+
+
 Interpreter::execute = (@playfield, options, input = []) ->
 	options ?= {}
 	options.jumpLimit ?= -1
@@ -215,6 +237,7 @@ Interpreter::execute = (@playfield, options, input = []) ->
 	loop
 		@stats.compileCalls++
 		graph = @buildGraph start
+		registerGraph graph, @playfield, @pathSet
 		program = @compile graph, options
 
 		program @runtime
@@ -223,6 +246,7 @@ Interpreter::execute = (@playfield, options, input = []) ->
 			@runtime.flags.pathInvalidatedAhead = false
 			{ x, y, dir } = @runtime.flags.exitPoint
 			start.set x, y, dir
+			start.advance()
 
 		if @runtime.flags.exitRequest
 			break
