@@ -1,7 +1,7 @@
 describe 'OptimizingCompiler', ->
   Path = bef.Path
   ProgramState = bef.ProgramState
-  OptimizinsCompiler = bef.OptimizinsCompiler
+  OptimizingCompiler = bef.OptimizingCompiler
 
   getPath = (string) ->
     path = new Path()
@@ -30,7 +30,7 @@ describe 'OptimizingCompiler', ->
 
   execute = (string, stack, input, pathInvalidatedAhead = false) ->
     path = getPath string
-    OptimizinsCompiler.compile path
+    OptimizingCompiler.compile path
 
     programState = getProgramState stack, input
     programState.flags.pathInvalidatedAhead = pathInvalidatedAhead

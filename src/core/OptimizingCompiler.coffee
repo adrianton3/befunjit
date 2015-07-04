@@ -138,10 +138,10 @@ codeMap =
   '@': -> '/* @ */  return;'
 
 
-OptimizinsCompiler = ->
+OptimizingCompiler = ->
 
 
-OptimizinsCompiler.assemble = (path) ->
+OptimizingCompiler.assemble = (path) ->
   charList = path.getAsList()
 
   stack = []
@@ -169,12 +169,12 @@ OptimizinsCompiler.assemble = (path) ->
   lines.join '\n'
 
 
-OptimizinsCompiler.compile = (path) ->
-  code = OptimizinsCompiler.assemble path
+OptimizingCompiler.compile = (path) ->
+  code = OptimizingCompiler.assemble path
   path.code = code #storing this just for debugging
   compiled = new Function 'programState', code
   path.body = compiled
 
 
 window.bef ?= {}
-window.bef.OptimizinsCompiler = OptimizinsCompiler
+window.bef.OptimizingCompiler = OptimizingCompiler

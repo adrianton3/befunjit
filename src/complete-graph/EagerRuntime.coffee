@@ -223,7 +223,7 @@ registerGraph = (graph, playfield, pathSet) ->
 EagerRuntime::execute = (@playfield, options, input = []) ->
 	options ?= {}
 	options.jumpLimit ?= -1
-	options.compiler ?= bef.OptimizinsCompiler
+	options.compiler ?= bef.OptimizingCompiler
 
 	@stats.compileCalls = 0
 	@stats.jumpsPerformed = 0

@@ -164,7 +164,7 @@ describe 'EagerRuntime', ->
 			eagerRuntime = getInterpreter string
 			start = new bef.Pointer 0, 0, '>', eagerRuntime.playfield.getSize()
 			graph = eagerRuntime.buildGraph start
-			eagerRuntime.compile graph, { compiler: bef.BasicCompiler }
+			eagerRuntime.compile graph, { compiler: bef.OptimizingCompiler }
 
 		execute = (string, stack = [], maxChecks = 100) ->
 			thunk = compile string
@@ -267,7 +267,7 @@ describe 'EagerRuntime', ->
 			playfield.fromString string, width, height
 
 			options.jumpLimit ?= 10
-			options.compiler ?= bef.BasicCompiler
+			options.compiler ?= bef.OptimizingCompiler
 
 			eagerRuntime = new EagerRuntime
 			eagerRuntime.execute playfield, options, input
