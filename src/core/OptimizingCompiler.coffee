@@ -59,9 +59,9 @@ codeMap =
   '<': -> '/* < */'
   'v': -> '/* v */'
   '>': -> '/* > */'
-  '?': -> '/* ? */  return;'
-  '_': -> '/* _ */  return;'
-  '|': -> '/* | */  return;'
+  '?': -> '/* ? */  /*return;*/'
+  '_': -> '/* _ */  /*return;*/'
+  '|': -> '/* | */  /*return;*/'
   '"': -> '/* " */'
 
 
@@ -135,7 +135,7 @@ codeMap =
   '~': -> '/* ~ */  programState.push(programState.nextChar())'
 
 
-  '@': -> '/* @ */  return;'
+  '@': -> '/* @ */  programState.exit(); /*return;*/'
 
 
 OptimizingCompiler = ->
