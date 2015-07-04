@@ -36,16 +36,16 @@ run = ->
   playfield = new bef.Playfield()
   playfield.fromString sourceEditor.getValue(), 16, 10
 
-  interpreter = new bef.Interpreter()
-  interpreter.execute playfield, jumpLimit: 1000, inputEditor.getValue()
+  lazyRuntime = new bef.LazyRuntime()
+  lazyRuntime.execute playfield, jumpLimit: 1000, inputEditor.getValue()
 
-  stringedStack = interpreter.programState.stack.join ' '
-  stringedOutput = interpreter.programState.outRecord.join ' '
+  stringedStack = lazyRuntime.programState.stack.join ' '
+  stringedOutput = lazyRuntime.programState.outRecord.join ' '
 
   outputEditor.setValue "Stack: #{stringedStack}\nOutput: #{stringedOutput}"
 
   grid?.destroy()
-  grid = new viz.Grid playfield, interpreter.pathSet, document.getElementById 'can'
+  grid = new viz.Grid playfield, lazyRuntime.pathSet, document.getElementById 'can'
   grid.setListener (path) ->
     jsEditor.setValue path?.code ? ''
 
