@@ -1,6 +1,6 @@
-describe 'Interpreter', ->
+describe 'EagerRuntime', ->
 	Playfield = bef.Playfield
-	Interpreter = bef.Interpreter2
+	EagerRuntime = bef.EagerRuntime
 
 	getPlayfield = (string, width, height) ->
 		lines = string.split '\n'
@@ -13,16 +13,16 @@ describe 'Interpreter', ->
 
 	getInterpreter = (string, width, height) ->
 		playfield = getPlayfield string, width, height
-		interpreter = new Interpreter()
-		interpreter.playfield = playfield
-		interpreter
+		eagerRuntime = new EagerRuntime()
+		eagerRuntime.playfield = playfield
+		eagerRuntime
 
 
 	describe 'getPath', ->
 		it 'can handle jumps on path endings', ->
-			interpreter = getInterpreter 'a_b#c_d'
+			eagerRuntime = getInterpreter 'a_b#c_d'
 
-			path = interpreter._getPath 2, 0, '>'
+			path = eagerRuntime._getPath 2, 0, '>'
 			pathAsList = path.path.getAsList()
 			(expect pathAsList).toEqual [
 				{ x: 2, y: 0, dir: '>', char: 'b', string: false }
@@ -32,9 +32,9 @@ describe 'Interpreter', ->
 
 	describe 'buildGraph', ->
 		buildGraph = (string) ->
-			interpreter = getInterpreter string
-			start = new bef.Pointer 0, 0, '>', interpreter.playfield.getSize()
-			interpreter.buildGraph start
+			eagerRuntime = getInterpreter string
+			start = new bef.Pointer 0, 0, '>', eagerRuntime.playfield.getSize()
+			eagerRuntime.buildGraph start
 
 		it 'builds a graph from a simple path', ->
 			graph = buildGraph 'abc@'
@@ -161,14 +161,14 @@ describe 'Interpreter', ->
 				true
 
 		compile = (string) ->
-			interpreter = getInterpreter string
-			start = new bef.Pointer 0, 0, '>', interpreter.playfield.getSize()
-			graph = interpreter.buildGraph start
-			interpreter.compile graph, { compiler: bef.BasicCompiler }
+			eagerRuntime = getInterpreter string
+			start = new bef.Pointer 0, 0, '>', eagerRuntime.playfield.getSize()
+			graph = eagerRuntime.buildGraph start
+			eagerRuntime.compile graph, { compiler: bef.BasicCompiler }
 
 		execute = (string, stack = [], maxChecks = 100) ->
 			thunk = compile string
-			programState = new ProgramState null # interpreter
+			programState = new ProgramState null # eagerRuntime
 			programState.stack = stack
 			programState.maxChecks = maxChecks
 			thunk programState
@@ -269,9 +269,9 @@ describe 'Interpreter', ->
 			options.jumpLimit ?= 10
 			options.compiler ?= bef.BasicCompiler
 
-			interpreter = new bef.Interpreter2
-			interpreter.execute playfield, options, input
-			interpreter.programState
+			eagerRuntime = new EagerRuntime
+			eagerRuntime.execute playfield, options, input
+			eagerRuntime.programState
 
 		it 'adds 2 numbers', ->
 			{ stack, outRecord } = execute '89+@'

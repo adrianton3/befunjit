@@ -1,6 +1,6 @@
 'use strict'
 
-Interpreter = ->
+EagerRuntime = ->
 	@playfield = null
 	@pathSet = null
 
@@ -12,7 +12,7 @@ Interpreter = ->
 	return
 
 
-Interpreter::_getPath = (x, y, dir) ->
+EagerRuntime::_getPath = (x, y, dir) ->
 	path = new bef.Path()
 	pointer = new bef.Pointer x, y, dir, @playfield.getSize()
 
@@ -64,7 +64,7 @@ Interpreter::_getPath = (x, y, dir) ->
 		pointer.advance()
 
 
-Interpreter::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
+EagerRuntime::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
 	# exit early if the coordinates are not valid
 	return if not @playfield.isInside x, y
 
@@ -97,7 +97,7 @@ Interpreter::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
 	###
 
 
-Interpreter::get = (x, y) ->
+EagerRuntime::get = (x, y) ->
 	return 0 if not @playfield.isInside x, y
 
 	char = @playfield.getAt x, y
@@ -113,7 +113,7 @@ getPointer = (point, space, dir) ->
 	pointer.advance()
 
 
-Interpreter::buildGraph = (start) ->
+EagerRuntime::buildGraph = (start) ->
 	graph = {}
 
 	dispatch = (hash, destination) =>
@@ -165,7 +165,7 @@ Interpreter::buildGraph = (start) ->
 	graph
 
 
-Interpreter::compile = (graph, options) ->
+EagerRuntime::compile = (graph, options) ->
 	assemble = options.compiler.assemble
 
 	# generate code for all paths
@@ -220,7 +220,7 @@ registerGraph = (graph, playfield, pathSet) ->
 	return
 
 
-Interpreter::execute = (@playfield, options, input = []) ->
+EagerRuntime::execute = (@playfield, options, input = []) ->
 	options ?= {}
 	options.jumpLimit ?= -1
 	options.compiler ?= bef.OptimizinsCompiler
@@ -259,4 +259,4 @@ Interpreter::execute = (@playfield, options, input = []) ->
 
 
 window.bef ?= {}
-window.bef.Interpreter2 = Interpreter
+window.bef.EagerRuntime = EagerRuntime

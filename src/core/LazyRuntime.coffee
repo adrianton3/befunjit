@@ -1,6 +1,6 @@
 'use strict'
 
-Interpreter = ->
+LazyRuntime = ->
   @playfield = null
   @pathSet = null
 
@@ -12,7 +12,7 @@ Interpreter = ->
   return
 
 
-Interpreter::_getPath = (x, y, dir) ->
+LazyRuntime::_getPath = (x, y, dir) ->
   path = new bef.Path()
   pointer = new bef.Pointer x, y, dir, @playfield.getSize()
 
@@ -54,7 +54,7 @@ Interpreter::_getPath = (x, y, dir) ->
     pointer.advance()
 
 
-Interpreter::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
+LazyRuntime::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
   return if not @playfield.isInside x, y # exit early
 
   paths = @playfield.getPathsThrough x, y
@@ -72,14 +72,14 @@ Interpreter::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
       dir: currentDir
 
 
-Interpreter::get = (x, y) ->
+LazyRuntime::get = (x, y) ->
   return 0 if not @playfield.isInside x, y
 
   char = @playfield.getAt x, y
   char.charCodeAt 0
 
 
-Interpreter::execute = (@playfield, options, input = []) ->
+LazyRuntime::execute = (@playfield, options, input = []) ->
   options ?= {}
   options.jumpLimit ?= -1
   options.compiler ?= bef.OptimizinsCompiler
@@ -147,4 +147,4 @@ Interpreter::execute = (@playfield, options, input = []) ->
 
 
 window.bef ?= {}
-window.bef.Interpreter = Interpreter
+window.bef.LazyRuntime = LazyRuntime

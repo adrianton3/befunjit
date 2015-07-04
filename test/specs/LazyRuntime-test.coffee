@@ -1,6 +1,6 @@
-describe 'Interpreter', ->
+describe 'LazyRuntime', ->
   Playfield = bef.Playfield
-  Interpreter = bef.Interpreter
+  LazyRuntime = bef.LazyRuntime
 
   getPlayfield = (string, width, height) ->
     playfield = new Playfield width, height
@@ -9,15 +9,15 @@ describe 'Interpreter', ->
 
   getInterpreter = (string, width, height) ->
     playfield = getPlayfield string, width, height
-    interpreter = new Interpreter()
-    interpreter.playfield = playfield
-    interpreter
+    lazyRuntime = new LazyRuntime()
+    lazyRuntime.playfield = playfield
+    lazyRuntime
 
   describe 'getPath', ->
     it 'gets a simple path until the pointer exist the playground', ->
-      interpreter = getInterpreter 'abc@', 4, 1
+      lazyRuntime = getInterpreter 'abc@', 4, 1
 
-      paths = interpreter._getPath 0, 0, '>'
+      paths = lazyRuntime._getPath 0, 0, '>'
       pathAsList = paths[0].getAsList()
       (expect pathAsList).toEqual [
         { x: 0, y: 0, dir: '>', char: 'a', string: false }
@@ -26,14 +26,14 @@ describe 'Interpreter', ->
       ]
 
     it 'can get a turning path', ->
-      interpreter = getInterpreter '''
+      lazyRuntime = getInterpreter '''
         abv
           c
           d
           @
       ''', 3, 4
 
-      paths = interpreter._getPath 0, 0, '>'
+      paths = lazyRuntime._getPath 0, 0, '>'
       pathAsList = paths[0].getAsList()
       (expect pathAsList).toEqual [
         { x: 0, y: 0, dir: '>', char: 'a', string: false }
@@ -44,13 +44,13 @@ describe 'Interpreter', ->
       ]
 
     it 'can get a circular path', ->
-      interpreter = getInterpreter '''
+      lazyRuntime = getInterpreter '''
         >av
         d b
         ^c<
       ''', 3, 3
 
-      paths = interpreter._getPath 0, 0, '>'
+      paths = lazyRuntime._getPath 0, 0, '>'
 
       pathAsList = paths[0].getAsList()
       (expect pathAsList).toEqual [
@@ -65,11 +65,11 @@ describe 'Interpreter', ->
       ]
 
     it 'can get a circular path by wrapping around', ->
-      interpreter = getInterpreter '''
+      lazyRuntime = getInterpreter '''
         abc
       ''', 3, 1
 
-      paths = interpreter._getPath 0, 0, '>'
+      paths = lazyRuntime._getPath 0, 0, '>'
 
       pathAsList = paths[0].getAsList()
       (expect pathAsList).toEqual [
@@ -79,13 +79,13 @@ describe 'Interpreter', ->
       ]
 
     it 'can get the initial part of a circular path', ->
-      interpreter = getInterpreter '''
+      lazyRuntime = getInterpreter '''
         ab>cv
           f d
           ^e<
       ''', 5, 3
 
-      paths = interpreter._getPath 0, 0, '>'
+      paths = lazyRuntime._getPath 0, 0, '>'
 
       pathAsList = paths[0].getAsList()
       (expect pathAsList).toEqual [
@@ -106,11 +106,11 @@ describe 'Interpreter', ->
       ]
 
     it 'can jump over a cell', ->
-      interpreter = getInterpreter '''
+      lazyRuntime = getInterpreter '''
         a#bc@
       ''', 5, 1
 
-      paths = interpreter._getPath 0, 0, '>'
+      paths = lazyRuntime._getPath 0, 0, '>'
 
       pathAsList = paths[0].getAsList()
       (expect pathAsList).toEqual [
@@ -120,11 +120,11 @@ describe 'Interpreter', ->
       ]
 
     it 'can jump repeatedly', ->
-      interpreter = getInterpreter '''
+      lazyRuntime = getInterpreter '''
         a#b#cd@
       ''', 7, 1
 
-      paths = interpreter._getPath 0, 0, '>'
+      paths = lazyRuntime._getPath 0, 0, '>'
 
       pathAsList = paths[0].getAsList()
       (expect pathAsList).toEqual [
@@ -135,11 +135,11 @@ describe 'Interpreter', ->
       ]
 
     it 'parses a string', ->
-      interpreter = getInterpreter '''
+      lazyRuntime = getInterpreter '''
         12"34"56
       ''', 8, 1
 
-      paths = interpreter._getPath 0, 0, '>'
+      paths = lazyRuntime._getPath 0, 0, '>'
       pathAsList = paths[0].getAsList()
       (expect pathAsList).toEqual [
         { x: 0, y: 0, dir: '>', char: '1', string: false }
@@ -153,11 +153,11 @@ describe 'Interpreter', ->
       ]
 
     it 'wraps around 2 times to close a string', ->
-      interpreter = getInterpreter '''
+      lazyRuntime = getInterpreter '''
         12"34
       ''', 5, 1
 
-      paths = interpreter._getPath 0, 0, '>'
+      paths = lazyRuntime._getPath 0, 0, '>'
       pathAsList = paths[0].getAsList()
       (expect pathAsList).toEqual [
         { x: 0, y: 0, dir: '>', char: '1', string: false }
@@ -177,9 +177,9 @@ describe 'Interpreter', ->
       ]
 
 		it 'gets an empty path', ->
-			interpreter = getInterpreter '__'
+			lazyRuntime = getInterpreter '__'
 
-			paths = interpreter._getPath 0, 0, '>'
+			paths = lazyRuntime._getPath 0, 0, '>'
 			pathAsList = paths[0].getAsList()
 			(expect pathAsList).toEqual []
 
@@ -189,149 +189,149 @@ describe 'Interpreter', ->
       playfield = new Playfield()
       playfield.fromString string, width, height
 
-      interpreter = new Interpreter()
-      interpreter.execute playfield, options, input
+      lazyRuntime = new LazyRuntime()
+      lazyRuntime.execute playfield, options, input
 
-      interpreter
+      lazyRuntime
 
     it 'just exits', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         @
       ''', 1, 1
 
-      (expect interpreter.programState.stack).toEqual []
-      (expect interpreter.programState.outRecord).toEqual []
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual []
+      (expect lazyRuntime.programState.outRecord).toEqual []
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'outputs a number', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         5.@
       ''', 3, 1
 
-      (expect interpreter.programState.stack).toEqual []
-      (expect interpreter.programState.outRecord).toEqual [5]
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual []
+      (expect lazyRuntime.programState.outRecord).toEqual [5]
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'outputs a character', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         77*,@
       ''', 5, 1
 
-      (expect interpreter.programState.stack).toEqual []
-      (expect interpreter.programState.outRecord).toEqual ['1']
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual []
+      (expect lazyRuntime.programState.outRecord).toEqual ['1']
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'loops forever (or until the too-many-jumps condition holds)', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         >7v
         ^.<
       ''', 3, 2, jumpLimit: 3
 
-      (expect interpreter.programState.stack).toEqual []
-      (expect interpreter.programState.outRecord).toEqual [7, 7, 7]
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual []
+      (expect lazyRuntime.programState.outRecord).toEqual [7, 7, 7]
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'executes a figure of 8', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
           v
         @.9<
           >^
       ''', 4, 3
 
-      (expect interpreter.programState.stack).toEqual [9]
-      (expect interpreter.programState.outRecord).toEqual [9]
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual [9]
+      (expect lazyRuntime.programState.outRecord).toEqual [9]
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'evaluates a conditional', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         0  v
         @.7_9.@
       ''', 7, 2
 
-      (expect interpreter.programState.stack).toEqual []
-      (expect interpreter.programState.outRecord).toEqual [9]
-      (expect interpreter.stats.compileCalls).toEqual 2
+      (expect lazyRuntime.programState.stack).toEqual []
+      (expect lazyRuntime.programState.outRecord).toEqual [9]
+      (expect lazyRuntime.stats.compileCalls).toEqual 2
 
     it 'mutates the current path, before the current index', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         2077*p5.@
       ''', 10, 1
 
-      (expect interpreter.programState.stack).toEqual []
-      (expect interpreter.programState.outRecord).toEqual [5]
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual []
+      (expect lazyRuntime.programState.outRecord).toEqual [5]
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'mutates the current path, after the current index', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         6077*p5.@
       ''', 10, 1
 
-      (expect interpreter.programState.stack).toEqual []
-      (expect interpreter.programState.outRecord).toEqual [1]
-      (expect interpreter.stats.compileCalls).toEqual 2
+      (expect lazyRuntime.programState.stack).toEqual []
+      (expect lazyRuntime.programState.outRecord).toEqual [1]
+      (expect lazyRuntime.stats.compileCalls).toEqual 2
 
     it 'evaluates an addition', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         49+.@
       ''', 10, 1
 
-      (expect interpreter.programState.stack).toEqual []
-      (expect interpreter.programState.outRecord).toEqual [13]
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual []
+      (expect lazyRuntime.programState.outRecord).toEqual [13]
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'evaluates a subtraction', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         49-.@
       ''', 10, 1
 
-      (expect interpreter.programState.stack).toEqual []
-      (expect interpreter.programState.outRecord).toEqual [5]
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual []
+      (expect lazyRuntime.programState.outRecord).toEqual [5]
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'evaluates a multiplication', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         49*.@
       ''', 10, 1
 
-      (expect interpreter.programState.stack).toEqual []
-      (expect interpreter.programState.outRecord).toEqual [36]
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual []
+      (expect lazyRuntime.programState.outRecord).toEqual [36]
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'performs integer division', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         49/.@
       ''', 10, 1
 
-      (expect interpreter.programState.stack).toEqual []
-      (expect interpreter.programState.outRecord).toEqual [2]
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual []
+      (expect lazyRuntime.programState.outRecord).toEqual [2]
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'performs a modulo operation', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         49%.@
       ''', 10, 1
 
-      (expect interpreter.programState.stack).toEqual []
-      (expect interpreter.programState.outRecord).toEqual [1]
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual []
+      (expect lazyRuntime.programState.outRecord).toEqual [1]
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'performs unary not', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         4!.@
       ''', 10, 1
 
-      (expect interpreter.programState.stack).toEqual []
-      (expect interpreter.programState.outRecord).toEqual [0]
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual []
+      (expect lazyRuntime.programState.outRecord).toEqual [0]
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'evaluates a comparison', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         49`.@
       ''', 10, 1
 
-      (expect interpreter.programState.stack).toEqual []
-      (expect interpreter.programState.outRecord).toEqual [1]
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual []
+      (expect lazyRuntime.programState.outRecord).toEqual [1]
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'changes direction randomly', ->
       source = [
@@ -350,8 +350,8 @@ describe 'Interpreter', ->
       # run for a couple of times
       # just enough so all directions should be hit
       for i in [1..20]
-        interpreter = thunk()
-        output = interpreter.programState.outRecord[0]
+        lazyRuntime = thunk()
+        output = lazyRuntime.programState.outRecord[0]
         sum += output
         hits[output] = true
 
@@ -363,58 +363,58 @@ describe 'Interpreter', ->
       (expect hits).toEqual expectedHits
 
     it 'duplicates the value on the stack', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         7:@
       ''', 10, 1
 
-      (expect interpreter.programState.stack).toEqual [7, 7]
-      (expect interpreter.programState.outRecord).toEqual []
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual [7, 7]
+      (expect lazyRuntime.programState.outRecord).toEqual []
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'swaps the first two values on the stack', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         275\\@
       ''', 10, 1
 
-      (expect interpreter.programState.stack).toEqual [2, 5, 7]
-      (expect interpreter.programState.outRecord).toEqual []
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual [2, 5, 7]
+      (expect lazyRuntime.programState.outRecord).toEqual []
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'discards the first value on the stack', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         27$@
       ''', 10, 1
 
-      (expect interpreter.programState.stack).toEqual [2]
-      (expect interpreter.programState.outRecord).toEqual []
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual [2]
+      (expect lazyRuntime.programState.outRecord).toEqual []
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'can get a value from the playfield', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         20g@
       ''', 10, 1
 
-      (expect interpreter.programState.stack).toEqual ['g'.charCodeAt 0]
-      (expect interpreter.programState.outRecord).toEqual []
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual ['g'.charCodeAt 0]
+      (expect lazyRuntime.programState.outRecord).toEqual []
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'can read an integer', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         &@
       ''', 10, 1, null, [123]
 
-      (expect interpreter.programState.stack).toEqual [123]
-      (expect interpreter.programState.outRecord).toEqual []
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual [123]
+      (expect lazyRuntime.programState.outRecord).toEqual []
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     it 'can read a char', ->
-      interpreter = execute '''
+      lazyRuntime = execute '''
         ~@
       ''', 10, 1, null, ['a']
 
-      (expect interpreter.programState.stack).toEqual ['a'.charCodeAt 0]
-      (expect interpreter.programState.outRecord).toEqual []
-      (expect interpreter.stats.compileCalls).toEqual 1
+      (expect lazyRuntime.programState.stack).toEqual ['a'.charCodeAt 0]
+      (expect lazyRuntime.programState.outRecord).toEqual []
+      (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     describe 'strings', ->
       charCodes = (string) ->
@@ -422,83 +422,83 @@ describe 'Interpreter', ->
           char.charCodeAt 0
 
       it 'pushes a string', ->
-        interpreter = execute '''
+        lazyRuntime = execute '''
           12"34"56@
         ''', 10, 1
 
-        (expect interpreter.programState.stack).toEqual [1, 2, 51, 52, 5, 6]
-        (expect interpreter.programState.outRecord).toEqual []
-        (expect interpreter.stats.compileCalls).toEqual 1
+        (expect lazyRuntime.programState.stack).toEqual [1, 2, 51, 52, 5, 6]
+        (expect lazyRuntime.programState.outRecord).toEqual []
+        (expect lazyRuntime.stats.compileCalls).toEqual 1
 
       it 'wraps around 2 times to close a string', ->
-        interpreter = execute '''
+        lazyRuntime = execute '''
           12"34
         ''', 5, 1, jumpLimit: 1
 
-        (expect interpreter.programState.stack).toEqual [1, 2, 51, 52, 49, 50, 3, 4]
-        (expect interpreter.programState.outRecord).toEqual []
-        (expect interpreter.stats.compileCalls).toEqual 1
+        (expect lazyRuntime.programState.stack).toEqual [1, 2, 51, 52, 49, 50, 3, 4]
+        (expect lazyRuntime.programState.outRecord).toEqual []
+        (expect lazyRuntime.stats.compileCalls).toEqual 1
 
       it 'does not change direction while in a string', ->
-        interpreter = execute '''
+        lazyRuntime = execute '''
           "V^"@
         ''', 10, 1
 
-        (expect interpreter.programState.stack).toEqual charCodes 'V^'
-        (expect interpreter.programState.outRecord).toEqual []
-        (expect interpreter.stats.compileCalls).toEqual 1
+        (expect lazyRuntime.programState.stack).toEqual charCodes 'V^'
+        (expect lazyRuntime.programState.outRecord).toEqual []
+        (expect lazyRuntime.stats.compileCalls).toEqual 1
 
       it 'evaluates an empty string', ->
-        interpreter = execute '''
+        lazyRuntime = execute '''
           ""@
         ''', 5, 1
 
-        (expect interpreter.programState.stack).toEqual []
-        (expect interpreter.programState.outRecord).toEqual []
-        (expect interpreter.stats.compileCalls).toEqual 1
+        (expect lazyRuntime.programState.stack).toEqual []
+        (expect lazyRuntime.programState.outRecord).toEqual []
+        (expect lazyRuntime.stats.compileCalls).toEqual 1
 
     describe 'edge cases', ->
       it 'pops 0 from an empty stack', ->
-        interpreter = execute '''
+        lazyRuntime = execute '''
           .@
         ''', 5, 1
 
-        (expect interpreter.programState.stack).toEqual []
-        (expect interpreter.programState.outRecord).toEqual [0]
-        (expect interpreter.stats.compileCalls).toEqual 1
+        (expect lazyRuntime.programState.stack).toEqual []
+        (expect lazyRuntime.programState.outRecord).toEqual [0]
+        (expect lazyRuntime.stats.compileCalls).toEqual 1
 
       it 'ignores non-instructions', ->
-        interpreter = execute '''
+        lazyRuntime = execute '''
           abc@
         ''', 5, 1
 
-        (expect interpreter.programState.stack).toEqual []
-        (expect interpreter.programState.outRecord).toEqual []
-        (expect interpreter.stats.compileCalls).toEqual 1
+        (expect lazyRuntime.programState.stack).toEqual []
+        (expect lazyRuntime.programState.outRecord).toEqual []
+        (expect lazyRuntime.stats.compileCalls).toEqual 1
 
       it 'gets 0 if input is empty', ->
-        interpreter = execute '''
+        lazyRuntime = execute '''
           &&&&&@
         ''', 6, 1, {}, [1, 2, 3]
 
-        (expect interpreter.programState.stack).toEqual [1, 2, 3, 0, 0]
-        (expect interpreter.programState.outRecord).toEqual []
-        (expect interpreter.stats.compileCalls).toEqual 1
+        (expect lazyRuntime.programState.stack).toEqual [1, 2, 3, 0, 0]
+        (expect lazyRuntime.programState.outRecord).toEqual []
+        (expect lazyRuntime.stats.compileCalls).toEqual 1
 
       it 'gets 0 when trying to access cells outside of the playfield', ->
-        interpreter = execute '''
+        lazyRuntime = execute '''
           99g@
         ''', 6, 1
 
-        (expect interpreter.programState.stack).toEqual [0]
-        (expect interpreter.programState.outRecord).toEqual []
-        (expect interpreter.stats.compileCalls).toEqual 1
+        (expect lazyRuntime.programState.stack).toEqual [0]
+        (expect lazyRuntime.programState.outRecord).toEqual []
+        (expect lazyRuntime.stats.compileCalls).toEqual 1
 
       it 'does not crash when trying to write outside of the playfield', ->
-        interpreter = execute '''
+        lazyRuntime = execute '''
           999p@
         ''', 6, 1
 
-        (expect interpreter.programState.stack).toEqual []
-        (expect interpreter.programState.outRecord).toEqual []
-        (expect interpreter.stats.compileCalls).toEqual 1
+        (expect lazyRuntime.programState.stack).toEqual []
+        (expect lazyRuntime.programState.outRecord).toEqual []
+        (expect lazyRuntime.stats.compileCalls).toEqual 1
