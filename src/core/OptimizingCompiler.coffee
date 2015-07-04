@@ -12,13 +12,13 @@ digitPusher = (digit) ->
 
 binaryOperator = (operatorFunction, operatorChar, stringFunction) ->
   (x, y, dir, index, stack) ->
-    operand1 = if stack.length then stack.pop() else 'runtime.pop()'
-    operand2 = if stack.length then stack.pop() else 'runtime.pop()'
+    operand1 = if stack.length then stack.pop() else 'programState.pop()'
+    operand2 = if stack.length then stack.pop() else 'programState.pop()'
     if (isNumber operand1) and (isNumber operand2)
       stack.push operatorFunction operand1, operand2
       "/* #{operatorChar} */"
     else
-      "/* #{operatorChar} */  runtime.push(#{stringFunction operand1, operand2})"
+      "/* #{operatorChar} */  programState.push(#{stringFunction operand1, operand2})"
 
 
 codeMap =
@@ -49,7 +49,7 @@ codeMap =
       stack.push +!stack.pop()
       '/* ! */'
     else
-      '/* ! */  runtime.push(+!runtime.pop())'
+      '/* ! */  programState.push(+!programState.pop())'
 
 
   '`': binaryOperator ((o1, o2) -> +(o1 > o2)), '`', (o1, o2) -> "+(#{o1} > #{o2})"
@@ -70,7 +70,7 @@ codeMap =
       stack.push stack[stack.length - 1]
       '/* : */'
     else
-      '/* : */  runtime.duplicate()'
+      '/* : */  programState.duplicate()'
 
 
   '\\': (x, y, dir, index, stack) ->
@@ -81,7 +81,7 @@ codeMap =
       stack[stack.length - 2] = e1
       '/* \\ */'
     else
-      '/* \\ */  runtime.swap()'
+      '/* \\ */  programState.swap()'
 
 
   '$': (x, y, dir, index, stack) ->
@@ -89,14 +89,14 @@ codeMap =
       stack.pop()
       '/* $ */'
     else
-      '/* $ */  runtime.pop()'
+      '/* $ */  programState.pop()'
 
 
   '.': (x, y, dir, index, stack) ->
     if stack.length
-      "/* . */  runtime.out(#{stack.pop()})"
+      "/* . */  programState.out(#{stack.pop()})"
     else
-      '/* . */  runtime.out(runtime.pop())'
+      '/* . */  programState.out(programState.pop())'
 
 
   ',': (x, y, dir, index, stack) ->
@@ -106,33 +106,33 @@ codeMap =
         char = "\\'"
       else if char == '\\'
         char = '\\\\'
-      "/* , */  runtime.out('#{char}')"
+      "/* , */  programState.out('#{char}')"
     else
-      '/* , */  runtime.out(String.fromCharCode(runtime.pop()))'
+      '/* , */  programState.out(String.fromCharCode(programState.pop()))'
 
 
   '#': -> '/* # */'
 
 
   'p': (x, y, dir, index, stack) ->
-    operand1 = if stack.length then stack.pop() else 'runtime.pop()'
-    operand2 = if stack.length then stack.pop() else 'runtime.pop()'
-    operand3 = if stack.length then stack.pop() else 'runtime.pop()'
-    "/* p */  runtime.put(#{operand1}, #{operand2}, #{operand3}, #{x}, #{y}, '#{dir}', #{index})\n" +
-    "if (runtime.flags.pathInvalidatedAhead) {" +
-    "#{if stack.length then "runtime.push(#{stack.join ', '});" else ''}" +
+    operand1 = if stack.length then stack.pop() else 'programState.pop()'
+    operand2 = if stack.length then stack.pop() else 'programState.pop()'
+    operand3 = if stack.length then stack.pop() else 'programState.pop()'
+    "/* p */  programState.put(#{operand1}, #{operand2}, #{operand3}, #{x}, #{y}, '#{dir}', #{index})\n" +
+    "if (programState.flags.pathInvalidatedAhead) {" +
+    "#{if stack.length then "programState.push(#{stack.join ', '});" else ''}" +
     " return; }"
 
 
   'g': (x, y, dir, index, stack) ->
-    operand1 = if stack.length then stack.pop() else 'runtime.pop()'
-    operand2 = if stack.length then stack.pop() else 'runtime.pop()'
-    "/* g */  runtime.push(runtime.get(#{operand1}, #{operand2}))"
+    operand1 = if stack.length then stack.pop() else 'programState.pop()'
+    operand2 = if stack.length then stack.pop() else 'programState.pop()'
+    "/* g */  programState.push(programState.get(#{operand1}, #{operand2}))"
 
 
   # require special handling
-  '&': -> '/* & */  runtime.push(runtime.next())'
-  '~': -> '/* ~ */  runtime.push(runtime.nextChar())'
+  '&': -> '/* & */  programState.push(programState.next())'
+  '~': -> '/* ~ */  programState.push(programState.nextChar())'
 
 
   '@': -> '/* @ */  return;'
@@ -156,7 +156,7 @@ OptimizinsCompiler.assemble = (path) ->
         if entry.char == '&' or entry.char == '~'
           # dump the stack
           if stack.length
-            ret += "runtime.push(#{stack.join ', '});\n"
+            ret += "programState.push(#{stack.join ', '});\n"
           stack = []
         ret += codeGenerator entry.x, entry.y, entry.dir, i, stack
         ret
@@ -164,7 +164,7 @@ OptimizinsCompiler.assemble = (path) ->
         "/* __ #{entry.char} */"
 
   if stack.length
-    lines.push "runtime.push(#{stack.join ', '})"
+    lines.push "programState.push(#{stack.join ', '})"
 
   lines.join '\n'
 
@@ -172,7 +172,7 @@ OptimizinsCompiler.assemble = (path) ->
 OptimizinsCompiler.compile = (path) ->
   code = OptimizinsCompiler.assemble path
   path.code = code #storing this just for debugging
-  compiled = new Function 'runtime', code
+  compiled = new Function 'programState', code
   path.body = compiled
 
 

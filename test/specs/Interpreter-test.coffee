@@ -199,8 +199,8 @@ describe 'Interpreter', ->
         @
       ''', 1, 1
 
-      (expect interpreter.runtime.stack).toEqual []
-      (expect interpreter.runtime.outRecord).toEqual []
+      (expect interpreter.programState.stack).toEqual []
+      (expect interpreter.programState.outRecord).toEqual []
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'outputs a number', ->
@@ -208,8 +208,8 @@ describe 'Interpreter', ->
         5.@
       ''', 3, 1
 
-      (expect interpreter.runtime.stack).toEqual []
-      (expect interpreter.runtime.outRecord).toEqual [5]
+      (expect interpreter.programState.stack).toEqual []
+      (expect interpreter.programState.outRecord).toEqual [5]
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'outputs a character', ->
@@ -217,8 +217,8 @@ describe 'Interpreter', ->
         77*,@
       ''', 5, 1
 
-      (expect interpreter.runtime.stack).toEqual []
-      (expect interpreter.runtime.outRecord).toEqual ['1']
+      (expect interpreter.programState.stack).toEqual []
+      (expect interpreter.programState.outRecord).toEqual ['1']
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'loops forever (or until the too-many-jumps condition holds)', ->
@@ -227,8 +227,8 @@ describe 'Interpreter', ->
         ^.<
       ''', 3, 2, jumpLimit: 3
 
-      (expect interpreter.runtime.stack).toEqual []
-      (expect interpreter.runtime.outRecord).toEqual [7, 7, 7]
+      (expect interpreter.programState.stack).toEqual []
+      (expect interpreter.programState.outRecord).toEqual [7, 7, 7]
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'executes a figure of 8', ->
@@ -238,8 +238,8 @@ describe 'Interpreter', ->
           >^
       ''', 4, 3
 
-      (expect interpreter.runtime.stack).toEqual [9]
-      (expect interpreter.runtime.outRecord).toEqual [9]
+      (expect interpreter.programState.stack).toEqual [9]
+      (expect interpreter.programState.outRecord).toEqual [9]
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'evaluates a conditional', ->
@@ -248,8 +248,8 @@ describe 'Interpreter', ->
         @.7_9.@
       ''', 7, 2
 
-      (expect interpreter.runtime.stack).toEqual []
-      (expect interpreter.runtime.outRecord).toEqual [9]
+      (expect interpreter.programState.stack).toEqual []
+      (expect interpreter.programState.outRecord).toEqual [9]
       (expect interpreter.stats.compileCalls).toEqual 2
 
     it 'mutates the current path, before the current index', ->
@@ -257,8 +257,8 @@ describe 'Interpreter', ->
         2077*p5.@
       ''', 10, 1
 
-      (expect interpreter.runtime.stack).toEqual []
-      (expect interpreter.runtime.outRecord).toEqual [5]
+      (expect interpreter.programState.stack).toEqual []
+      (expect interpreter.programState.outRecord).toEqual [5]
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'mutates the current path, after the current index', ->
@@ -266,8 +266,8 @@ describe 'Interpreter', ->
         6077*p5.@
       ''', 10, 1
 
-      (expect interpreter.runtime.stack).toEqual []
-      (expect interpreter.runtime.outRecord).toEqual [1]
+      (expect interpreter.programState.stack).toEqual []
+      (expect interpreter.programState.outRecord).toEqual [1]
       (expect interpreter.stats.compileCalls).toEqual 2
 
     it 'evaluates an addition', ->
@@ -275,8 +275,8 @@ describe 'Interpreter', ->
         49+.@
       ''', 10, 1
 
-      (expect interpreter.runtime.stack).toEqual []
-      (expect interpreter.runtime.outRecord).toEqual [13]
+      (expect interpreter.programState.stack).toEqual []
+      (expect interpreter.programState.outRecord).toEqual [13]
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'evaluates a subtraction', ->
@@ -284,8 +284,8 @@ describe 'Interpreter', ->
         49-.@
       ''', 10, 1
 
-      (expect interpreter.runtime.stack).toEqual []
-      (expect interpreter.runtime.outRecord).toEqual [5]
+      (expect interpreter.programState.stack).toEqual []
+      (expect interpreter.programState.outRecord).toEqual [5]
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'evaluates a multiplication', ->
@@ -293,8 +293,8 @@ describe 'Interpreter', ->
         49*.@
       ''', 10, 1
 
-      (expect interpreter.runtime.stack).toEqual []
-      (expect interpreter.runtime.outRecord).toEqual [36]
+      (expect interpreter.programState.stack).toEqual []
+      (expect interpreter.programState.outRecord).toEqual [36]
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'performs integer division', ->
@@ -302,8 +302,8 @@ describe 'Interpreter', ->
         49/.@
       ''', 10, 1
 
-      (expect interpreter.runtime.stack).toEqual []
-      (expect interpreter.runtime.outRecord).toEqual [2]
+      (expect interpreter.programState.stack).toEqual []
+      (expect interpreter.programState.outRecord).toEqual [2]
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'performs a modulo operation', ->
@@ -311,8 +311,8 @@ describe 'Interpreter', ->
         49%.@
       ''', 10, 1
 
-      (expect interpreter.runtime.stack).toEqual []
-      (expect interpreter.runtime.outRecord).toEqual [1]
+      (expect interpreter.programState.stack).toEqual []
+      (expect interpreter.programState.outRecord).toEqual [1]
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'performs unary not', ->
@@ -320,8 +320,8 @@ describe 'Interpreter', ->
         4!.@
       ''', 10, 1
 
-      (expect interpreter.runtime.stack).toEqual []
-      (expect interpreter.runtime.outRecord).toEqual [0]
+      (expect interpreter.programState.stack).toEqual []
+      (expect interpreter.programState.outRecord).toEqual [0]
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'evaluates a comparison', ->
@@ -329,8 +329,8 @@ describe 'Interpreter', ->
         49`.@
       ''', 10, 1
 
-      (expect interpreter.runtime.stack).toEqual []
-      (expect interpreter.runtime.outRecord).toEqual [1]
+      (expect interpreter.programState.stack).toEqual []
+      (expect interpreter.programState.outRecord).toEqual [1]
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'changes direction randomly', ->
@@ -351,7 +351,7 @@ describe 'Interpreter', ->
       # just enough so all directions should be hit
       for i in [1..20]
         interpreter = thunk()
-        output = interpreter.runtime.outRecord[0]
+        output = interpreter.programState.outRecord[0]
         sum += output
         hits[output] = true
 
@@ -367,8 +367,8 @@ describe 'Interpreter', ->
         7:@
       ''', 10, 1
 
-      (expect interpreter.runtime.stack).toEqual [7, 7]
-      (expect interpreter.runtime.outRecord).toEqual []
+      (expect interpreter.programState.stack).toEqual [7, 7]
+      (expect interpreter.programState.outRecord).toEqual []
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'swaps the first two values on the stack', ->
@@ -376,8 +376,8 @@ describe 'Interpreter', ->
         275\\@
       ''', 10, 1
 
-      (expect interpreter.runtime.stack).toEqual [2, 5, 7]
-      (expect interpreter.runtime.outRecord).toEqual []
+      (expect interpreter.programState.stack).toEqual [2, 5, 7]
+      (expect interpreter.programState.outRecord).toEqual []
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'discards the first value on the stack', ->
@@ -385,8 +385,8 @@ describe 'Interpreter', ->
         27$@
       ''', 10, 1
 
-      (expect interpreter.runtime.stack).toEqual [2]
-      (expect interpreter.runtime.outRecord).toEqual []
+      (expect interpreter.programState.stack).toEqual [2]
+      (expect interpreter.programState.outRecord).toEqual []
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'can get a value from the playfield', ->
@@ -394,8 +394,8 @@ describe 'Interpreter', ->
         20g@
       ''', 10, 1
 
-      (expect interpreter.runtime.stack).toEqual ['g'.charCodeAt 0]
-      (expect interpreter.runtime.outRecord).toEqual []
+      (expect interpreter.programState.stack).toEqual ['g'.charCodeAt 0]
+      (expect interpreter.programState.outRecord).toEqual []
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'can read an integer', ->
@@ -403,8 +403,8 @@ describe 'Interpreter', ->
         &@
       ''', 10, 1, null, [123]
 
-      (expect interpreter.runtime.stack).toEqual [123]
-      (expect interpreter.runtime.outRecord).toEqual []
+      (expect interpreter.programState.stack).toEqual [123]
+      (expect interpreter.programState.outRecord).toEqual []
       (expect interpreter.stats.compileCalls).toEqual 1
 
     it 'can read a char', ->
@@ -412,8 +412,8 @@ describe 'Interpreter', ->
         ~@
       ''', 10, 1, null, ['a']
 
-      (expect interpreter.runtime.stack).toEqual ['a'.charCodeAt 0]
-      (expect interpreter.runtime.outRecord).toEqual []
+      (expect interpreter.programState.stack).toEqual ['a'.charCodeAt 0]
+      (expect interpreter.programState.outRecord).toEqual []
       (expect interpreter.stats.compileCalls).toEqual 1
 
     describe 'strings', ->
@@ -426,8 +426,8 @@ describe 'Interpreter', ->
           12"34"56@
         ''', 10, 1
 
-        (expect interpreter.runtime.stack).toEqual [1, 2, 51, 52, 5, 6]
-        (expect interpreter.runtime.outRecord).toEqual []
+        (expect interpreter.programState.stack).toEqual [1, 2, 51, 52, 5, 6]
+        (expect interpreter.programState.outRecord).toEqual []
         (expect interpreter.stats.compileCalls).toEqual 1
 
       it 'wraps around 2 times to close a string', ->
@@ -435,8 +435,8 @@ describe 'Interpreter', ->
           12"34
         ''', 5, 1, jumpLimit: 1
 
-        (expect interpreter.runtime.stack).toEqual [1, 2, 51, 52, 49, 50, 3, 4]
-        (expect interpreter.runtime.outRecord).toEqual []
+        (expect interpreter.programState.stack).toEqual [1, 2, 51, 52, 49, 50, 3, 4]
+        (expect interpreter.programState.outRecord).toEqual []
         (expect interpreter.stats.compileCalls).toEqual 1
 
       it 'does not change direction while in a string', ->
@@ -444,8 +444,8 @@ describe 'Interpreter', ->
           "V^"@
         ''', 10, 1
 
-        (expect interpreter.runtime.stack).toEqual charCodes 'V^'
-        (expect interpreter.runtime.outRecord).toEqual []
+        (expect interpreter.programState.stack).toEqual charCodes 'V^'
+        (expect interpreter.programState.outRecord).toEqual []
         (expect interpreter.stats.compileCalls).toEqual 1
 
       it 'evaluates an empty string', ->
@@ -453,8 +453,8 @@ describe 'Interpreter', ->
           ""@
         ''', 5, 1
 
-        (expect interpreter.runtime.stack).toEqual []
-        (expect interpreter.runtime.outRecord).toEqual []
+        (expect interpreter.programState.stack).toEqual []
+        (expect interpreter.programState.outRecord).toEqual []
         (expect interpreter.stats.compileCalls).toEqual 1
 
     describe 'edge cases', ->
@@ -463,8 +463,8 @@ describe 'Interpreter', ->
           .@
         ''', 5, 1
 
-        (expect interpreter.runtime.stack).toEqual []
-        (expect interpreter.runtime.outRecord).toEqual [0]
+        (expect interpreter.programState.stack).toEqual []
+        (expect interpreter.programState.outRecord).toEqual [0]
         (expect interpreter.stats.compileCalls).toEqual 1
 
       it 'ignores non-instructions', ->
@@ -472,8 +472,8 @@ describe 'Interpreter', ->
           abc@
         ''', 5, 1
 
-        (expect interpreter.runtime.stack).toEqual []
-        (expect interpreter.runtime.outRecord).toEqual []
+        (expect interpreter.programState.stack).toEqual []
+        (expect interpreter.programState.outRecord).toEqual []
         (expect interpreter.stats.compileCalls).toEqual 1
 
       it 'gets 0 if input is empty', ->
@@ -481,8 +481,8 @@ describe 'Interpreter', ->
           &&&&&@
         ''', 6, 1, {}, [1, 2, 3]
 
-        (expect interpreter.runtime.stack).toEqual [1, 2, 3, 0, 0]
-        (expect interpreter.runtime.outRecord).toEqual []
+        (expect interpreter.programState.stack).toEqual [1, 2, 3, 0, 0]
+        (expect interpreter.programState.outRecord).toEqual []
         (expect interpreter.stats.compileCalls).toEqual 1
 
       it 'gets 0 when trying to access cells outside of the playfield', ->
@@ -490,8 +490,8 @@ describe 'Interpreter', ->
           99g@
         ''', 6, 1
 
-        (expect interpreter.runtime.stack).toEqual [0]
-        (expect interpreter.runtime.outRecord).toEqual []
+        (expect interpreter.programState.stack).toEqual [0]
+        (expect interpreter.programState.outRecord).toEqual []
         (expect interpreter.stats.compileCalls).toEqual 1
 
       it 'does not crash when trying to write outside of the playfield', ->
@@ -499,6 +499,6 @@ describe 'Interpreter', ->
           999p@
         ''', 6, 1
 
-        (expect interpreter.runtime.stack).toEqual []
-        (expect interpreter.runtime.outRecord).toEqual []
+        (expect interpreter.programState.stack).toEqual []
+        (expect interpreter.programState.outRecord).toEqual []
         (expect interpreter.stats.compileCalls).toEqual 1

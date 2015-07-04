@@ -1,6 +1,6 @@
 describe 'OptimizingCompiler', ->
   Path = bef.Path
-  Runtime = bef.Runtime
+  ProgramState = bef.ProgramState
   OptimizinsCompiler = bef.OptimizinsCompiler
 
   getPath = (string) ->
@@ -15,334 +15,334 @@ describe 'OptimizingCompiler', ->
     path
 
 
-  getRuntime = (stack = [], input = []) ->
-    runtime = new Runtime()
-    runtime.stack = stack
-    runtime.setInput input
+  getProgramState = (stack = [], input = []) ->
+    programState = new ProgramState()
+    programState.stack = stack
+    programState.setInput input
 
-    (spyOn runtime, 'push').and.callThrough()
-    (spyOn runtime, 'pop').and.callThrough()
-    spyOn runtime, 'put'
-    (spyOn runtime, 'get').and.returnValue 55
+    (spyOn programState, 'push').and.callThrough()
+    (spyOn programState, 'pop').and.callThrough()
+    spyOn programState, 'put'
+    (spyOn programState, 'get').and.returnValue 55
 
-    runtime
+    programState
 
 
   execute = (string, stack, input, pathInvalidatedAhead = false) ->
     path = getPath string
     OptimizinsCompiler.compile path
 
-    runtime = getRuntime stack, input
-    runtime.flags.pathInvalidatedAhead = pathInvalidatedAhead
-    path.body runtime
+    programState = getProgramState stack, input
+    programState.flags.pathInvalidatedAhead = pathInvalidatedAhead
+    path.body programState
 
-    runtime
+    programState
 
 
   it 'compiles an empty path', ->
-    runtime = execute ''
-    (expect runtime.push.calls.count()).toEqual 0
-    (expect runtime.pop.calls.count()).toEqual 0
-    (expect runtime.stack).toEqual []
+    programState = execute ''
+    (expect programState.push.calls.count()).toEqual 0
+    (expect programState.pop.calls.count()).toEqual 0
+    (expect programState.stack).toEqual []
 
 
   describe 'binary operators', ->
     describe '+', ->
       it 'resolves entirely at compile time', ->
-        runtime = execute '12+'
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [3]
+        programState = execute '12+'
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [3]
 
       it 'resolves partially at compile time', ->
-        runtime = execute '1+', [2]
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 1
-        (expect runtime.stack).toEqual [3]
+        programState = execute '1+', [2]
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 1
+        (expect programState.stack).toEqual [3]
 
       it 'does not resolve at compile time', ->
-        runtime = execute '+', [1, 2]
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 2
-        (expect runtime.stack).toEqual [3]
+        programState = execute '+', [1, 2]
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 2
+        (expect programState.stack).toEqual [3]
 
     describe '-', ->
       it 'resolves entirely at compile time', ->
-        runtime = execute '23-'
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [1]
+        programState = execute '23-'
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [1]
 
       it 'resolves partially at compile time', ->
-        runtime = execute '3-', [2]
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 1
-        (expect runtime.stack).toEqual [1]
+        programState = execute '3-', [2]
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 1
+        (expect programState.stack).toEqual [1]
 
       it 'does not resolve at compile time', ->
-        runtime = execute '-', [2, 3]
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 2
-        (expect runtime.stack).toEqual [1]
+        programState = execute '-', [2, 3]
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 2
+        (expect programState.stack).toEqual [1]
 
     describe '*', ->
       it 'resolves entirely at compile time', ->
-        runtime = execute '23*'
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [6]
+        programState = execute '23*'
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [6]
 
       it 'resolves partially at compile time', ->
-        runtime = execute '3*', [2]
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 1
-        (expect runtime.stack).toEqual [6]
+        programState = execute '3*', [2]
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 1
+        (expect programState.stack).toEqual [6]
 
       it 'does not resolve at compile time', ->
-        runtime = execute '*', [2, 3]
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 2
-        (expect runtime.stack).toEqual [6]
+        programState = execute '*', [2, 3]
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 2
+        (expect programState.stack).toEqual [6]
 
     describe '/', ->
       it 'resolves entirely at compile time', ->
-        runtime = execute '29/'
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [4]
+        programState = execute '29/'
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [4]
 
       it 'resolves partially at compile time', ->
-        runtime = execute '9/', [2]
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 1
-        (expect runtime.stack).toEqual [4]
+        programState = execute '9/', [2]
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 1
+        (expect programState.stack).toEqual [4]
 
       it 'does not resolve at compile time', ->
-        runtime = execute '/', [2, 9]
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 2
-        (expect runtime.stack).toEqual [4]
+        programState = execute '/', [2, 9]
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 2
+        (expect programState.stack).toEqual [4]
 
     describe '`', ->
       it 'resolves entirely at compile time', ->
-        runtime = execute '29`'
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [1]
+        programState = execute '29`'
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [1]
 
       it 'resolves partially at compile time', ->
-        runtime = execute '9`', [2]
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 1
-        (expect runtime.stack).toEqual [1]
+        programState = execute '9`', [2]
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 1
+        (expect programState.stack).toEqual [1]
 
       it 'does not resolve at compile time', ->
-        runtime = execute '`', [2, 9]
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 2
-        (expect runtime.stack).toEqual [1]
+        programState = execute '`', [2, 9]
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 2
+        (expect programState.stack).toEqual [1]
 
   describe '!', ->
     it 'resolves at compile time', ->
-      runtime = execute '2!'
-      (expect runtime.push.calls.count()).toEqual 1
-      (expect runtime.pop.calls.count()).toEqual 0
-      (expect runtime.stack).toEqual [0]
+      programState = execute '2!'
+      (expect programState.push.calls.count()).toEqual 1
+      (expect programState.pop.calls.count()).toEqual 0
+      (expect programState.stack).toEqual [0]
 
     it 'does not resolve at compile time', ->
-      runtime = execute '!', [2]
-      (expect runtime.push.calls.count()).toEqual 1
-      (expect runtime.pop.calls.count()).toEqual 1
-      (expect runtime.stack).toEqual [0]
+      programState = execute '!', [2]
+      (expect programState.push.calls.count()).toEqual 1
+      (expect programState.pop.calls.count()).toEqual 1
+      (expect programState.stack).toEqual [0]
 
   describe 'literals', ->
     describe '0..9', ->
       it 'pushes one digit', ->
-        runtime = execute '9'
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [9]
+        programState = execute '9'
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [9]
 
       it 'pushes more digits', ->
-        runtime = execute '1234567'
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [1, 2, 3, 4, 5, 6, 7]
+        programState = execute '1234567'
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [1, 2, 3, 4, 5, 6, 7]
 
 
     describe 'strings', ->
       it 'pushes no character', ->
-        runtime = execute '""'
-        (expect runtime.push.calls.count()).toEqual 0
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual []
+        programState = execute '""'
+        (expect programState.push.calls.count()).toEqual 0
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual []
 
       it 'pushes one character', ->
-        runtime = execute '"9"'
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [57]
+        programState = execute '"9"'
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [57]
 
       it 'pushes more characters', ->
-        runtime = execute '"123"'
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [49, 50, 51]
+        programState = execute '"123"'
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [49, 50, 51]
 
 
   describe 'stack operators', ->
     describe ':', ->
       it 'resolves at compile time', ->
-        runtime = execute '1:'
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [1, 1]
+        programState = execute '1:'
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [1, 1]
 
       it 'does not resolve at compile time', ->
-        runtime = execute ':', [1]
-        (expect runtime.push.calls.count()).toEqual 0
-        (expect runtime.pop.calls.count()).toEqual 0
+        programState = execute ':', [1]
+        (expect programState.push.calls.count()).toEqual 0
+        (expect programState.pop.calls.count()).toEqual 0
         # calls .duplicate
-        (expect runtime.stack).toEqual [1, 1]
+        (expect programState.stack).toEqual [1, 1]
 
     describe '\\', ->
       it 'resolves at compile time', ->
-        runtime = execute '12\\'
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [2, 1]
+        programState = execute '12\\'
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [2, 1]
 
       it 'does not resolve at compile time', ->
-        runtime = execute '\\', [1, 2]
-        (expect runtime.push.calls.count()).toEqual 0
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [2, 1]
+        programState = execute '\\', [1, 2]
+        (expect programState.push.calls.count()).toEqual 0
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [2, 1]
 
     describe '$', ->
       it 'resolves at compile time', ->
-        runtime = execute '1$\\'
-        (expect runtime.push.calls.count()).toEqual 0
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual []
+        programState = execute '1$\\'
+        (expect programState.push.calls.count()).toEqual 0
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual []
 
       it 'does not resolve at compile time', ->
-        runtime = execute '$', [1, 2]
-        (expect runtime.push.calls.count()).toEqual 0
-        (expect runtime.pop.calls.count()).toEqual 1
-        (expect runtime.stack).toEqual [1]
+        programState = execute '$', [1, 2]
+        (expect programState.push.calls.count()).toEqual 0
+        (expect programState.pop.calls.count()).toEqual 1
+        (expect programState.stack).toEqual [1]
 
 
   describe 'output', ->
     describe '.', ->
       it 'resolves at compile time', ->
-        runtime = execute '1.'
-        (expect runtime.push.calls.count()).toEqual 0
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual []
-        (expect runtime.outRecord).toEqual [1]
+        programState = execute '1.'
+        (expect programState.push.calls.count()).toEqual 0
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual []
+        (expect programState.outRecord).toEqual [1]
 
       it 'does not resolve at compile time', ->
-        runtime = execute '.', [1]
-        (expect runtime.push.calls.count()).toEqual 0
-        (expect runtime.pop.calls.count()).toEqual 1
-        (expect runtime.stack).toEqual []
-        (expect runtime.outRecord).toEqual [1]
+        programState = execute '.', [1]
+        (expect programState.push.calls.count()).toEqual 0
+        (expect programState.pop.calls.count()).toEqual 1
+        (expect programState.stack).toEqual []
+        (expect programState.outRecord).toEqual [1]
 
     describe ',', ->
       it 'resolves at compile time', ->
-        runtime = execute '"1",'
-        (expect runtime.push.calls.count()).toEqual 0
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual []
-        (expect runtime.outRecord).toEqual ['1']
+        programState = execute '"1",'
+        (expect programState.push.calls.count()).toEqual 0
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual []
+        (expect programState.outRecord).toEqual ['1']
 
       it 'escapes \'', ->
-        runtime = execute '158*-,'
-        (expect runtime.push.calls.count()).toEqual 0
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual []
-        (expect runtime.outRecord).toEqual ['\'']
+        programState = execute '158*-,'
+        (expect programState.push.calls.count()).toEqual 0
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual []
+        (expect programState.outRecord).toEqual ['\'']
 
       it 'escapes \\', ->
-        runtime = execute '2999*++,'
-        (expect runtime.push.calls.count()).toEqual 0
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual []
-        (expect runtime.outRecord).toEqual ['\\']
+        programState = execute '2999*++,'
+        (expect programState.push.calls.count()).toEqual 0
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual []
+        (expect programState.outRecord).toEqual ['\\']
 
       it 'does not resolve at compile time', ->
-        runtime = execute ',', [49]
-        (expect runtime.push.calls.count()).toEqual 0
-        (expect runtime.pop.calls.count()).toEqual 1
-        (expect runtime.stack).toEqual []
-        (expect runtime.outRecord).toEqual ['1']
+        programState = execute ',', [49]
+        (expect programState.push.calls.count()).toEqual 0
+        (expect programState.pop.calls.count()).toEqual 1
+        (expect programState.stack).toEqual []
+        (expect programState.outRecord).toEqual ['1']
 
 
   describe 'input', ->
     describe '&', ->
       it 'dumps the stack before adding to it', ->
-        runtime = execute '123&', [], [4]
-        (expect runtime.push.calls.count()).toEqual 2
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [1, 2, 3, 4]
+        programState = execute '123&', [], [4]
+        (expect programState.push.calls.count()).toEqual 2
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [1, 2, 3, 4]
 
       it 'does not dump an empty stack before adding to it', ->
-        runtime = execute '&', [], [4]
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [4]
+        programState = execute '&', [], [4]
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [4]
 
     describe '~', ->
       it 'dumps the stack before adding to it', ->
-        runtime = execute '123~', [], ['4']
-        (expect runtime.push.calls.count()).toEqual 2
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [1, 2, 3, 52]
+        programState = execute '123~', [], ['4']
+        (expect programState.push.calls.count()).toEqual 2
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [1, 2, 3, 52]
 
       it 'does not dump an empty stack before adding to it', ->
-        runtime = execute '~', [], ['4']
-        (expect runtime.push.calls.count()).toEqual 1
-        (expect runtime.pop.calls.count()).toEqual 0
-        (expect runtime.stack).toEqual [52]
+        programState = execute '~', [], ['4']
+        (expect programState.push.calls.count()).toEqual 1
+        (expect programState.pop.calls.count()).toEqual 0
+        (expect programState.stack).toEqual [52]
 
   describe 'p', ->
     it 'gets stack entries at compile time', ->
-      runtime = execute '123p'
-      (expect runtime.push.calls.count()).toEqual 0
-      (expect runtime.pop.calls.count()).toEqual 0
-      (expect runtime.put.calls.count()).toEqual 1
+      programState = execute '123p'
+      (expect programState.push.calls.count()).toEqual 0
+      (expect programState.pop.calls.count()).toEqual 0
+      (expect programState.put.calls.count()).toEqual 1
 
     it 'gets no stack entries at compile time', ->
-      runtime = execute 'p', [1, 2, 3]
-      (expect runtime.push.calls.count()).toEqual 0
-      (expect runtime.pop.calls.count()).toEqual 3
-      (expect runtime.put.calls.count()).toEqual 1
+      programState = execute 'p', [1, 2, 3]
+      (expect programState.push.calls.count()).toEqual 0
+      (expect programState.pop.calls.count()).toEqual 3
+      (expect programState.put.calls.count()).toEqual 1
 
     it 'dumps the stack if path was invalidated ahead', ->
-      runtime = execute '123456p789', [], [], true
-      (expect runtime.push.calls.count()).toEqual 1
-      (expect runtime.pop.calls.count()).toEqual 0
-      (expect runtime.put.calls.count()).toEqual 1
-      (expect runtime.stack).toEqual [1, 2, 3]
+      programState = execute '123456p789', [], [], true
+      (expect programState.push.calls.count()).toEqual 1
+      (expect programState.pop.calls.count()).toEqual 0
+      (expect programState.put.calls.count()).toEqual 1
+      (expect programState.stack).toEqual [1, 2, 3]
 
   describe 'g', ->
     it 'gets all stack entries at compile time', ->
-      runtime = execute '12g'
-      (expect runtime.push.calls.count()).toEqual 1
-      (expect runtime.pop.calls.count()).toEqual 0
-      (expect runtime.get.calls.count()).toEqual 1
-      (expect runtime.stack).toEqual [55]
+      programState = execute '12g'
+      (expect programState.push.calls.count()).toEqual 1
+      (expect programState.pop.calls.count()).toEqual 0
+      (expect programState.get.calls.count()).toEqual 1
+      (expect programState.stack).toEqual [55]
 
     it 'gets some stack entries at compile time', ->
-      runtime = execute '2g', [1]
-      (expect runtime.push.calls.count()).toEqual 1
-      (expect runtime.pop.calls.count()).toEqual 1
-      (expect runtime.get.calls.count()).toEqual 1
-      (expect runtime.stack).toEqual [55]
+      programState = execute '2g', [1]
+      (expect programState.push.calls.count()).toEqual 1
+      (expect programState.pop.calls.count()).toEqual 1
+      (expect programState.get.calls.count()).toEqual 1
+      (expect programState.stack).toEqual [55]
 
     it 'gets some stack entries at compile time', ->
-      runtime = execute 'g', [1, 2]
-      (expect runtime.push.calls.count()).toEqual 1
-      (expect runtime.pop.calls.count()).toEqual 2
-      (expect runtime.get.calls.count()).toEqual 1
-      (expect runtime.stack).toEqual [55]
+      programState = execute 'g', [1, 2]
+      (expect programState.push.calls.count()).toEqual 1
+      (expect programState.pop.calls.count()).toEqual 2
+      (expect programState.get.calls.count()).toEqual 1
+      (expect programState.stack).toEqual [55]

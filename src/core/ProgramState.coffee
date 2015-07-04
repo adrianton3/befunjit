@@ -1,6 +1,6 @@
 'use strict'
 
-Runtime = (@interpreter) ->
+ProgramState = (@interpreter) ->
   @stack = []
   @flags =
     pathInvalidatedAhead: false
@@ -10,25 +10,25 @@ Runtime = (@interpreter) ->
   return
 
 
-Runtime::push = ->
+ProgramState::push = ->
   @stack.push.apply @stack, arguments
 
 
-Runtime::pop = ->
+ProgramState::pop = ->
   return 0 if @stack.length < 1
   @stack.pop()
 
 
-Runtime::out = (e) ->
+ProgramState::out = (e) ->
   @outRecord.push e
 
 
-Runtime::setInput = (values) ->
+ProgramState::setInput = (values) ->
   @inputList = values.slice 0
   @inputPointer = 0
 
 
-Runtime::next = ->
+ProgramState::next = ->
   ret = @inputList[@inputPointer]
   if @inputPointer < @inputList.length
     @inputPointer++
@@ -37,7 +37,7 @@ Runtime::next = ->
     0
 
 
-Runtime::nextChar = ->
+ProgramState::nextChar = ->
   ret = @inputList[@inputPointer].charCodeAt 0
   if @inputPointer < @inputList.length
     @inputPointer++
@@ -46,33 +46,33 @@ Runtime::nextChar = ->
     0
 
 
-Runtime::put = (e, y, x, currentX, currentY, currentDir, index) ->
+ProgramState::put = (e, y, x, currentX, currentY, currentDir, index) ->
   @interpreter.put x, y, (String.fromCharCode e), currentX, currentY, currentDir, index
 
 
-Runtime::get = (y, x) ->
+ProgramState::get = (y, x) ->
   @interpreter.get x, y
 
 
-Runtime::duplicate = ->
+ProgramState::duplicate = ->
   e = @stack[@stack.length - 1]
   @stack.push e
 
 
-Runtime::swap = ->
+ProgramState::swap = ->
   e1 = @stack[@stack.length - 1]
   e2 = @stack[@stack.length - 2]
   @stack[@stack.length - 1] = e2
   @stack[@stack.length - 2] = e1
 
 
-Runtime::randInt = (max) ->
+ProgramState::randInt = (max) ->
 	Math.floor Math.random() * max
 
 
-Runtime::exit = ->
+ProgramState::exit = ->
 	@flags.exitRequest = true
 
 
 window.bef ?= {}
-window.bef.Runtime = Runtime
+window.bef.ProgramState = ProgramState

@@ -150,8 +150,8 @@ describe 'Interpreter', ->
 
 
 	describe 'compile', ->
-		Runtime = bef.Runtime
-		Runtime::isAlive = ->
+		ProgramState = bef.ProgramState
+		ProgramState::isAlive = ->
 			return false if @exitRequest
 			if @maxChecks?
 				@checks ?= 0
@@ -168,11 +168,11 @@ describe 'Interpreter', ->
 
 		execute = (string, stack = [], maxChecks = 100) ->
 			thunk = compile string
-			runtime = new Runtime null # interpreter
-			runtime.stack = stack
-			runtime.maxChecks = maxChecks
-			thunk runtime
-			runtime
+			programState = new ProgramState null # interpreter
+			programState.stack = stack
+			programState.maxChecks = maxChecks
+			thunk programState
+			programState
 
 		it 'adds 2 numbers', ->
 			{ stack, outRecord } = execute '37+@'
@@ -245,8 +245,8 @@ describe 'Interpreter', ->
 			# run for a couple of times
 			# just enough so all directions should be hit
 			for i in [1..20]
-				runtime = thunk()
-				output = runtime.outRecord[0]
+				programState = thunk()
+				output = programState.outRecord[0]
 				sum += output
 				hits[output] = true
 
@@ -271,7 +271,7 @@ describe 'Interpreter', ->
 
 			interpreter = new bef.Interpreter2
 			interpreter.execute playfield, options, input
-			interpreter.runtime
+			interpreter.programState
 
 		it 'adds 2 numbers', ->
 			{ stack, outRecord } = execute '89+@'

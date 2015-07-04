@@ -79,8 +79,8 @@ Interpreter::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
 
 	# figure out if the current path is invalidated
 	# for now it's always invalidated
-	@runtime.flags.pathInvalidatedAhead = true
-	@runtime.flags.exitPoint =
+	@programState.flags.pathInvalidatedAhead = true
+	@programState.flags.exitPoint =
 		x: currentX
 		y: currentY
 		dir: currentDir
@@ -89,8 +89,8 @@ Interpreter::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
 	###
 	lastEntry = @currentPath.getLastEntryThrough x, y
 	if lastEntry?.index > currentIndex
-		@runtime.flags.pathInvalidatedAhead = true
-		@runtime.flags.exitPoint =
+		@programState.flags.pathInvalidatedAhead = true
+		@programState.flags.exitPoint =
 			x: currentX
 			y: currentY
 			dir: currentDir
@@ -177,13 +177,13 @@ Interpreter::compile = (graph, options) ->
 				when 'composed'
 					"""
 						#{assemble path.initialPath}
-						while (runtime.isAlive()) {
+						while (programState.isAlive()) {
 							#{assemble path.loopingPath}
 						}
 					"""
 				when 'looping'
 					"""
-						while (runtime.isAlive()) {
+						while (programState.isAlive()) {
 							#{assemble path.loopingPath}
 						}
 					"""
@@ -195,7 +195,7 @@ Interpreter::compile = (graph, options) ->
 		start: 'start'
 		nodes: graph
 
-	new Function 'runtime', code
+	new Function 'programState', code
 
 
 registerGraph = (graph, playfield, pathSet) ->
@@ -229,8 +229,8 @@ Interpreter::execute = (@playfield, options, input = []) ->
 	@stats.jumpsPerformed = 0
 
 	@pathSet = new bef.PathSet()
-	@runtime = new bef.Runtime @
-	@runtime.setInput input
+	@programState = new bef.ProgramState @
+	@programState.setInput input
 
 	start = new bef.Pointer 0, 0, '>', @playfield.getSize()
 
@@ -240,15 +240,15 @@ Interpreter::execute = (@playfield, options, input = []) ->
 		registerGraph graph, @playfield, @pathSet
 		program = @compile graph, options
 
-		program @runtime
+		program @programState
 
-		if @runtime.flags.pathInvalidatedAhead
-			@runtime.flags.pathInvalidatedAhead = false
-			{ x, y, dir } = @runtime.flags.exitPoint
+		if @programState.flags.pathInvalidatedAhead
+			@programState.flags.pathInvalidatedAhead = false
+			{ x, y, dir } = @programState.flags.exitPoint
 			start.set x, y, dir
 			start.advance()
 
-		if @runtime.flags.exitRequest
+		if @programState.flags.exitRequest
 			break
 
 		@stats.jumpsPerformed++

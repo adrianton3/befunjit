@@ -39,8 +39,8 @@ run = ->
   interpreter = new bef.Interpreter()
   interpreter.execute playfield, jumpLimit: 1000, inputEditor.getValue()
 
-  stringedStack = interpreter.runtime.stack.join ' '
-  stringedOutput = interpreter.runtime.outRecord.join ' '
+  stringedStack = interpreter.programState.stack.join ' '
+  stringedOutput = interpreter.programState.outRecord.join ' '
 
   outputEditor.setValue "Stack: #{stringedStack}\nOutput: #{stringedOutput}"
 

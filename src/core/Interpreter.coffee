@@ -65,8 +65,8 @@ Interpreter::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
 
   lastEntry = @currentPath.getLastEntryThrough x, y
   if lastEntry?.index > currentIndex
-    @runtime.flags.pathInvalidatedAhead = true
-    @runtime.flags.exitPoint =
+    @programState.flags.pathInvalidatedAhead = true
+    @programState.flags.exitPoint =
       x: currentX
       y: currentY
       dir: currentDir
@@ -88,8 +88,8 @@ Interpreter::execute = (@playfield, options, input = []) ->
   @stats.jumpsPerformed = 0
 
   @pathSet = new bef.PathSet()
-  @runtime = new bef.Runtime @
-  @runtime.setInput input
+  @programState = new bef.ProgramState @
+  @programState.setInput input
   pointer = new bef.Pointer 0, 0, '>', @playfield.getSize()
 
   loop
@@ -109,10 +109,10 @@ Interpreter::execute = (@playfield, options, input = []) ->
           playfield.addPath newPath
 
     @currentPath ?= newPaths[0]
-    @currentPath.body @runtime # executing the compiled path
-    if @runtime.flags.pathInvalidatedAhead
-      @runtime.flags.pathInvalidatedAhead = false
-      exitPoint = @runtime.flags.exitPoint
+    @currentPath.body @programState # executing the compiled path
+    if @programState.flags.pathInvalidatedAhead
+      @programState.flags.pathInvalidatedAhead = false
+      exitPoint = @programState.flags.exitPoint
       pointer.set exitPoint.x, exitPoint.y, exitPoint.dir
       pointer.advance()
       continue
@@ -124,13 +124,13 @@ Interpreter::execute = (@playfield, options, input = []) ->
     currentChar = @playfield.getAt pointer.x, pointer.y
 
     if currentChar == '|'
-      if @runtime.pop() == 0
+      if @programState.pop() == 0
         pointer.turn 'v'
       else
         pointer.turn '^'
       pointer.advance()
     else if currentChar == '_'
-      if @runtime.pop() == 0
+      if @programState.pop() == 0
         pointer.turn '>'
       else
         pointer.turn '<'

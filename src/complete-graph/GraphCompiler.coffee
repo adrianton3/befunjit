@@ -21,7 +21,7 @@ assemble = (graph) ->
 	wrapIfLooping = (stack, node, code) ->
 		if cycledNodes.has node
 			"""
-				while (runtime.isAlive()) _#{node}: {
+				while (programState.isAlive()) _#{node}: {
 					#{code}
 				}
 			"""
@@ -52,7 +52,7 @@ assemble = (graph) ->
 					branch3 = df neighbours[3].to, newStack
 
 					randomCode = """
-						var choice = runtime.randInt(4);
+						var choice = programState.randInt(4);
 						switch (choice) {
 							case 0:
 								#{neighbours[0].code}
@@ -80,7 +80,7 @@ assemble = (graph) ->
 					branch1 = df neighbours[1].to, newStack
 
 					selectCode = """
-						if (runtime.pop()) {
+						if (programState.pop()) {
 							#{neighbours[0].code}
 							#{branch0}
 						} else {

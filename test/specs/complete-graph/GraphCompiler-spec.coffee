@@ -5,35 +5,35 @@ describe 'GraphCompiler', ->
 		assemble = GraphCompiler.assemble
 
 
-		Runtime = (stack = []) ->
+		ProgramState = (stack = []) ->
 			@stack = stack
 			@messages = []
 			@exitRequest = false
 			return
 
-		Runtime::isAlive = ->	@stack.length > 0 and not @exitRequest
-		Runtime::exit = -> @exitRequest = true
-		Runtime::emit = (message) -> @messages.push message
-		Runtime::pop = -> @stack.pop()
+		ProgramState::isAlive = ->	@stack.length > 0 and not @exitRequest
+		ProgramState::exit = -> @exitRequest = true
+		ProgramState::emit = (message) -> @messages.push message
+		ProgramState::pop = -> @stack.pop()
 
 
 		execute = (code, stack) ->
-			thunk = new Function 'runtime', code
-			runtime = new Runtime stack
-			thunk runtime
-			runtime
+			thunk = new Function 'programState', code
+			programState = new ProgramState stack
+			thunk programState
+			programState
 
 
 		it 'assembles a tree', ->
 			graph =
 				start: 'a'
 				nodes:
-					a: [{ code: 'runtime.emit("p1")', to: 'b' }]
-					b: [{ code: 'runtime.emit("p2")', to: 'c' }, { code: 'runtime.emit("p3")', to: 'd' }]
+					a: [{ code: 'programState.emit("p1")', to: 'b' }]
+					b: [{ code: 'programState.emit("p2")', to: 'c' }, { code: 'programState.emit("p3")', to: 'd' }]
 
-			runtime = execute (assemble graph), [true]
+			programState = execute (assemble graph), [true]
 
-			expect runtime.messages
+			expect programState.messages
 			.toEqual ['p1', 'p2']
 
 		it 'assembles the minimal chain', ->
@@ -41,15 +41,15 @@ describe 'GraphCompiler', ->
 				start: 'a'
 				nodes:
 					a: [
-						{ code: 'runtime.emit("p11")', to: 'b' },
-						{ code: 'runtime.emit("p12")', to: 'b' }
+						{ code: 'programState.emit("p11")', to: 'b' },
+						{ code: 'programState.emit("p12")', to: 'b' }
 					]
 					b: [
-						{ code: 'runtime.emit("p21")', to: 'a' },
-						{ code: 'runtime.emit("p22")', to: 'a' }
+						{ code: 'programState.emit("p21")', to: 'a' },
+						{ code: 'programState.emit("p22")', to: 'a' }
 					]
 
-			runtime = execute (assemble graph), [true, true]
+			programState = execute (assemble graph), [true, true]
 
-			expect runtime.messages
+			expect programState.messages
 			.toEqual ['p11', 'p21']
