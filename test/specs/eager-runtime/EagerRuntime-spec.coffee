@@ -267,7 +267,7 @@ describe 'EagerRuntime', ->
 			playfield.fromString string, width, height
 
 			options.jumpLimit ?= 10
-			options.compiler ?= bef.BasicCompiler
+			options.compiler ?= bef.OptimizingCompiler
 
 			eagerRuntime = new EagerRuntime
 			eagerRuntime.execute playfield, options, input
@@ -300,5 +300,5 @@ describe 'EagerRuntime', ->
 		it 'can get a value from the playfield after it was altered', ->
 			{ stack, outRecord } = execute '6077*p560g@'
 
-			(expect stack).toEqual [1, ('1'.charCodeAt 0)]
+			(expect stack).toEqual [1, 49]
 			(expect outRecord).toEqual []
