@@ -53,3 +53,17 @@ describe 'GraphCompiler', ->
 
 			expect programState.messages
 			.toEqual ['p11', 'p21']
+
+		it 'assembles a cycle', ->
+			graph =
+				start: 'a'
+				nodes:
+					a: [
+						{ code: 'programState.emit("p1")', to: 'a' },
+						{ code: 'programState.emit("p2")', to: 'a' }
+					]
+
+			programState = execute (assemble graph), [true, true, false, true]
+
+			expect programState.messages
+			.toEqual ['p1', 'p2', 'p1', 'p1']
