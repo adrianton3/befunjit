@@ -14,16 +14,17 @@
     <!-- include source files here... -->
     <script type="text/javascript" src="../src/core/Playfield.js"></script>
     <script type="text/javascript" src="../src/core/Path.js"></script>
-    <script type="text/javascript" src="../src/core/LazyRuntime.js"></script>
-    <script type="text/javascript" src="../src/core/BasicCompiler.js"></script>
-    <script type="text/javascript" src="../src/core/OptimizingCompiler.js"></script>
+    <script type="text/javascript" src="../src/compilers/BasicCompiler.js"></script>
+    <script type="text/javascript" src="../src/compilers/OptimizingCompiler.js"></script>
     <script type="text/javascript" src="../src/core/Pointer.js"></script>
     <script type="text/javascript" src="../src/core/ProgramState.js"></script>
     <script type="text/javascript" src="../src/core/PathSet.js"></script>
+    <script type="text/javascript" src="../src/core/List.js"></script>
 
-    <script type="text/javascript" src="../src/complete-graph/List.js"></script>
-    <script type="text/javascript" src="../src/complete-graph/GraphCompiler.js"></script>
-    <script type="text/javascript" src="../src/complete-graph/EagerRuntime.js"></script>
+    <script type="text/javascript" src="../src/lazy-runtime/LazyRuntime.js"></script>
+
+    <script type="text/javascript" src="../src/eager-runtime/GraphCompiler.js"></script>
+    <script type="text/javascript" src="../src/eager-runtime/EagerRuntime.js"></script>
 
     <!-- include spec files here... -->
     <script type="text/javascript" src="specs/Playfield-test.js"></script>
@@ -34,8 +35,8 @@
     <script type="text/javascript" src="specs/ProgramState-test.js"></script>
     <script type="text/javascript" src="specs/PathSet-test.js"></script>
 
-    <script type="text/javascript" src="specs/complete-graph/GraphCompiler-spec.js"></script>
-    <script type="text/javascript" src="specs/complete-graph/EagerRuntime-spec.js"></script>
+    <script type="text/javascript" src="specs/eager-runtime/GraphCompiler-spec.js"></script>
+    <script type="text/javascript" src="specs/eager-runtime/EagerRuntime-spec.js"></script>
 
 </head>
 
