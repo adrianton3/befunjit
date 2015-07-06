@@ -43,7 +43,7 @@ ProgramState::nextChar = ->
 		@inputPointer++
 		ret
 	else
-	0
+		0
 
 
 ProgramState::put = (e, y, x, currentX, currentY, currentDir, index) ->
