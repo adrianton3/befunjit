@@ -25,24 +25,30 @@ The reflective instruction `p` is the only thing that makes it very hard (if not
 Changelog
 ---------
 
-####v0.5.0 --- 6 aug 2014
+####r7 --- 6 jul 2015
+ + added an alternative runtime that compiles the whole source code
+ + fixed the `:` and the `\` instructions in edge cases
+ + fixed the `g` instruction breaking the stack
+ + adjusted terminology: renamed *Runtime* to *ProgramState* and *Interpreter* to *Runtime*
+
+####r6 --- 6 aug 2014
  + replaced BasicCompiler with OptimizingCompiler
 
-####v0.4.1 --- 1 aug 2014
+####r5 --- 1 aug 2014
  + `_|` outcomes have been swapped
- + released a visualizer for the runtime-generated code paths 
+ + released a visualizer for the runtime-generated code paths
 
-####v0.4.0 --- 27 jul 2014
+####r4 --- 27 jul 2014
  + added support for `&~,` and `#`
  + handles edge cases (empty stack/input, writing/reading outside of the playfield)
 
-####v0.3.0 --- 25 jul 2014
+####r3 --- 25 jul 2014
  + added support for `:\$`, `g` and strings
 
-####v0.2.0 --- 22 jul 2014
+####r2 --- 22 jul 2014
  + funge-space is now toroidal
  + added support for `@` and `?`
 
-####v0.1.0 --- 21 jul 2014
+####r1 --- 21 jul 2014
  + can compile code paths lazily and invalidate them on demand
  + supports `^<v>`, `0-9`, `+-*/%`, `|_`, ``!` ``, `&.` and `p`
