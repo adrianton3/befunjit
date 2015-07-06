@@ -33,3 +33,18 @@ describe 'ProgramState', ->
 		it 'swaps the first 2 entries of a stack', ->
 			programState.swap()
 			(expect programState.stack).toEqual []
+
+	describe 'duplicate', ->
+		it 'duplicates the last entry of a stack', ->
+			programState.push 11, 22, 33, 44
+			programState.duplicate()
+			(expect programState.stack).toEqual [11, 22, 33, 44, 44]
+
+		it 'duplicates the last entry of a one-element stack', ->
+			programState.push 11
+			programState.duplicate()
+			(expect programState.stack).toEqual [11, 11]
+
+		it 'does nothing to an empty stack', ->
+			programState.duplicate()
+			(expect programState.stack).toEqual []

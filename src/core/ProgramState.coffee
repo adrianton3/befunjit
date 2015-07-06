@@ -55,8 +55,10 @@ ProgramState::get = (y, x) ->
 
 
 ProgramState::duplicate = ->
+	return if @stack.length < 1
 	e = @stack[@stack.length - 1]
 	@stack.push e
+	return
 
 
 ProgramState::swap = ->
