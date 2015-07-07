@@ -99,8 +99,8 @@ Grid::_getRegion = (x, y) ->
 
 # throttle this
 mouseMove = (e) ->
-  @mouseState.x = e.layerX
-  @mouseState.y = e.layerY
+  @mouseState.x = e.offsetX ? e.layerX
+  @mouseState.y = e.offsetY ? e.layerY
   newRegion = @_getRegion @mouseState.x, @mouseState.y
   if newRegion != @currentRegion
     @currentRegion = newRegion
