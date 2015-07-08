@@ -258,7 +258,7 @@ describe 'EagerRuntime', ->
 			(expect hits).toEqual expectedHits
 
 	describe 'execute', ->
-		execute = (string, options = {}, input = []) ->
+		execute = (string, input = []) ->
 			lines = string.split '\n'
 			width = Math.max (lines.map (line) -> line.length)...
 			height = lines.length
@@ -266,30 +266,16 @@ describe 'EagerRuntime', ->
 			playfield = new Playfield width, height
 			playfield.fromString string, width, height
 
-			options.jumpLimit ?= 10
-			options.compiler ?= bef.OptimizingCompiler
+			options =
+				jumpLimit: 10
+				compiler: bef.OptimizingCompiler
 
 			eagerRuntime = new EagerRuntime
 			eagerRuntime.execute playfield, options, input
 			eagerRuntime.programState
 
-		it 'adds 2 numbers', ->
-			{ stack, outRecord } = execute '89+@'
 
-			(expect stack).toEqual [8 + 9]
-			(expect outRecord).toEqual []
-
-		it 'mutates the current path, before the current index', ->
-			{ stack, outRecord } = execute '2077*p5.@'
-
-			(expect stack).toEqual []
-			(expect outRecord).toEqual [5]
-
-		it 'mutates the current path, after the current index', ->
-			{ stack, outRecord } = execute '6077*p5.@'
-
-			(expect stack).toEqual []
-			(expect outRecord).toEqual [1]
+		befTest.runtimeSuite execute
 
 		it 'can get a value from the playfield', ->
 			{ stack, outRecord } = execute '20g@'
