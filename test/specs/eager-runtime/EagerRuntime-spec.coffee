@@ -3,10 +3,6 @@ describe 'EagerRuntime', ->
 	EagerRuntime = bef.EagerRuntime
 
 	getPlayfield = (string, width, height) ->
-		lines = string.split '\n'
-		width ?= Math.max (lines.map (line) -> line.length)...
-		height ?= lines.length
-
 		playfield = new Playfield width, height
 		playfield.fromString string, width, height
 		playfield
