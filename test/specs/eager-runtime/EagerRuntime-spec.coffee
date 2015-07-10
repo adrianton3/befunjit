@@ -255,12 +255,8 @@ describe 'EagerRuntime', ->
 
 	describe 'execute', ->
 		execute = (string, input = []) ->
-			lines = string.split '\n'
-			width = Math.max (lines.map (line) -> line.length)...
-			height = lines.length
-
-			playfield = new Playfield width, height
-			playfield.fromString string, width, height
+			playfield = new Playfield
+			playfield.fromString string
 
 			options =
 				jumpLimit: 10
@@ -268,6 +264,7 @@ describe 'EagerRuntime', ->
 
 			eagerRuntime = new EagerRuntime
 			eagerRuntime.execute playfield, options, input
+
 			eagerRuntime.programState
 
 
