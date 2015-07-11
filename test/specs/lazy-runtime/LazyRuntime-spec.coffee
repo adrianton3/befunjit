@@ -179,13 +179,15 @@ describe 'LazyRuntime', ->
 			playfield = new Playfield
 			playfield.fromString string
 
+			options.jumpLimit ?= 100
+
 			lazyRuntime = new LazyRuntime
 			lazyRuntime.execute playfield, options, input
 
 			lazyRuntime.programState
 
 
-		befTest.runtimeSuite execute
+		befTest.runtimeSuite befTest.specs.general, execute
 
 		it 'loops forever (or until the too-many-jumps condition holds)', ->
 			{ stack, outRecord } = execute '''
@@ -227,15 +229,7 @@ describe 'LazyRuntime', ->
 
 
 		describe 'strings', ->
-			charCodes = (string) ->
-				(string.split '').map (char) ->
-					char.charCodeAt 0
-
-			it 'pushes a string', ->
-				{ stack, outRecord } = execute '12"34"56@'
-
-				(expect stack).toEqual [1, 2, 51, 52, 5, 6]
-				(expect outRecord).toEqual []
+			befTest.runtimeSuite befTest.specs.string, execute
 
 			it 'wraps around 2 times to close a string', ->
 				{ stack, outRecord } = execute '12"34', [], jumpLimit: 1
@@ -243,45 +237,6 @@ describe 'LazyRuntime', ->
 				(expect stack).toEqual [1, 2, 51, 52, 49, 50, 3, 4]
 				(expect outRecord).toEqual []
 
-			it 'does not change direction while in a string', ->
-				{ stack, outRecord } = execute '"V^"@'
-
-				(expect stack).toEqual charCodes 'V^'
-				(expect outRecord).toEqual []
-
-			it 'evaluates an empty string', ->
-				{ stack, outRecord } = execute '""@'
-
-				(expect stack).toEqual []
-				(expect outRecord).toEqual []
 
 		describe 'edge cases', ->
-			it 'pops 0 from an empty stack', ->
-				{ stack, outRecord } = execute '.@'
-
-				(expect stack).toEqual []
-				(expect outRecord).toEqual [0]
-
-			it 'ignores non-instructions', ->
-				{ stack, outRecord } = execute 'abc@'
-
-				(expect stack).toEqual []
-				(expect outRecord).toEqual []
-
-			it 'gets 0 if input is empty', ->
-				{ stack, outRecord } = execute '&&&&&@', [1, 2, 3]
-
-				(expect stack).toEqual [1, 2, 3, 0, 0]
-				(expect outRecord).toEqual []
-
-			it 'gets 0 when trying to access cells outside of the playfield', ->
-				{ stack, outRecord } = execute '99g@'
-
-				(expect stack).toEqual [0]
-				(expect outRecord).toEqual []
-
-			it 'does not crash when trying to write outside of the playfield', ->
-				{ stack, outRecord } = execute '999p@'
-
-				(expect stack).toEqual []
-				(expect outRecord).toEqual []
+			befTest.runtimeSuite befTest.specs.edgeCases, execute

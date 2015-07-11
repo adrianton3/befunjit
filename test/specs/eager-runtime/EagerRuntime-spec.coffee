@@ -268,7 +268,7 @@ describe 'EagerRuntime', ->
 			eagerRuntime.programState
 
 
-		befTest.runtimeSuite execute
+		befTest.runtimeSuite befTest.specs.general, execute
 
 		it 'can get a value from the playfield', ->
 			{ stack, outRecord } = execute '20g@'
@@ -281,3 +281,10 @@ describe 'EagerRuntime', ->
 
 			(expect stack).toEqual [1, 49]
 			(expect outRecord).toEqual []
+
+
+		describe 'strings', ->
+			befTest.runtimeSuite befTest.specs.string, execute
+
+		describe 'edge cases', ->
+			befTest.runtimeSuite befTest.specs.edgeCases, execute
