@@ -225,41 +225,6 @@ describe 'LazyRuntime', ->
 			expectedHits[5] = true
 			(expect hits).toEqual expectedHits
 
-		it 'duplicates the value on the stack', ->
-			{ stack, outRecord } = execute '7:@'
-
-			(expect stack).toEqual [7, 7]
-			(expect outRecord).toEqual []
-
-		it 'swaps the first two values on the stack', ->
-			{ stack, outRecord } = execute '275\\@'
-
-			(expect stack).toEqual [2, 5, 7]
-			(expect outRecord).toEqual []
-
-		it 'discards the first value on the stack', ->
-			{ stack, outRecord } = execute '27$@'
-
-			(expect stack).toEqual [2]
-			(expect outRecord).toEqual []
-
-		it 'can get a value from the playfield', ->
-			{ stack, outRecord } = execute '20g@'
-
-			(expect stack).toEqual ['g'.charCodeAt 0]
-			(expect outRecord).toEqual []
-
-		it 'can read an integer', ->
-			{ stack, outRecord } = execute '&@', [123]
-
-			(expect stack).toEqual [123]
-			(expect outRecord).toEqual []
-
-		it 'can read a char', ->
-			{ stack, outRecord } = execute '~@', ['a']
-
-			(expect stack).toEqual ['a'.charCodeAt 0]
-			(expect outRecord).toEqual []
 
 		describe 'strings', ->
 			charCodes = (string) ->

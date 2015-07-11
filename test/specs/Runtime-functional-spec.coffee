@@ -62,6 +62,32 @@ specs = [
 		text: 'evaluates a comparison'
 		code: '49`.@'
 		outRecord: [1]
+	}, {
+		text: 'duplicates the value on the stack'
+		code: '7:..@'
+		outRecord: [7, 7]
+	}, {
+		text: 'swaps the first two values on the stack'
+		code: '275\\...@'
+		outRecord: [7, 5, 2]
+	}, {
+		text: 'discards the first value on the stack'
+		code: '27$.@'
+		outRecord: [2]
+	}, {
+		text: 'can get a value from the playfield'
+		code: '20g.@'
+		outRecord: ['g'.charCodeAt 0]
+	}, {
+		text: 'can read an integer'
+		code: '&.@'
+		input: [123]
+		outRecord: [123]
+	}, {
+		text: 'can read a char'
+		code: '~.@'
+		input: ['a']
+		outRecord: ['a'.charCodeAt 0]
 	}
 ]
 
