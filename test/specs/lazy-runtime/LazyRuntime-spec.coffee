@@ -206,16 +206,14 @@ describe 'LazyRuntime', ->
 			(expect (startsWith outRecord, [7, 7, 7])).toBeTruthy()
 
 		it 'changes direction randomly', ->
-			source = [
-				'?2.@.3',
-				'4',
-				'.',
-				'@',
-				'.',
-				'5'
-			].join '\n'
-
-			thunk = -> execute source
+			thunk = execute.bind null, '''
+				?2.@.3
+				4
+				.
+				@
+				.
+				5
+			'''
 
 			sum = 0
 			hits = []
