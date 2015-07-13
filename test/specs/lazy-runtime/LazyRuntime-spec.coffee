@@ -187,16 +187,23 @@ describe 'LazyRuntime', ->
 			lazyRuntime.programState
 
 
+		startsWith = (array, start) ->
+			return false if array.length < start.length
+
+			start.every (element, index) ->
+				array[index] == element
+
+
 		befTest.runtimeSuite befTest.specs.general, execute
 
 		it 'loops forever (or until the too-many-jumps condition holds)', ->
 			{ stack, outRecord } = execute '''
 				>7v
 				^.<
-			''', [], jumpLimit: 3
+			'''
 
 			(expect stack).toEqual []
-			(expect outRecord).toEqual [7, 7, 7]
+			(expect (startsWith outRecord, [7, 7, 7])).toBeTruthy()
 
 		it 'changes direction randomly', ->
 			source = [
