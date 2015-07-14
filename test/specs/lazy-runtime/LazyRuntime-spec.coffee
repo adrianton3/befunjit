@@ -187,11 +187,8 @@ describe 'LazyRuntime', ->
 			lazyRuntime.programState
 
 
-		startsWith = (array, start) ->
-			return false if array.length < start.length
-
-			start.every (element, index) ->
-				array[index] == element
+		beforeEach ->
+			jasmine.addMatchers befTest.CustomMatchers
 
 
 		befTest.runtimeSuite befTest.specs.general, execute
@@ -203,7 +200,7 @@ describe 'LazyRuntime', ->
 			'''
 
 			(expect stack).toEqual []
-			(expect (startsWith outRecord, [7, 7, 7])).toBeTruthy()
+			(expect outRecord).toStartWith [7, 7, 7]
 
 		it 'changes direction randomly', ->
 			thunk = execute.bind null, '''
