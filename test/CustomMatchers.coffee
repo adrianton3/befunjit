@@ -7,7 +7,7 @@ toStartWith = (util, customEqualityTesters) ->
 			message: "Expected at least #{expected.length} elements"
 		else
 			matching = expected.every (element, index) ->
-				actual[index] == element
+				util.equals actual[index], element
 
 			if matching
 				pass: true
