@@ -7,6 +7,9 @@ ProgramState = (@interpreter) ->
 	@inputPointer = 0
 	@inputList = []
 	@outRecord = []
+
+	@checks = 0
+	@maxChecks = Infinity
 	return
 
 
@@ -76,6 +79,12 @@ ProgramState::randInt = (max) ->
 
 ProgramState::exit = ->
 	@flags.exitRequest = true
+
+
+ProgramState::isAlive = ->
+	return false if @flags.exitRequest
+	@checks++
+	@checks < @maxChecks
 
 
 window.bef ?= {}

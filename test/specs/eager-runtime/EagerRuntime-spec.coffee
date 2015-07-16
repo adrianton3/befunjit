@@ -146,16 +146,6 @@ describe 'EagerRuntime', ->
 
 
 	describe 'compile', ->
-		ProgramState = bef.ProgramState
-		ProgramState::isAlive = ->
-			return false if @exitRequest
-			if @maxChecks?
-				@checks ?= 0
-				@checks++
-				@checks < @maxChecks
-			else
-				true
-
 		compile = (string) ->
 			eagerRuntime = getInterpreter string
 			start = new bef.Pointer 0, 0, '>', eagerRuntime.playfield.getSize()
@@ -164,7 +154,7 @@ describe 'EagerRuntime', ->
 
 		execute = (string, stack = [], maxChecks = 100) ->
 			thunk = compile string
-			programState = new ProgramState null # eagerRuntime
+			programState = new bef.ProgramState null # eagerRuntime
 			programState.stack = stack
 			programState.maxChecks = maxChecks
 			thunk programState
