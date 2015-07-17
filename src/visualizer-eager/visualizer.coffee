@@ -37,7 +37,10 @@ run = ->
 	runtime = new bef.EagerRuntime()
 	runtime.execute playfield, jumpLimit: 100, inputEditor.getValue()
 
-	jsEditor.setValue runtime.code
+	rawJs = runtime.code
+	prettyJs = js_beautify rawJs
+
+	jsEditor.setValue prettyJs
 
 	stringedStack = runtime.programState.stack.join ' '
 	stringedOutput = runtime.programState.outRecord.join ' '
