@@ -191,11 +191,11 @@ EagerRuntime::compile = (graph, options) ->
 					assemble path.path
 
 	# generate code for the whole graph
-	code = bef.GraphCompiler.assemble
+	@code = bef.GraphCompiler.assemble
 		start: 'start'
 		nodes: graph
 
-	new Function 'programState', code
+	new Function 'programState', @code
 
 
 registerGraph = (graph, playfield, pathSet) ->
