@@ -119,21 +119,20 @@ EagerRuntime::buildGraph = (start) ->
 	dispatch = (hash, destination) =>
 		currentChar = @playfield.getAt destination.x, destination.y
 		partial = getPointer.bind null, destination, @playfield.getSize()
-		if currentChar == '_'
-			buildEdge hash, partial '<'
-			buildEdge hash, partial '>'
-		else if currentChar == '|'
-			buildEdge hash, partial '^'
-			buildEdge hash, partial 'v'
-		else if currentChar == '?'
-			buildEdge hash, partial '^'
-			buildEdge hash, partial 'v'
-			buildEdge hash, partial '<'
-			buildEdge hash, partial '>'
-		else if currentChar == '@'
-			console.log 'exit'
-		else
-			console.log "unknown char #{currentChar}"
+
+		switch currentChar
+			when '_'
+				buildEdge hash, partial '<'
+				buildEdge hash, partial '>'
+			when '|'
+				buildEdge hash, partial '^'
+				buildEdge hash, partial 'v'
+			when '?'
+				buildEdge hash, partial '^'
+				buildEdge hash, partial 'v'
+				buildEdge hash, partial '<'
+				buildEdge hash, partial '>'
+
 		return
 
 
