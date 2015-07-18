@@ -93,7 +93,7 @@ LazyRuntime::get = (x, y) ->
 	char.charCodeAt 0
 
 
-LazyRuntime::registerPath = (path, compiler) ->
+LazyRuntime::_registerPath = (path, compiler) ->
 	@stats.compileCalls++
 	compiler.compile path
 	if path.list.length
@@ -101,6 +101,47 @@ LazyRuntime::registerPath = (path, compiler) ->
 		@playfield.addPath path
 
 	return
+
+
+LazyRuntime::_getCurrentPath = ({ x, y, dir }, compiler) ->
+	path = @pathSet.getStartingFrom x, y, dir
+
+	if not path?
+		newPath = @_getPath x, y, dir
+
+		path = switch newPath.type
+			when 'simple'
+				@_registerPath newPath.path, compiler
+				newPath.path
+			when 'looping'
+				@_registerPath newPath.loopingPath, compiler
+				newPath.loopingPath
+			when 'composed'
+				@_registerPath newPath.initialPath, compiler
+				@_registerPath newPath.loopingPath, compiler
+				newPath.initialPath
+
+	path
+
+
+LazyRuntime::_turn = (pointer, char) ->
+	if char == '|'
+		if @programState.pop() == 0
+			pointer.turn 'v'
+		else
+			pointer.turn '^'
+		pointer.advance()
+	else if char == '_'
+		if @programState.pop() == 0
+			pointer.turn '>'
+		else
+			pointer.turn '<'
+		pointer.advance()
+	else if char == '?'
+		pointer.turn '^<v>'[Math.random() * 4 | 0]
+		pointer.advance()
+	else
+		pointer.turn char
 
 
 LazyRuntime::execute = (@playfield, options, input = []) ->
@@ -122,22 +163,7 @@ LazyRuntime::execute = (@playfield, options, input = []) ->
 
 		@stats.jumpsPerformed++
 
-		@currentPath = @pathSet.getStartingFrom pointer.x, pointer.y, pointer.dir
-
-		if not @currentPath?
-			newPath = @_getPath pointer.x, pointer.y, pointer.dir
-
-			@currentPath = switch newPath.type
-				when 'simple'
-					@registerPath newPath.path, options.compiler
-					newPath.path
-				when 'looping'
-					@registerPath newPath.loopingPath, options.compiler
-					newPath.loopingPath
-				when 'composed'
-					@registerPath newPath.initialPath, options.compiler
-					@registerPath newPath.loopingPath, options.compiler
-					newPath.initialPath
+		@currentPath = @_getCurrentPath pointer, options.compiler
 
 		# executing the compiled path
 		@currentPath.body @programState
@@ -159,25 +185,10 @@ LazyRuntime::execute = (@playfield, options, input = []) ->
 
 		currentChar = @playfield.getAt pointer.x, pointer.y
 
-		if currentChar == '|'
-			if @programState.pop() == 0
-				pointer.turn 'v'
-			else
-				pointer.turn '^'
-			pointer.advance()
-		else if currentChar == '_'
-			if @programState.pop() == 0
-				pointer.turn '>'
-			else
-				pointer.turn '<'
-			pointer.advance()
-		else if currentChar == '?'
-			pointer.turn '^<v>'[Math.random() * 4 | 0]
-			pointer.advance()
-		else if currentChar == '@'
-			break # program ended
-		else
-			pointer.turn currentChar
+		# program ended
+		break if currentChar == '@'
+
+		@_turn pointer, currentChar
 
 	return
 
