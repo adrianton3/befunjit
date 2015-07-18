@@ -125,23 +125,18 @@ LazyRuntime::_getCurrentPath = ({ x, y, dir }, compiler) ->
 
 
 LazyRuntime::_turn = (pointer, char) ->
-	if char == '|'
-		if @programState.pop() == 0
-			pointer.turn 'v'
-		else
-			pointer.turn '^'
-		pointer.advance()
-	else if char == '_'
-		if @programState.pop() == 0
-			pointer.turn '>'
-		else
-			pointer.turn '<'
-		pointer.advance()
-	else if char == '?'
-		pointer.turn '^<v>'[Math.random() * 4 | 0]
-		pointer.advance()
-	else
-		pointer.turn char
+	dir = switch char
+		when '|'
+			if @programState.pop() then '^' else 'v'
+		when '_'
+			if @programState.pop() then '<' else '>'
+		when '?'
+			'^<v>'[Math.random() * 4 | 0]
+
+	pointer.turn dir
+	pointer.advance()
+
+	return
 
 
 LazyRuntime::execute = (@playfield, options, input = []) ->
