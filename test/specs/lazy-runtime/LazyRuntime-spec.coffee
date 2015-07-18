@@ -14,15 +14,16 @@ describe 'LazyRuntime', ->
 		lazyRuntime
 
 	describe 'getPath', ->
-		it 'gets a simple path until the pointer exist the playground', ->
+		it 'gets a simple path until the pointer encounters @', ->
 			lazyRuntime = getInterpreter 'abc@'
 
-			paths = lazyRuntime._getPath 0, 0, '>'
-			pathAsList = paths[0].getAsList()
+			{ path } = lazyRuntime._getPath 0, 0, '>'
+			pathAsList = path.getAsList()
 			(expect pathAsList).toEqual [
 				{ x: 0, y: 0, dir: '>', char: 'a', string: false }
 				{ x: 1, y: 0, dir: '>', char: 'b', string: false }
 				{ x: 2, y: 0, dir: '>', char: 'c', string: false }
+				{ x: 3, y: 0, dir: '>', char: '@', string: false }
 			]
 
 		it 'can get a turning path', ->
@@ -33,14 +34,15 @@ describe 'LazyRuntime', ->
 				..@
 			'''
 
-			paths = lazyRuntime._getPath 0, 0, '>'
-			pathAsList = paths[0].getAsList()
+			{ path } = lazyRuntime._getPath 0, 0, '>'
+			pathAsList = path.getAsList()
 			(expect pathAsList).toEqual [
 				{ x: 0, y: 0, dir: '>', char: 'a', string: false }
 				{ x: 1, y: 0, dir: '>', char: 'b', string: false }
 				{ x: 2, y: 0, dir: 'v', char: 'v', string: false }
 				{ x: 2, y: 1, dir: 'v', char: 'c', string: false }
 				{ x: 2, y: 2, dir: 'v', char: 'd', string: false }
+				{ x: 2, y: 3, dir: 'v', char: '@', string: false }
 			]
 
 		it 'can get a circular path', ->
@@ -50,9 +52,9 @@ describe 'LazyRuntime', ->
 				^c<
 			'''
 
-			paths = lazyRuntime._getPath 0, 0, '>'
+			{ loopingPath } = lazyRuntime._getPath 0, 0, '>'
 
-			pathAsList = paths[0].getAsList()
+			pathAsList = loopingPath.getAsList()
 			(expect pathAsList).toEqual [
 				{ x: 0, y: 0, dir: '>', char: '>', string: false }
 				{ x: 1, y: 0, dir: '>', char: 'a', string: false }
@@ -67,31 +69,31 @@ describe 'LazyRuntime', ->
 		it 'can get a circular path by wrapping around', ->
 			lazyRuntime = getInterpreter 'abc'
 
-			paths = lazyRuntime._getPath 0, 0, '>'
+			{ loopingPath } = lazyRuntime._getPath 0, 0, '>'
 
-			pathAsList = paths[0].getAsList()
+			pathAsList = loopingPath.getAsList()
 			(expect pathAsList).toEqual [
 				{ x: 0, y: 0, dir: '>', char: 'a', string: false }
 				{ x: 1, y: 0, dir: '>', char: 'b', string: false }
 				{ x: 2, y: 0, dir: '>', char: 'c', string: false }
 			]
 
-		it 'can get the initial part of a circular path', ->
+		it 'can get a path composed of an initial part and a circular part', ->
 			lazyRuntime = getInterpreter '''
 				ab>cv
 				..f d
 				..^e<
 			'''
 
-			paths = lazyRuntime._getPath 0, 0, '>'
+			{ initialPath, loopingPath } = lazyRuntime._getPath 0, 0, '>'
 
-			pathAsList = paths[0].getAsList()
+			pathAsList = initialPath.getAsList()
 			(expect pathAsList).toEqual [
 				{ x: 0, y: 0, dir: '>', char: 'a', string: false }
 				{ x: 1, y: 0, dir: '>', char: 'b', string: false }
 			]
 
-			pathAsList = paths[1].getAsList()
+			pathAsList = loopingPath.getAsList()
 			(expect pathAsList).toEqual [
 				{ x: 2, y: 0, dir: '>', char: '>', string: false }
 				{ x: 3, y: 0, dir: '>', char: 'c', string: false }
@@ -106,33 +108,35 @@ describe 'LazyRuntime', ->
 		it 'can jump over a cell', ->
 			lazyRuntime = getInterpreter 'a#bc@'
 
-			paths = lazyRuntime._getPath 0, 0, '>'
+			{ path } = lazyRuntime._getPath 0, 0, '>'
 
-			pathAsList = paths[0].getAsList()
+			pathAsList = path.getAsList()
 			(expect pathAsList).toEqual [
 				{ x: 0, y: 0, dir: '>', char: 'a', string: false }
 				{ x: 1, y: 0, dir: '>', char: '#', string: false }
 				{ x: 3, y: 0, dir: '>', char: 'c', string: false }
+				{ x: 4, y: 0, dir: '>', char: '@', string: false }
 			]
 
 		it 'can jump repeatedly', ->
 			lazyRuntime = getInterpreter 'a#b#cd@'
 
-			paths = lazyRuntime._getPath 0, 0, '>'
+			{ path } = lazyRuntime._getPath 0, 0, '>'
 
-			pathAsList = paths[0].getAsList()
+			pathAsList = path.getAsList()
 			(expect pathAsList).toEqual [
 				{ x: 0, y: 0, dir: '>', char: 'a', string: false }
 				{ x: 1, y: 0, dir: '>', char: '#', string: false }
 				{ x: 3, y: 0, dir: '>', char: '#', string: false }
 				{ x: 5, y: 0, dir: '>', char: 'd', string: false }
+				{ x: 6, y: 0, dir: '>', char: '@', string: false }
 			]
 
 		it 'parses a string', ->
-			lazyRuntime = getInterpreter '12"34"56'
+			lazyRuntime = getInterpreter '12"34"56@'
 
-			paths = lazyRuntime._getPath 0, 0, '>'
-			pathAsList = paths[0].getAsList()
+			{ path } = lazyRuntime._getPath 0, 0, '>'
+			pathAsList = path.getAsList()
 			(expect pathAsList).toEqual [
 				{ x: 0, y: 0, dir: '>', char: '1', string: false }
 				{ x: 1, y: 0, dir: '>', char: '2', string: false }
@@ -142,13 +146,14 @@ describe 'LazyRuntime', ->
 				{ x: 5, y: 0, dir: '>', char: '"', string: false }
 				{ x: 6, y: 0, dir: '>', char: '5', string: false }
 				{ x: 7, y: 0, dir: '>', char: '6', string: false }
+				{ x: 8, y: 0, dir: '>', char: '@', string: false }
 			]
 
 		it 'wraps around 2 times to close a string', ->
 			lazyRuntime = getInterpreter '12"34'
 
-			paths = lazyRuntime._getPath 0, 0, '>'
-			pathAsList = paths[0].getAsList()
+			{ loopingPath } = lazyRuntime._getPath 0, 0, '>'
+			pathAsList = loopingPath.getAsList()
 			(expect pathAsList).toEqual [
 				{ x: 0, y: 0, dir: '>', char: '1', string: false }
 				{ x: 1, y: 0, dir: '>', char: '2', string: false }
@@ -169,9 +174,11 @@ describe 'LazyRuntime', ->
 		it 'gets an empty path', ->
 			lazyRuntime = getInterpreter '__'
 
-			paths = lazyRuntime._getPath 0, 0, '>'
-			pathAsList = paths[0].getAsList()
-			(expect pathAsList).toEqual []
+			{ path } = lazyRuntime._getPath 0, 0, '>'
+			pathAsList = path.getAsList()
+			(expect pathAsList).toEqual [
+				{ x: 0, y: 0, dir: '>', char: '_', string: false }
+			]
 
 
 	describe 'execute', ->
