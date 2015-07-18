@@ -40,7 +40,7 @@ run = ->
 	rawJs = runtime.code
 	prettyJs = js_beautify rawJs
 
-	jsEditor.setValue prettyJs
+	jsEditor.setValue prettyJs, 1
 
 	stringedStack = runtime.programState.stack.join ' '
 	stringedOutput = runtime.programState.outRecord.join ' '

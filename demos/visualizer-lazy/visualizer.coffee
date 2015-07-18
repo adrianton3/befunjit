@@ -42,7 +42,7 @@ run = ->
   stringedStack = lazyRuntime.programState.stack.join ' '
   stringedOutput = lazyRuntime.programState.outRecord.join ' '
 
-  outputEditor.setValue "Stack: #{stringedStack}\nOutput: #{stringedOutput}"
+  outputEditor.setValue "Stack: #{stringedStack}\nOutput: #{stringedOutput}", 1
 
   grid?.destroy()
   grid = new viz.Grid playfield, lazyRuntime.pathSet, document.getElementById 'can'

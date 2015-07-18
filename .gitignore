@@ -1,4 +1,6 @@
 .idea
 src/**/*.js
+demos/visualizer-eager/**/*.js
+demos/visualizer-lazy/**/*.js
 test/*.js
 test/specs/**/*.js
