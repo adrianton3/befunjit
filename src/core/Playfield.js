@@ -36,28 +36,27 @@
   };
 
   Playfield.prototype.fromString = function(string, width, height) {
-    var i, j, line, lines, _i, _j, _ref, _ref1, _ref2;
-    if (width != null) {
-      this.width = width;
-    }
-    if (height != null) {
-      this.height = height;
-    }
-    this.field = [];
+    var i, j, line, lines, _i, _j, _ref, _ref1, _ref2, _ref3;
     lines = string.split('\n');
+    _ref = (width != null) && (height != null) ? [width, height] : [
+      Math.max.apply(Math, lines.map(function(line) {
+        return line.length;
+      })), lines.length
+    ], this.width = _ref[0], this.height = _ref[1];
+    this.field = [];
     lines.forEach((function(_this) {
       return function(line) {
-        var chars, i, _i, _ref, _ref1;
+        var chars, i, _i, _ref1, _ref2;
         chars = line.split('');
-        for (i = _i = _ref = chars.length, _ref1 = _this.width; _ref <= _ref1 ? _i < _ref1 : _i > _ref1; i = _ref <= _ref1 ? ++_i : --_i) {
+        for (i = _i = _ref1 = chars.length, _ref2 = _this.width; _ref1 <= _ref2 ? _i < _ref2 : _i > _ref2; i = _ref1 <= _ref2 ? ++_i : --_i) {
           chars.push(' ');
         }
         return _this.field.push(chars);
       };
     })(this));
-    for (i = _i = _ref = lines.length, _ref1 = this.height; _ref <= _ref1 ? _i < _ref1 : _i > _ref1; i = _ref <= _ref1 ? ++_i : --_i) {
+    for (i = _i = _ref1 = lines.length, _ref2 = this.height; _ref1 <= _ref2 ? _i < _ref2 : _i > _ref2; i = _ref1 <= _ref2 ? ++_i : --_i) {
       line = [];
-      for (j = _j = 0, _ref2 = this.width; 0 <= _ref2 ? _j < _ref2 : _j > _ref2; j = 0 <= _ref2 ? ++_j : --_j) {
+      for (j = _j = 0, _ref3 = this.width; 0 <= _ref3 ? _j < _ref3 : _j > _ref3; j = 0 <= _ref3 ? ++_j : --_j) {
         line.push(' ');
       }
       this.field.push(line);

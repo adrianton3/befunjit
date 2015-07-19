@@ -38,15 +38,27 @@
         if (splitPosition > 0) {
           initialPath = path.prefix(splitPosition);
           loopingPath = path.suffix(splitPosition);
-          return [initialPath, loopingPath];
+          loopingPath.looping = true;
+          return {
+            type: 'composed',
+            initialPath: initialPath,
+            loopingPath: loopingPath
+          };
         } else {
-          return [path];
+          path.looping = true;
+          return {
+            type: 'looping',
+            loopingPath: path
+          };
         }
       }
-      if (currentChar === '|' || currentChar === '_' || currentChar === '?' || currentChar === '@') {
-        return [path];
-      }
       path.push(pointer.x, pointer.y, pointer.dir, currentChar);
+      if (currentChar === '|' || currentChar === '_' || currentChar === '?' || currentChar === '@') {
+        return {
+          type: 'simple',
+          path: path
+        };
+      }
       if (currentChar === '#') {
         pointer.advance();
       }
@@ -70,7 +82,7 @@
     lastEntry = this.currentPath.getLastEntryThrough(x, y);
     if ((lastEntry != null ? lastEntry.index : void 0) > currentIndex) {
       this.programState.flags.pathInvalidatedAhead = true;
-      return this.programState.flags.exitPoint = {
+      this.programState.flags.exitPoint = {
         x: currentX,
         y: currentY,
         dir: currentDir
@@ -87,8 +99,67 @@
     return char.charCodeAt(0);
   };
 
+  LazyRuntime.prototype._registerPath = function(path, compiler) {
+    this.stats.compileCalls++;
+    compiler.compile(path);
+    if (path.list.length) {
+      this.pathSet.add(path);
+      this.playfield.addPath(path);
+    }
+  };
+
+  LazyRuntime.prototype._getCurrentPath = function(_arg, compiler) {
+    var dir, newPath, path, x, y;
+    x = _arg.x, y = _arg.y, dir = _arg.dir;
+    path = this.pathSet.getStartingFrom(x, y, dir);
+    if (path == null) {
+      newPath = this._getPath(x, y, dir);
+      path = (function() {
+        switch (newPath.type) {
+          case 'simple':
+            this._registerPath(newPath.path, compiler);
+            return newPath.path;
+          case 'looping':
+            this._registerPath(newPath.loopingPath, compiler);
+            return newPath.loopingPath;
+          case 'composed':
+            this._registerPath(newPath.initialPath, compiler);
+            this._registerPath(newPath.loopingPath, compiler);
+            return newPath.initialPath;
+        }
+      }).call(this);
+    }
+    return path;
+  };
+
+  LazyRuntime.prototype._turn = function(pointer, char) {
+    var dir;
+    dir = (function() {
+      switch (char) {
+        case '|':
+          if (this.programState.pop()) {
+            return '^';
+          } else {
+            return 'v';
+          }
+          break;
+        case '_':
+          if (this.programState.pop()) {
+            return '<';
+          } else {
+            return '>';
+          }
+          break;
+        case '?':
+          return '^<v>'[Math.random() * 4 | 0];
+      }
+    }).call(this);
+    pointer.turn(dir);
+    pointer.advance();
+  };
+
   LazyRuntime.prototype.execute = function(playfield, options, input) {
-    var currentChar, exitPoint, newPaths, pathEndPoint, pointer;
+    var currentChar, exitPoint, pathEndPoint, pointer;
     this.playfield = playfield;
     if (input == null) {
       input = [];
@@ -111,26 +182,9 @@
     while (true) {
       if (this.stats.jumpsPerformed === options.jumpLimit) {
         break;
-      } else {
-        this.stats.jumpsPerformed++;
       }
-      this.currentPath = this.pathSet.getStartingFrom(pointer.x, pointer.y, pointer.dir);
-      if (!this.currentPath) {
-        newPaths = this._getPath(pointer.x, pointer.y, pointer.dir);
-        newPaths.forEach((function(_this) {
-          return function(newPath) {
-            _this.stats.compileCalls++;
-            options.compiler.compile(newPath);
-            if (newPath.list.length) {
-              _this.pathSet.add(newPath);
-              return playfield.addPath(newPath);
-            }
-          };
-        })(this));
-      }
-      if (this.currentPath == null) {
-        this.currentPath = newPaths[0];
-      }
+      this.stats.jumpsPerformed++;
+      this.currentPath = this._getCurrentPath(pointer, options.compiler);
       this.currentPath.body(this.programState);
       if (this.programState.flags.pathInvalidatedAhead) {
         this.programState.flags.pathInvalidatedAhead = false;
@@ -142,31 +196,16 @@
       if (this.currentPath.list.length) {
         pathEndPoint = this.currentPath.getEndPoint();
         pointer.set(pathEndPoint.x, pathEndPoint.y, pathEndPoint.dir);
-        pointer.advance();
+        if (this.currentPath.looping) {
+          pointer.advance();
+          continue;
+        }
       }
       currentChar = this.playfield.getAt(pointer.x, pointer.y);
-      if (currentChar === '|') {
-        if (this.programState.pop() === 0) {
-          pointer.turn('v');
-        } else {
-          pointer.turn('^');
-        }
-        pointer.advance();
-      } else if (currentChar === '_') {
-        if (this.programState.pop() === 0) {
-          pointer.turn('>');
-        } else {
-          pointer.turn('<');
-        }
-        pointer.advance();
-      } else if (currentChar === '?') {
-        pointer.turn('^<v>'[Math.random() * 4 | 0]);
-        pointer.advance();
-      } else if (currentChar === '@') {
+      if (currentChar === '@') {
         break;
-      } else {
-        pointer.turn(currentChar);
       }
+      this._turn(pointer, currentChar);
     }
   };
 

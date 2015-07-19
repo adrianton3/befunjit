@@ -12,6 +12,8 @@
     this.inputPointer = 0;
     this.inputList = [];
     this.outRecord = [];
+    this.checks = 0;
+    this.maxChecks = Infinity;
   };
 
   ProgramState.prototype.push = function() {
@@ -90,6 +92,14 @@
 
   ProgramState.prototype.exit = function() {
     return this.flags.exitRequest = true;
+  };
+
+  ProgramState.prototype.isAlive = function() {
+    if (this.flags.exitRequest) {
+      return false;
+    }
+    this.checks++;
+    return this.checks < this.maxChecks;
   };
 
   if (window.bef == null) {

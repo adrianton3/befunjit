@@ -20,6 +20,7 @@
     this.id = getId();
     this.entries = {};
     this.list = [];
+    this.looping = false;
     list.forEach((function(_this) {
       return function(entry) {
         return _this.push(entry.x, entry.y, entry.dir, entry.char, entry.string);

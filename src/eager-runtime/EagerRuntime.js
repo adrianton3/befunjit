@@ -122,21 +122,20 @@
         var currentChar, partial;
         currentChar = _this.playfield.getAt(destination.x, destination.y);
         partial = getPointer.bind(null, destination, _this.playfield.getSize());
-        if (currentChar === '_') {
-          buildEdge(hash, partial('<'));
-          buildEdge(hash, partial('>'));
-        } else if (currentChar === '|') {
-          buildEdge(hash, partial('^'));
-          buildEdge(hash, partial('v'));
-        } else if (currentChar === '?') {
-          buildEdge(hash, partial('^'));
-          buildEdge(hash, partial('v'));
-          buildEdge(hash, partial('<'));
-          buildEdge(hash, partial('>'));
-        } else if (currentChar === '@') {
-          console.log('exit');
-        } else {
-          console.log("unknown char " + currentChar);
+        switch (currentChar) {
+          case '_':
+            buildEdge(hash, partial('<'));
+            buildEdge(hash, partial('>'));
+            break;
+          case '|':
+            buildEdge(hash, partial('^'));
+            buildEdge(hash, partial('v'));
+            break;
+          case '?':
+            buildEdge(hash, partial('^'));
+            buildEdge(hash, partial('v'));
+            buildEdge(hash, partial('<'));
+            buildEdge(hash, partial('>'));
         }
       };
     })(this);
@@ -171,7 +170,7 @@
   };
 
   EagerRuntime.prototype.compile = function(graph, options) {
-    var assemble, code;
+    var assemble;
     assemble = options.compiler.assemble;
     (Object.keys(graph)).forEach(function(nodeName) {
       var edges;
@@ -191,11 +190,11 @@
         })();
       });
     });
-    code = bef.GraphCompiler.assemble({
+    this.code = bef.GraphCompiler.assemble({
       start: 'start',
       nodes: graph
     });
-    return new Function('programState', code);
+    return new Function('programState', this.code);
   };
 
   registerGraph = function(graph, playfield, pathSet) {
