@@ -2,7 +2,7 @@
 
 mkdir tmp
 cp -r src tmp
-cp -r lib tmp
+cp -r demos tmp
 
 git checkout gh-pages
 
