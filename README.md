@@ -1,7 +1,10 @@
 befunjit
 ========
 
-befunjit is a just-in-time compiler for the befunge-93 language. [Try it!](http://adrianton3.github.io/befunjit/src/visualizer/visualizer.html)
+befunjit is a just-in-time compiler for the befunge-93 language.
+
++ Try the [lazy runtime](http://adrianton3.github.io/befunjit/demos/visualizer-lazy/visualizer.html)
++ Try the [eager runtime](http://adrianton3.github.io/befunjit/demos/visualizer-eager/visualizer.html)
 
 
 ###Under the hood
@@ -25,8 +28,12 @@ The reflective instruction `p` is the only thing that makes it very hard (if not
 Changelog
 ---------
 
+####r8 --- 19 jul 2015
+ + fixed jumping (`#`) on `_|?`
+ + released a visualizer for the eager runtime
+
 ####r7 --- 6 jul 2015
- + added an alternative runtime that compiles the whole source code
+ + added an alternative runtime that (eagerly) compiles the whole source code
  + fixed the `:` and the `\` instructions in edge cases
  + fixed the `g` instruction breaking the stack
  + adjusted terminology: renamed *Runtime* to *ProgramState* and *Interpreter* to *Runtime*
