@@ -34,6 +34,14 @@ generalSpecs = [{
 	code: '6077*p5.@'
 	outRecord: [1]
 }, {
+	text: 'mutates a conditional'
+	code: '''
+			v>>>>>>>8v
+			>7177*p| >.@
+			>>>>>>>>9^
+		'''
+	outRecord: [1]
+}, {
 	text: 'evaluates an addition'
 	code: '49+.@'
 	outRecord: [13]
