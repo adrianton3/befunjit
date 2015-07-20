@@ -255,6 +255,7 @@ describe 'EagerRuntime', ->
 			eagerRuntime = new EagerRuntime
 			eagerRuntime.execute playfield, options, input
 
+			eagerRuntime.programState.stats = eagerRuntime.stats
 			eagerRuntime.programState
 
 
@@ -267,10 +268,21 @@ describe 'EagerRuntime', ->
 			(expect outRecord).toEqual []
 
 		it 'can get a value from the playfield after it was altered', ->
-			{ stack, outRecord } = execute '6077*p560g@'
+			{ stack, outRecord, stats } = execute '6077*p560g@'
 
 			(expect stack).toEqual [1, 49]
 			(expect outRecord).toEqual []
+			(expect stats.compileCalls).toEqual 2
+
+		it 'does not recompile if altered cell is not on any path', ->
+			{ stack, outRecord, stats } = execute '''
+					6177*p@
+					>>>>>>>
+				'''
+
+			(expect stack).toEqual []
+			(expect outRecord).toEqual []
+			(expect stats.compileCalls).toEqual 1
 
 
 		describe 'strings', ->

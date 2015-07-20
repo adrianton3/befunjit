@@ -73,28 +73,21 @@ EagerRuntime::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
 	paths.forEach (path) =>
 		@pathSet.remove path
 		@playfield.removePath path
+		return
 
 	# write to the cell
 	@playfield.setAt x, y, e
 
 	# figure out if the current path is invalidated
-	# for now it's always invalidated
-	@programState.flags.pathInvalidatedAhead = true
-	@programState.flags.exitPoint =
-		x: currentX
-		y: currentY
-		dir: currentDir
-
-	# should check if the affected edges are reachable
-	###
-	lastEntry = @currentPath.getLastEntryThrough x, y
-	if lastEntry?.index > currentIndex
+	if paths.length > 0
+		# should check if the affected edges are reachable
 		@programState.flags.pathInvalidatedAhead = true
 		@programState.flags.exitPoint =
 			x: currentX
 			y: currentY
 			dir: currentDir
-	###
+
+	return
 
 
 EagerRuntime::get = (x, y) ->
