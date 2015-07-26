@@ -33,9 +33,18 @@ codeMap =
   '.': -> '/* . */  programState.out(programState.pop())'
   ',': -> '/* , */  programState.out(String.fromCharCode(programState.pop()))'
   '#': -> '/* # */'
-  'p': (x, y, dir, index) ->
-    "/* p */  programState.put(programState.pop(), programState.pop(), programState.pop(), #{x}, #{y}, '#{dir}', #{index})\n" +
-    "if (programState.flags.pathInvalidatedAhead) { return; }"
+  'p': (x, y, dir, index, stack, from, to) ->
+    """
+			/* p */
+			programState.put(
+				programState.pop(),
+				programState.pop(),
+				programState.pop(),
+				#{x}, #{y}, '#{dir}', #{index},
+				'#{from}', '#{to}'
+			)
+    	if (programState.flags.pathInvalidatedAhead) { return; }
+		"""
   'g': -> '/* g */  programState.push(programState.get(programState.pop(), programState.pop()))'
   '&': -> '/* & */  programState.push(programState.next())'
   '~': -> '/* ~ */  programState.push(programState.nextChar())'
@@ -53,7 +62,7 @@ BasicCompiler.assemble = (path) ->
     else
       codeGenerator = codeMap[entry.char]
       if codeGenerator?
-        codeGenerator entry.x, entry.y, entry.dir, i
+        codeGenerator entry.x, entry.y, entry.dir, i, null, path.from, path.to
       else
         "/* __ #{entry.char} */"
 

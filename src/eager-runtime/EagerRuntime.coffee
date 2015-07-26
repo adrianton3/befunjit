@@ -64,7 +64,27 @@ EagerRuntime::_getPath = (x, y, dir) ->
 		pointer.advance()
 
 
-EagerRuntime::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
+canReach = do ->
+	visited = new Set
+
+	(graph, start, targets) ->
+		traverse = (start) ->
+			return true if targets.has start
+			return false if visited.has start
+			visited.add start
+			graph[start].some ({ to }) -> traverse to
+
+		traverse start
+
+
+getPath = (graph, from, to) ->
+	for edge in graph[from]
+		if edge.to == to
+			return edge
+	return
+
+
+EagerRuntime::put = (x, y, e, currentX, currentY, currentDir, currentIndex, from, to) ->
 	# exit early if the coordinates are not valid
 	return if not @playfield.isInside x, y
 
@@ -80,12 +100,28 @@ EagerRuntime::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
 
 	# figure out if the current path is invalidated
 	if paths.length > 0
-		# should check if the affected edges are reachable
-		@programState.flags.pathInvalidatedAhead = true
-		@programState.flags.exitPoint =
-			x: currentX
-			y: currentY
-			dir: currentDir
+		# check if the affected edges are reachable
+		targets = paths.reduce (targets, path) ->
+			targets.add path.from
+		, new Set
+
+		# check if current edge is affected
+		{ path: currentPath } = getPath @graph, from, to
+		lastEntry = switch currentPath.type
+			when 'simple'
+				currentPath.path.getLastEntryThrough x, y
+			when 'looping'
+				currentPath.loopingPath.getLastEntryThrough x, y
+			when 'composed'
+				(currentPath.initialPath.getLastEntryThrough x, y) ?
+					(currentPath.loopingPath.getLastEntryThrough x, y)
+
+		if lastEntry? or (canReach @graph, to, targets)
+			@programState.flags.pathInvalidatedAhead = true
+			@programState.flags.exitPoint =
+				x: currentX
+				y: currentY
+				dir: currentDir
 
 	return
 
@@ -132,6 +168,15 @@ EagerRuntime::buildGraph = (start) ->
 	buildEdge = (hash, pointer) =>
 		# seek out a path
 		newPath = @_getPath pointer.x, pointer.y, pointer.dir
+
+		# remember where this path comes from and where it leads to
+		newPath.path?.from = hash
+		newPath.initialPath?.from = hash
+		newPath.loopingPath?.from = hash
+
+		newPath.path?.to = getHash newPath.path.getEndPoint()
+		newPath.initialPath?.to = getHash newPath.initialPath.getEndPoint()
+		newPath.loopingPath?.to = getHash newPath.loopingPath.getEndPoint()
 
 		if newPath.type != 'simple'
 			# cyclic path
@@ -228,9 +273,9 @@ EagerRuntime::execute = (@playfield, options, input = []) ->
 
 	loop
 		@stats.compileCalls++
-		graph = @buildGraph start
-		registerGraph graph, @playfield, @pathSet
-		program = @compile graph, options
+		@graph = @buildGraph start
+		registerGraph @graph, @playfield, @pathSet
+		program = @compile @graph, options
 
 		program @programState
 

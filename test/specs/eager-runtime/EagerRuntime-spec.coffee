@@ -284,6 +284,26 @@ describe 'EagerRuntime', ->
 			(expect outRecord).toEqual []
 			(expect stats.compileCalls).toEqual 1
 
+		it 'does not recompile if altered cell is not on a reachable path', ->
+			{ stack, outRecord, stats } = execute '''
+					v>1234....@
+					>|
+					>>6077*p9.@
+				'''
+
+			(expect stack).toEqual []
+			(expect outRecord).toEqual [9]
+			(expect stats.compileCalls).toEqual 1
+
+		it 'recompiles if altered cell is on a reachable path', ->
+			{ stack, outRecord, stats } = execute '''
+					2177*p0v
+					@.8    _9.@
+				'''
+
+			(expect stack).toEqual []
+			(expect outRecord).toEqual [9]
+			(expect stats.compileCalls).toEqual 2
 
 		describe 'strings', ->
 			befTest.runtimeSuite befTest.specs.string, execute

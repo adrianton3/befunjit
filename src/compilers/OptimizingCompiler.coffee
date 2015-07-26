@@ -114,14 +114,24 @@ codeMap =
 	'#': -> '/* # */'
 
 
-	'p': (x, y, dir, index, stack) ->
+	'p': (x, y, dir, index, stack, from, to) ->
 		operand1 = if stack.length then stack.pop() else 'programState.pop()'
 		operand2 = if stack.length then stack.pop() else 'programState.pop()'
 		operand3 = if stack.length then stack.pop() else 'programState.pop()'
-		"/* p */  programState.put(#{operand1}, #{operand2}, #{operand3}, #{x}, #{y}, '#{dir}', #{index})\n" +
-		"if (programState.flags.pathInvalidatedAhead) {" +
-		"#{if stack.length then "programState.push(#{stack.join ', '});" else ''}" +
-		" return; }"
+		"""
+			/* p */
+			programState.put(
+				#{operand1},
+				#{operand2},
+				#{operand3},
+				#{x}, #{y}, '#{dir}', #{index},
+				'#{from}', '#{to}'
+			);
+			if (programState.flags.pathInvalidatedAhead) {
+				#{if stack.length then "programState.push(#{stack.join ', '});" else ''}
+				return;
+			}
+		"""
 
 
 	'g': (x, y, dir, index, stack) ->
@@ -169,7 +179,7 @@ OptimizingCompiler.assemble = (path) ->
 					if stack.length
 						ret += "programState.push(#{stack.join ', '});\n"
 					stack = []
-				ret += codeGenerator entry.x, entry.y, entry.dir, i, stack
+				ret += codeGenerator entry.x, entry.y, entry.dir, i, stack, path.from, path.to
 				ret
 			else
 				"/* __ #{entry.char} */"

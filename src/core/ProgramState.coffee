@@ -49,8 +49,8 @@ ProgramState::nextChar = ->
 		0
 
 
-ProgramState::put = (e, y, x, currentX, currentY, currentDir, index) ->
-	@interpreter.put x, y, (String.fromCharCode e), currentX, currentY, currentDir, index
+ProgramState::put = (e, y, x, currentX, currentY, currentDir, index, from, to) ->
+	@interpreter.put x, y, (String.fromCharCode e), currentX, currentY, currentDir, index, from, to
 
 
 ProgramState::get = (y, x) ->
