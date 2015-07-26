@@ -156,12 +156,12 @@
     '#': function() {
       return '/* # */';
     },
-    'p': function(x, y, dir, index, stack) {
+    'p': function(x, y, dir, index, stack, from, to) {
       var operand1, operand2, operand3;
       operand1 = stack.length ? stack.pop() : 'programState.pop()';
       operand2 = stack.length ? stack.pop() : 'programState.pop()';
       operand3 = stack.length ? stack.pop() : 'programState.pop()';
-      return ("/* p */  programState.put(" + operand1 + ", " + operand2 + ", " + operand3 + ", " + x + ", " + y + ", '" + dir + "', " + index + ")\n") + "if (programState.flags.pathInvalidatedAhead) {" + ("" + (stack.length ? "programState.push(" + (stack.join(', ')) + ");" : '')) + " return; }";
+      return "/* p */\nprogramState.put(\n	" + operand1 + ",\n	" + operand2 + ",\n	" + operand3 + ",\n	" + x + ", " + y + ", '" + dir + "', " + index + ",\n	'" + from + "', '" + to + "'\n);\nif (programState.flags.pathInvalidatedAhead) {\n	" + (stack.length ? "programState.push(" + (stack.join(', ')) + ");" : '') + "\n	return;\n}";
     },
     'g': function(x, y, dir, index, stack) {
       var operand1, operand2, stringedStack;
@@ -207,7 +207,7 @@
             }
             stack = [];
           }
-          ret += codeGenerator(entry.x, entry.y, entry.dir, i, stack);
+          ret += codeGenerator(entry.x, entry.y, entry.dir, i, stack, path.from, path.to);
           return ret;
         } else {
           return "/* __ " + entry.char + " */";

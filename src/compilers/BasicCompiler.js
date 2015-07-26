@@ -100,8 +100,8 @@
     '#': function() {
       return '/* # */';
     },
-    'p': function(x, y, dir, index) {
-      return ("/* p */  programState.put(programState.pop(), programState.pop(), programState.pop(), " + x + ", " + y + ", '" + dir + "', " + index + ")\n") + "if (programState.flags.pathInvalidatedAhead) { return; }";
+    'p': function(x, y, dir, index, stack, from, to) {
+      return "/* p */\nprogramState.put(\n	programState.pop(),\n	programState.pop(),\n	programState.pop(),\n	" + x + ", " + y + ", '" + dir + "', " + index + ",\n	'" + from + "', '" + to + "'\n)\n    	if (programState.flags.pathInvalidatedAhead) { return; }";
     },
     'g': function() {
       return '/* g */  programState.push(programState.get(programState.pop(), programState.pop()))';
@@ -129,7 +129,7 @@
       } else {
         codeGenerator = codeMap[entry.char];
         if (codeGenerator != null) {
-          return codeGenerator(entry.x, entry.y, entry.dir, i);
+          return codeGenerator(entry.x, entry.y, entry.dir, i, null, path.from, path.to);
         } else {
           return "/* __ " + entry.char + " */";
         }

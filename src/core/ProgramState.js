@@ -58,8 +58,8 @@
     }
   };
 
-  ProgramState.prototype.put = function(e, y, x, currentX, currentY, currentDir, index) {
-    return this.interpreter.put(x, y, String.fromCharCode(e), currentX, currentY, currentDir, index);
+  ProgramState.prototype.put = function(e, y, x, currentX, currentY, currentDir, index, from, to) {
+    return this.interpreter.put(x, y, String.fromCharCode(e), currentX, currentY, currentDir, index, from, to);
   };
 
   ProgramState.prototype.get = function(y, x) {
