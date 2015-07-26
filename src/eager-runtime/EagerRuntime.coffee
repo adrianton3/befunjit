@@ -174,9 +174,8 @@ EagerRuntime::buildGraph = (start) ->
 		newPath.initialPath?.from = hash
 		newPath.loopingPath?.from = hash
 
+		# only simple paths lead somewhere
 		newPath.path?.to = getHash newPath.path.getEndPoint()
-		newPath.initialPath?.to = getHash newPath.initialPath.getEndPoint()
-		newPath.loopingPath?.to = getHash newPath.loopingPath.getEndPoint()
 
 		if newPath.type != 'simple'
 			# cyclic path
