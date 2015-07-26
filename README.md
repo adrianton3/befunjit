@@ -28,6 +28,9 @@ The reflective instruction `p` is the only thing that makes it very hard (if not
 Changelog
 ---------
 
+####r9 --- 26 jul 2015
+ + the eager runtime recompiles the program only when reachable paths are mutated
+
 ####r8 --- 19 jul 2015
  + fixed jumping (`#`) on `_|?`
  + released a visualizer for the eager runtime
