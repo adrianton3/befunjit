@@ -28,6 +28,12 @@ The reflective instruction `p` is the only thing that makes it very hard (if not
 Changelog
 ---------
 
+####r10 --- 28 jul 2015
+ + reversed operand order for `-/%`
+ + fixed the `\` operation for stacks with less than 2 elements
+ + fixed reading chars when given no input
+ + added sample programs to the visualizer
+
 ####r9 --- 26 jul 2015
  + the eager runtime recompiles the program only when reachable paths are mutated
 
