@@ -17,7 +17,7 @@
   };
 
   ProgramState.prototype.push = function() {
-    return this.stack.push.apply(this.stack, arguments);
+    this.stack.push.apply(this.stack, arguments);
   };
 
   ProgramState.prototype.pop = function() {
@@ -38,8 +38,8 @@
 
   ProgramState.prototype.next = function() {
     var ret;
-    ret = this.inputList[this.inputPointer];
     if (this.inputPointer < this.inputList.length) {
+      ret = parseInt(this.inputList[this.inputPointer], 10);
       this.inputPointer++;
       return ret;
     } else {
@@ -49,8 +49,8 @@
 
   ProgramState.prototype.nextChar = function() {
     var ret;
-    ret = this.inputList[this.inputPointer].charCodeAt(0);
     if (this.inputPointer < this.inputList.length) {
+      ret = this.inputList[this.inputPointer].charCodeAt(0);
       this.inputPointer++;
       return ret;
     } else {
@@ -66,6 +66,14 @@
     return this.interpreter.get(x, y);
   };
 
+  ProgramState.prototype.div = function(a, b) {
+    this.push(Math.floor(b / a));
+  };
+
+  ProgramState.prototype.mod = function(a, b) {
+    this.push(b % a);
+  };
+
   ProgramState.prototype.duplicate = function() {
     var e;
     if (this.stack.length < 1) {
@@ -77,13 +85,16 @@
 
   ProgramState.prototype.swap = function() {
     var e1, e2;
-    if (this.stack.length < 2) {
-      return;
+    if (this.stack.length >= 2) {
+      e1 = this.stack[this.stack.length - 1];
+      e2 = this.stack[this.stack.length - 2];
+      this.stack[this.stack.length - 1] = e2;
+      this.stack[this.stack.length - 2] = e1;
+    } else if (this.stack.length === 1) {
+      this.stack.push(0);
+    } else {
+      this.stack.push(0, 0);
     }
-    e1 = this.stack[this.stack.length - 1];
-    e2 = this.stack[this.stack.length - 2];
-    this.stack[this.stack.length - 1] = e2;
-    this.stack[this.stack.length - 2] = e1;
   };
 
   ProgramState.prototype.randInt = function(max) {

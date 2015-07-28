@@ -41,16 +41,16 @@
       return '/* + */  programState.push(programState.pop() + programState.pop())';
     },
     '-': function() {
-      return '/* - */  programState.push(programState.pop() - programState.pop())';
+      return '/* - */  programState.push(-programState.pop() + programState.pop())';
     },
     '*': function() {
       return '/* * */  programState.push(programState.pop() * programState.pop())';
     },
     '/': function() {
-      return '/* / */  programState.push(Math.floor(programState.pop() / programState.pop()))';
+      return '/* / */  programState.div(programState.pop(), programState.pop())';
     },
     '%': function() {
-      return '/* % */  programState.push(programState.pop() % programState.pop())';
+      return '/* % */  programState.mod(programState.pop(), programState.pop())';
     },
     '!': function() {
       return '/* ! */  programState.push(+!programState.pop())';

@@ -297,6 +297,7 @@
     this.pathSet = new bef.PathSet();
     this.programState = new bef.ProgramState(this);
     this.programState.setInput(input);
+    this.programState.maxChecks = options.jumpLimit;
     start = new bef.Pointer(0, 0, '>', this.playfield.getSize());
     while (true) {
       this.stats.compileCalls++;

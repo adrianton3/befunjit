@@ -23,7 +23,7 @@
         stack.push(operatorFunction(operand1, operand2));
         return "/* " + operatorChar + " */";
       } else {
-        return "/* " + operatorChar + " */  programState.push(" + (stringFunction(operand1, operand2)) + ")";
+        return "/* " + operatorChar + " */  " + (stringFunction(operand1, operand2));
       }
     };
   };
@@ -45,27 +45,27 @@
     '+': binaryOperator((function(o1, o2) {
       return o1 + o2;
     }), '+', function(o1, o2) {
-      return "" + o1 + " + " + o2;
+      return "programState.push(" + o1 + " + " + o2 + ")";
     }),
     '-': binaryOperator((function(o1, o2) {
-      return o1 - o2;
+      return o2 - o1;
     }), '-', function(o1, o2) {
-      return "" + o1 + " - " + o2;
+      return "programState.push(-" + o1 + " + " + o2 + ")";
     }),
     '*': binaryOperator((function(o1, o2) {
       return o1 * o2;
     }), '*', function(o1, o2) {
-      return "" + o1 + " * " + o2;
+      return "programState.push(" + o1 + " * " + o2 + ")";
     }),
     '/': binaryOperator((function(o1, o2) {
-      return Math.floor(o1 / o2);
+      return Math.floor(o2 / o1);
     }), '/', function(o1, o2) {
-      return "Math.floor(" + o1 + " / " + o2 + ")";
+      return "programState.div(" + o1 + ", " + o2 + ")";
     }),
     '%': binaryOperator((function(o1, o2) {
-      return o1 % o2;
+      return o2 % o1;
     }), '%', function(o1, o2) {
-      return "" + o1 + " % " + o2;
+      return "programState.mod(" + o1 + ", " + o2 + ")";
     }),
     '!': function(x, y, dir, index, stack) {
       if (stack.length) {
@@ -78,7 +78,7 @@
     '`': binaryOperator((function(o1, o2) {
       return +(o1 > o2);
     }), '`', function(o1, o2) {
-      return "+(" + o1 + " > " + o2 + ")";
+      return "programState.push(+(" + o1 + " > " + o2 + "))";
     }),
     '^': function() {
       return '/* ^ */';
@@ -140,15 +140,26 @@
       }
     },
     ',': function(x, y, dir, index, stack) {
-      var char;
+      var char, safeChar;
       if (stack.length) {
         char = String.fromCharCode(stack.pop());
-        if (char === "'") {
-          char = "\\'";
-        } else if (char === '\\') {
-          char = '\\\\';
-        }
-        return "/* , */  programState.out('" + char + "')";
+        safeChar = (function() {
+          switch (char) {
+            case "'":
+              return "\\'";
+            case '\\':
+              return '\\\\';
+            case '\n':
+              return '\\n';
+            case '\r':
+              return '\\r';
+            case '\t':
+              return '\\t';
+            default:
+              return char;
+          }
+        })();
+        return "/* , */  programState.out('" + safeChar + "')";
       } else {
         return '/* , */  programState.out(String.fromCharCode(programState.pop()))';
       }
