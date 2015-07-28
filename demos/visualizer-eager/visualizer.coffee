@@ -6,6 +6,22 @@ outputEditor = null
 jsEditor = null
 
 
+setupSamples = ->
+	select = document.getElementById 'sample'
+
+	(Object.keys window.befSample).forEach (sampleName) ->
+		option = document.createElement 'option'
+		option.textContent = sampleName
+		select.appendChild option
+		return
+
+	select.addEventListener 'change', ->
+		{ input, code } = window.befSample[@value]
+		sourceEditor.setValue code, 1
+		inputEditor.setValue input, 1
+		return
+
+
 setupEditors = ->
 	sourceEditor = ace.edit 'source-editor'
 	sourceEditor.setTheme 'ace/theme/monokai'
@@ -45,13 +61,14 @@ run = ->
 	stringedStack = runtime.programState.stack.join ' '
 	stringedOutput = runtime.programState.outRecord.join ' '
 
-	outputEditor.setValue "Stack: #{stringedStack}\nOutput: #{stringedOutput}"
+	outputEditor.setValue "Stack: #{stringedStack}\nOutput: #{stringedOutput}", 1
 
 
 setupRunButton = ->
 	(document.getElementById 'run').addEventListener 'click', run
 
 
+setupSamples()
 setupEditors()
 setupRunButton()
 run()

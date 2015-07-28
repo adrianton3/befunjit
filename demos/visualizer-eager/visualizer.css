@@ -62,23 +62,34 @@ div .editor {
     margin-top: 10px;
 }
 
-button {
-    position: relative;
-    width: 300px;
-    top: 20px;
-    clear: both;
+.blue {
+    width: 144px;
     color: #F3F4F1;
     font-weight: bold;
     font-size: 16px;
+    border-style: solid;
     border-width: 0 0 4px 0;
     background-color: hsl(220, 100%, 50%);
-    border-bottom-color: hsl(220, 100%, 40%);
+    border-bottom-color: hsl(220, 100%, 30%);
     height: 35px;
-    margin-bottom: 20px;
-    padding: 2px 0 0 0;
+    margin: 20px 4px 0 0;
+    padding: 3px 8px 0 8px;
+    outline: none;
 }
 
-button:hover {
+.blue:last-child {
+    margin-right: 0;
+}
+
+.blue:hover {
     background-color: hsl(220, 100%, 60%);
-    border-bottom-color: hsl(220, 100%, 45%);
+    border-bottom-color: hsl(220, 100%, 35%);
+}
+
+option {
+    border-width: 0;
+}
+
+option:hover {
+    background-color: hsl(220, 100%, 60%);
 }
