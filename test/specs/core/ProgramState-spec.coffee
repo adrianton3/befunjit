@@ -25,14 +25,14 @@ describe 'ProgramState', ->
 			programState.swap()
 			(expect programState.stack).toEqual [11, 22, 44, 33]
 
-		it 'does nothing when the stack has 1 element', ->
+		it 'pushes a 0 when the stack has 1 element', ->
 			programState.push 11
 			programState.swap()
-			(expect programState.stack).toEqual [11]
+			(expect programState.stack).toEqual [11, 0]
 
-		it 'swaps the first 2 entries of a stack', ->
+		it 'pushes 2 zeros when the stack is empty', ->
 			programState.swap()
-			(expect programState.stack).toEqual []
+			(expect programState.stack).toEqual [0, 0]
 
 	describe 'duplicate', ->
 		it 'duplicates the last entry of a stack', ->

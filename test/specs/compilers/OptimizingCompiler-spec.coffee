@@ -76,19 +76,19 @@ describe 'OptimizingCompiler', ->
 				programState = execute '23-'
 				(expect programState.push.calls.count()).toEqual 1
 				(expect programState.pop.calls.count()).toEqual 0
-				(expect programState.stack).toEqual [1]
+				(expect programState.stack).toEqual [-1]
 
 			it 'resolves partially at compile time', ->
 				programState = execute '3-', [2]
 				(expect programState.push.calls.count()).toEqual 1
 				(expect programState.pop.calls.count()).toEqual 1
-				(expect programState.stack).toEqual [1]
+				(expect programState.stack).toEqual [-1]
 
 			it 'does not resolve at compile time', ->
 				programState = execute '-', [2, 3]
 				(expect programState.push.calls.count()).toEqual 1
 				(expect programState.pop.calls.count()).toEqual 2
-				(expect programState.stack).toEqual [1]
+				(expect programState.stack).toEqual [-1]
 
 		describe '*', ->
 			it 'resolves entirely at compile time', ->
@@ -111,19 +111,19 @@ describe 'OptimizingCompiler', ->
 
 		describe '/', ->
 			it 'resolves entirely at compile time', ->
-				programState = execute '29/'
+				programState = execute '92/'
 				(expect programState.push.calls.count()).toEqual 1
 				(expect programState.pop.calls.count()).toEqual 0
 				(expect programState.stack).toEqual [4]
 
 			it 'resolves partially at compile time', ->
-				programState = execute '9/', [2]
+				programState = execute '2/', [9]
 				(expect programState.push.calls.count()).toEqual 1
 				(expect programState.pop.calls.count()).toEqual 1
 				(expect programState.stack).toEqual [4]
 
 			it 'does not resolve at compile time', ->
-				programState = execute '/', [2, 9]
+				programState = execute '/', [9, 2]
 				(expect programState.push.calls.count()).toEqual 1
 				(expect programState.pop.calls.count()).toEqual 2
 				(expect programState.stack).toEqual [4]
@@ -225,7 +225,7 @@ describe 'OptimizingCompiler', ->
 
 		describe '$', ->
 			it 'resolves at compile time', ->
-				programState = execute '1$\\'
+				programState = execute '1$'
 				(expect programState.push.calls.count()).toEqual 0
 				(expect programState.pop.calls.count()).toEqual 0
 				(expect programState.stack).toEqual []
@@ -262,7 +262,7 @@ describe 'OptimizingCompiler', ->
 				(expect programState.outRecord).toEqual ['1']
 
 			it 'escapes \'', ->
-				programState = execute '158*-,'
+				programState = execute '58*1-,'
 				(expect programState.push.calls.count()).toEqual 0
 				(expect programState.pop.calls.count()).toEqual 0
 				(expect programState.stack).toEqual []

@@ -169,7 +169,7 @@ describe 'EagerRuntime', ->
 		it 'performs arithmetic operations', ->
 			{ stack, outRecord } = execute '2357*+-@'
 
-			(expect stack).toEqual [5 * 7 + 3 - 2]
+			(expect stack).toEqual [2 - (5 * 7 + 3)]
 			(expect outRecord).toEqual []
 
 		it 'branches to the left', ->

@@ -18,7 +18,7 @@ binaryOperator = (operatorFunction, operatorChar, stringFunction) ->
 			stack.push operatorFunction operand1, operand2
 			"/* #{operatorChar} */"
 		else
-			"/* #{operatorChar} */  programState.push(#{stringFunction operand1, operand2})"
+			"/* #{operatorChar} */  #{stringFunction operand1, operand2}"
 
 
 codeMap =
@@ -37,11 +37,11 @@ codeMap =
 	'9': digitPusher 9
 
 
-	'+': binaryOperator ((o1, o2) -> o1 + o2), '+', (o1, o2) -> "#{o1} + #{o2}"
-	'-': binaryOperator ((o1, o2) -> o1 - o2), '-', (o1, o2) -> "#{o1} - #{o2}"
-	'*': binaryOperator ((o1, o2) -> o1 * o2), '*', (o1, o2) -> "#{o1} * #{o2}"
-	'/': binaryOperator ((o1, o2) -> Math.floor(o1 / o2)), '/', (o1, o2) -> "Math.floor(#{o1} / #{o2})"
-	'%': binaryOperator ((o1, o2) -> o1 % o2), '%', (o1, o2) -> "#{o1} % #{o2}"
+	'+': binaryOperator ((o1, o2) -> o1 + o2), '+', (o1, o2) -> "programState.push(#{o1} + #{o2})"
+	'-': binaryOperator ((o1, o2) -> o2 - o1), '-', (o1, o2) -> "programState.push(-#{o1} + #{o2})"
+	'*': binaryOperator ((o1, o2) -> o1 * o2), '*', (o1, o2) -> "programState.push(#{o1} * #{o2})"
+	'/': binaryOperator ((o1, o2) -> o2 // o1), '/', (o1, o2) -> "programState.div(#{o1}, #{o2})"
+	'%': binaryOperator ((o1, o2) -> o2 % o1), '%', (o1, o2) -> "programState.mod(#{o1}, #{o2})"
 
 
 	'!': (x, y, dir, index, stack) ->
@@ -52,7 +52,7 @@ codeMap =
 			'/* ! */  programState.push(+!programState.pop())'
 
 
-	'`': binaryOperator ((o1, o2) -> +(o1 > o2)), '`', (o1, o2) -> "+(#{o1} > #{o2})"
+	'`': binaryOperator ((o1, o2) -> +(o1 > o2)), '`', (o1, o2) -> "programState.push(+(#{o1} > #{o2}))"
 
 
 	'^': -> '/* ^ */'

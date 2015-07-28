@@ -267,6 +267,7 @@ EagerRuntime::execute = (@playfield, options, input = []) ->
 	@pathSet = new bef.PathSet()
 	@programState = new bef.ProgramState @
 	@programState.setInput input
+	@programState.maxChecks = options.jumpLimit
 
 	start = new bef.Pointer 0, 0, '>', @playfield.getSize()
 

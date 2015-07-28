@@ -48,18 +48,18 @@ generalSpecs = [{
 }, {
 	text: 'evaluates a subtraction'
 	code: '49-.@'
-	outRecord: [5]
+	outRecord: [-5]
 }, {
 	text: 'evaluates a multiplication'
 	code: '49*.@'
 	outRecord: [36]
 }, {
 	text: 'performs integer division'
-	code: '49/.@'
+	code: '94/.@'
 	outRecord: [2]
 }, {
 	text: 'performs a modulo operation'
-	code: '49%.@'
+	code: '94%.@'
 	outRecord: [1]
 }, {
 	text: 'performs unary not'

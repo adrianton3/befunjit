@@ -15,6 +15,7 @@ ProgramState = (@interpreter) ->
 
 ProgramState::push = ->
 	@stack.push.apply @stack, arguments
+	return
 
 
 ProgramState::pop = ->
@@ -32,8 +33,8 @@ ProgramState::setInput = (values) ->
 
 
 ProgramState::next = ->
-	ret = @inputList[@inputPointer]
 	if @inputPointer < @inputList.length
+		ret = parseInt @inputList[@inputPointer], 10
 		@inputPointer++
 		ret
 	else
@@ -57,6 +58,16 @@ ProgramState::get = (y, x) ->
 	@interpreter.get x, y
 
 
+ProgramState::div = (a, b) ->
+	@push b // a
+	return
+
+
+ProgramState::mod = (a, b) ->
+	@push b % a
+	return
+
+
 ProgramState::duplicate = ->
 	return if @stack.length < 1
 	e = @stack[@stack.length - 1]
@@ -65,11 +76,15 @@ ProgramState::duplicate = ->
 
 
 ProgramState::swap = ->
-	return if @stack.length < 2
-	e1 = @stack[@stack.length - 1]
-	e2 = @stack[@stack.length - 2]
-	@stack[@stack.length - 1] = e2
-	@stack[@stack.length - 2] = e1
+	if @stack.length >= 2
+		e1 = @stack[@stack.length - 1]
+		e2 = @stack[@stack.length - 2]
+		@stack[@stack.length - 1] = e2
+		@stack[@stack.length - 2] = e1
+	else if @stack.length == 1
+		@stack.push 0
+	else
+		@stack.push 0, 0
 	return
 
 
