@@ -42,8 +42,8 @@ ProgramState::next = ->
 
 
 ProgramState::nextChar = ->
-	ret = @inputList[@inputPointer].charCodeAt 0
 	if @inputPointer < @inputList.length
+		ret = @inputList[@inputPointer].charCodeAt 0
 		@inputPointer++
 		ret
 	else

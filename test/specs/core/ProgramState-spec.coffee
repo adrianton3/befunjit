@@ -19,6 +19,21 @@ describe 'ProgramState', ->
 			(expect programState.next()).toEqual 22
 			(expect programState.next()).toEqual 33
 
+		it 'reads when given no input', ->
+			programState.setInput []
+			(expect programState.next()).toEqual 0
+
+	describe 'nextChar', ->
+		it 'read from input', ->
+			programState.setInput ['1', '2', '3']
+			(expect programState.nextChar()).toEqual 49
+			(expect programState.nextChar()).toEqual 50
+			(expect programState.nextChar()).toEqual 51
+
+		it 'reads when given no input', ->
+			programState.setInput []
+			(expect programState.nextChar()).toEqual 0
+
 	describe 'swap', ->
 		it 'swaps the first 2 entries of a stack', ->
 			programState.push 11, 22, 33, 44
@@ -30,7 +45,7 @@ describe 'ProgramState', ->
 			programState.swap()
 			(expect programState.stack).toEqual [11, 0]
 
-		it 'pushes 2 zeros when the stack is empty', ->
+		it 'pushes two 0s when the stack is empty', ->
 			programState.swap()
 			(expect programState.stack).toEqual [0, 0]
 
