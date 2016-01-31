@@ -3,20 +3,30 @@
 
 
 	function processArguments(argv) {
-		if (argv.length < 3 || argv.length > 4) {
-			console.error('Use: node befunjit.node.js [--lazy] <source>');
+		if (argv.length < 3 || argv.length > 5) {
+			console.error('Use: node befunjit.node.js [--lazy] [--time] <source>');
 			process.exit(1);
 		}
 
 		if (argv.length === 3) {
 			return {
 				runtimeConstructor: bef.EagerRuntime,
-				sourcePath: argv[2]
+				sourcePath: argv[2],
+				time: false
+			}
+		} else if (argv.length === 4) {
+			return {
+				runtimeConstructor: argv[2] === '--lazy' ? bef.LazyRuntime : bef.EagerRuntime,
+				sourcePath: argv[3],
+				time: argv[2] === '--time'
 			}
 		} else {
 			return {
-				runtimeConstructor: argv[2] === '--lazy' ? bef.LazyRuntime : bef.EagerRuntime,
-				sourcePath: argv[3]
+				runtimeConstructor: (argv[2] === '--lazy') || (argv[3] === '--lazy') ?
+					bef.LazyRuntime :
+					bef.EagerRuntime,
+				sourcePath: argv[4],
+				time: (argv[2] === '--time') || (argv[3] === '--time')
 			}
 		}
 	}
@@ -58,9 +68,19 @@
 		setupStdin(function (input) {
 			var source = fs.readFileSync(args.sourcePath).toString();
 
+			var start;
+			if (args.time) {
+				start = process.hrtime();
+			}
+
 			var output = run(args.runtimeConstructor, source, input);
 
-			process.stdout.write(output);
+			if (args.time) {
+				var diff = process.hrtime(start);
+				process.stdout.write('execution took ' + (diff[0] * 1e9 + diff[1]) + 'ns');
+			} else {
+				process.stdout.write(output);
+			}
 		})
 	} else {
 		module.exports = bef;
