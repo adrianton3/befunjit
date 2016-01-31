@@ -1,8 +1,6 @@
 (function () {
 	'use strict';
 
-	var fs = require('fs');
-
 
 	function processArguments(argv) {
 		if (argv.length < 3 || argv.length > 4) {
@@ -52,13 +50,19 @@
 	}
 
 
-	var args = processArguments(process.argv);
+	if (require.main === module) {
+		var fs = require('fs');
 
-	setupStdin(function (input) {
-		var source = fs.readFileSync(args.sourcePath).toString();
+		var args = processArguments(process.argv);
 
-		var output = run(args.runtimeConstructor, source, input);
+		setupStdin(function (input) {
+			var source = fs.readFileSync(args.sourcePath).toString();
 
-		process.stdout.write(output);
-	})
+			var output = run(args.runtimeConstructor, source, input);
+
+			process.stdout.write(output);
+		})
+	} else {
+		module.exports = bef;
+	}
 })();
