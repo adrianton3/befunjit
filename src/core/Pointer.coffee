@@ -1,11 +1,12 @@
 'use strict'
 
 
-dirTable =
-	'^': { x:  0, y: -1 }
-	'<': { x: -1, y:  0 }
-	'v': { x:  0, y:  1 }
-	'>': { x:  1, y:  0 }
+dirTable = new Map [
+	['^', { x:  0, y: -1 }]
+	['<', { x: -1, y:  0 }]
+	['v', { x:  0, y:  1 }]
+	['>', { x:  1, y:  0 }]
+]
 
 
 Pointer = (@x, @y, dir, @space) ->
@@ -15,12 +16,13 @@ Pointer = (@x, @y, dir, @space) ->
 
 Pointer::_updateDir = (dir) ->
 	@dir = dir
-	@ax = dirTable[dir].x
-	@ay = dirTable[dir].y
+	entry = dirTable.get dir
+	@ax = entry.x
+	@ay = entry.y
 
 
 Pointer::turn = (dir) ->
-	if dirTable[dir]? and (dir != @dir)
+	if (dirTable.has dir) and (dir != @dir)
 		@_updateDir dir
 	@
 
