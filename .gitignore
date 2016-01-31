@@ -1,7 +1,12 @@
 .idea
+node_modules
+
 src/**/*.js
 demos/visualizer-eager/**/*.js
 demos/visualizer-lazy/**/*.js
 demos/samples/**/*.js
+
+build
+
 test/*.js
 test/specs/**/*.js
