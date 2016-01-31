@@ -3,8 +3,24 @@
 
 	var fs = require('fs');
 
-	if (process.argv.length < 2) {
-		console.error('Must supply source');
+
+	function processArguments(argv) {
+		if (argv.length < 3 || argv.length > 4) {
+			console.error('Use: node befunjit.node.js [--lazy] <source>');
+			process.exit(1);
+		}
+
+		if (argv.length === 3) {
+			return {
+				runtimeConstructor: bef.EagerRuntime,
+				sourcePath: argv[2]
+			}
+		} else {
+			return {
+				runtimeConstructor: argv[2] === '--lazy' ? bef.LazyRuntime : bef.EagerRuntime,
+				sourcePath: argv[3]
+			}
+		}
 	}
 
 	function setupStdin(ready) {
@@ -25,21 +41,23 @@
 		});
 	}
 
-	function run(source, input) {
+	function run(runtimeConstructor, source, input) {
 		var playfield = new bef.Playfield();
 		playfield.fromString(source);
 
-		var runtime = new bef.LazyRuntime();
-		runtime.execute(playfield, { jumpLimit: 100 }, input);
+		var runtime = new runtimeConstructor;
+		runtime.execute(playfield, { jumpLimit: 1000 }, input);
 
 		return runtime.programState.outRecord.join('');
 	}
 
-	setupStdin(function (input) {
-		var sourcePath = process.argv[2];
-		var source = fs.readFileSync(sourcePath).toString();
 
-		var output = run(source, input);
+	var args = processArguments(process.argv);
+
+	setupStdin(function (input) {
+		var source = fs.readFileSync(args.sourcePath).toString();
+
+		var output = run(args.runtimeConstructor, source, input);
 
 		process.stdout.write(output);
 	})
