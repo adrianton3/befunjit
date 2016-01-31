@@ -1,6 +1,14 @@
 {
-  "name": "jinter",
+  "name": "befunjit",
+  "description": "Befunge-93 just-in-time compiler",
+  "author": "Adrian Toncean <adrianton3@gmail.com>",
   "version": "0.0.1",
+  "main": "build/befunjit.node.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adrianton3/befunjit.git"
+  },
+  "bugs": "https://github.com/adrianton3/befunjit/issues",
   "license": "MIT",
   "devDependencies": {
     "grunt": "^0.4.5",
