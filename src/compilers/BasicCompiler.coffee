@@ -18,7 +18,7 @@ codeMap =
   '/': -> '/* / */  programState.div(programState.pop(), programState.pop())'
   '%': -> '/* % */  programState.mod(programState.pop(), programState.pop())'
   '!': -> '/* ! */  programState.push(+!programState.pop())'
-  '`': -> '/* ` */  programState.push(+(programState.pop() > programState.pop()))'
+  '`': -> '/* ` */  programState.push(+(programState.pop() < programState.pop()))'
   '^': -> '/* ^ */'
   '<': -> '/* < */'
   'v': -> '/* v */'

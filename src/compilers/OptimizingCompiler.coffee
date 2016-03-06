@@ -52,7 +52,7 @@ codeMap =
 			'/* ! */  programState.push(+!programState.pop())'
 
 
-	'`': binaryOperator ((o1, o2) -> +(o1 > o2)), '`', (o1, o2) -> "programState.push(+(#{o1} > #{o2}))"
+	'`': binaryOperator ((o1, o2) -> +(o1 < o2)), '`', (o1, o2) -> "programState.push(+(#{o1} < #{o2}))"
 
 
 	'^': -> '/* ^ */'

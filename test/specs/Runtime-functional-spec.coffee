@@ -67,7 +67,7 @@ generalSpecs = [{
 	outRecord: [0]
 }, {
 	text: 'evaluates a comparison'
-	code: '49`.@'
+	code: '94`.@'
 	outRecord: [1]
 }, {
 	text: 'duplicates the value on the stack'

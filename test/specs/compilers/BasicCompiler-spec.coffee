@@ -131,19 +131,19 @@ describe 'BasicCompiler', ->
 
 		describe '`', ->
 			it 'resolves entirely at compile time', ->
-				programState = execute '29`'
+				programState = execute '92`'
 				(expect programState.push.calls.count()).toEqual 3
 				(expect programState.pop.calls.count()).toEqual 2
 				(expect programState.stack).toEqual [1]
 
 			it 'resolves partially at compile time', ->
-				programState = execute '9`', [2]
+				programState = execute '2`', [9]
 				(expect programState.push.calls.count()).toEqual 2
 				(expect programState.pop.calls.count()).toEqual 2
 				(expect programState.stack).toEqual [1]
 
 			it 'does not resolve at compile time', ->
-				programState = execute '`', [2, 9]
+				programState = execute '`', [9, 2]
 				(expect programState.push.calls.count()).toEqual 1
 				(expect programState.pop.calls.count()).toEqual 2
 				(expect programState.stack).toEqual [1]
