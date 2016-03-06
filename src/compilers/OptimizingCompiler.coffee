@@ -80,6 +80,8 @@ codeMap =
 			stack[stack.length - 1] = e2
 			stack[stack.length - 2] = e1
 			'/* \\ */'
+		else if stack.length > 0
+			"/* \\ */  programState.push(#{stack.pop()}, programState.pop())"
 		else
 			'/* \\ */  programState.swap()'
 

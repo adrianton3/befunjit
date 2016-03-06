@@ -217,6 +217,12 @@ describe 'OptimizingCompiler', ->
 				(expect programState.pop.calls.count()).toEqual 0
 				(expect programState.stack).toEqual [2, 1]
 
+			it 'resolves partially at compile time', ->
+				programState = execute '3\\', [2]
+				(expect programState.push.calls.count()).toEqual 1
+				(expect programState.pop.calls.count()).toEqual 1
+				(expect programState.stack).toEqual [3, 2]
+
 			it 'does not resolve at compile time', ->
 				programState = execute '\\', [1, 2]
 				(expect programState.push.calls.count()).toEqual 0
