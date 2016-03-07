@@ -76,9 +76,9 @@
       }
     },
     '`': binaryOperator((function(o1, o2) {
-      return +(o1 > o2);
+      return +(o1 < o2);
     }), '`', function(o1, o2) {
-      return "programState.push(+(" + o1 + " > " + o2 + "))";
+      return "programState.push(+(" + o1 + " < " + o2 + "))";
     }),
     '^': function() {
       return '/* ^ */';
@@ -120,6 +120,8 @@
         stack[stack.length - 1] = e2;
         stack[stack.length - 2] = e1;
         return '/* \\ */';
+      } else if (stack.length > 0) {
+        return "/* \\ */  programState.push(" + (stack.pop()) + ", programState.pop())";
       } else {
         return '/* \\ */  programState.swap()';
       }

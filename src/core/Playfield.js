@@ -16,7 +16,7 @@
   };
 
   Playfield.prototype._initPathPlane = function(width, height) {
-    var i, j, line, _i, _j, _results;
+    var i, j, line, _i, _j;
     if (width == null) {
       width = DEFAULT.WIDTH;
     }
@@ -24,15 +24,13 @@
       height = DEFAULT.HEIGHT;
     }
     this.pathPlane = [];
-    _results = [];
     for (i = _i = 1; 1 <= height ? _i <= height : _i >= height; i = 1 <= height ? ++_i : --_i) {
       line = [];
       for (j = _j = 1; 1 <= width ? _j <= width : _j >= width; j = 1 <= width ? ++_j : --_j) {
         line.push({});
       }
-      _results.push(this.pathPlane.push(line));
+      this.pathPlane.push(line);
     }
-    return _results;
   };
 
   Playfield.prototype.fromString = function(string, width, height) {
@@ -100,11 +98,11 @@
   };
 
   Playfield.prototype.removePath = function(path) {
-    return path.list.forEach((function(_this) {
+    path.list.forEach((function(_this) {
       return function(entry) {
         var cell;
         cell = _this.pathPlane[entry.y][entry.x];
-        return delete cell[path.id];
+        delete cell[path.id];
       };
     })(this));
   };
@@ -117,19 +115,12 @@
   };
 
   Playfield.prototype.clearPaths = function() {
-    var i, j, _i, _ref, _results;
-    _results = [];
+    var i, j, _i, _j, _ref, _ref1;
     for (i = _i = 0, _ref = this.height; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-      _results.push((function() {
-        var _j, _ref1, _results1;
-        _results1 = [];
-        for (j = _j = 0, _ref1 = this.width; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
-          _results1.push(this.pathPlane[i][j] = {});
-        }
-        return _results1;
-      }).call(this));
+      for (j = _j = 0, _ref1 = this.width; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
+        this.pathPlane[i][j] = {};
+      }
     }
-    return _results;
   };
 
   if (window.bef == null) {

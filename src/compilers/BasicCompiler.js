@@ -56,7 +56,7 @@
       return '/* ! */  programState.push(+!programState.pop())';
     },
     '`': function() {
-      return '/* ` */  programState.push(+(programState.pop() > programState.pop()))';
+      return '/* ` */  programState.push(+(programState.pop() < programState.pop()))';
     },
     '^': function() {
       return '/* ^ */';

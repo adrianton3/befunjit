@@ -3,41 +3,47 @@
   'use strict';
   var Pointer, dirTable;
 
-  dirTable = {
-    '^': {
-      x: 0,
-      y: -1
-    },
-    '<': {
-      x: -1,
-      y: 0
-    },
-    'v': {
-      x: 0,
-      y: 1
-    },
-    '>': {
-      x: 1,
-      y: 0
-    }
-  };
+  dirTable = new Map([
+    [
+      '^', {
+        x: 0,
+        y: -1
+      }
+    ], [
+      '<', {
+        x: -1,
+        y: 0
+      }
+    ], [
+      'v', {
+        x: 0,
+        y: 1
+      }
+    ], [
+      '>', {
+        x: 1,
+        y: 0
+      }
+    ]
+  ]);
 
   Pointer = function(x, y, dir, space) {
     this.x = x;
     this.y = y;
-    this.dir = dir;
     this.space = space;
-    this._updateDir(this.dir);
+    this._updateDir(dir);
   };
 
   Pointer.prototype._updateDir = function(dir) {
+    var entry;
     this.dir = dir;
-    this.ax = dirTable[this.dir].x;
-    return this.ay = dirTable[this.dir].y;
+    entry = dirTable.get(dir);
+    this.ax = entry.x;
+    return this.ay = entry.y;
   };
 
   Pointer.prototype.turn = function(dir) {
-    if ((dirTable[dir] != null) && (dir !== this.dir)) {
+    if ((dirTable.has(dir)) && (dir !== this.dir)) {
       this._updateDir(dir);
     }
     return this;
@@ -52,7 +58,6 @@
   Pointer.prototype.set = function(x, y, dir) {
     this.x = x;
     this.y = y;
-    this.dir = dir;
     this._updateDir(dir);
     return this;
   };

@@ -8,37 +8,39 @@
   };
 
   PathSet = function() {
-    this.set = {};
+    this.map = new Map;
   };
 
   PathSet.prototype.add = function(path) {
-    var hash;
-    hash = getHash(path.list[0].x, path.list[0].y, path.list[0].dir);
-    this.set[hash] = path;
+    var hash, head;
+    head = path.list[0];
+    hash = getHash(head.x, head.y, head.dir);
+    this.map.set(hash, path);
     return this;
   };
 
   PathSet.prototype.has = function(x, y, dir) {
     var hash;
     hash = getHash(x, y, dir);
-    return this.set[hash] != null;
+    return this.map.has(hash);
   };
 
   PathSet.prototype.getStartingFrom = function(x, y, dir) {
     var hash;
     hash = getHash(x, y, dir);
-    return this.set[hash];
+    return this.map.get(hash);
   };
 
   PathSet.prototype.remove = function(path) {
-    var hash;
-    hash = getHash(path.list[0].x, path.list[0].y, path.list[0].dir);
-    delete this.set[hash];
+    var hash, head;
+    head = path.list[0];
+    hash = getHash(head.x, head.y, head.dir);
+    this.map["delete"](hash);
     return this;
   };
 
   PathSet.prototype.clear = function() {
-    this.set = {};
+    this.map.clear();
     return this;
   };
 
