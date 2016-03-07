@@ -1,38 +1,40 @@
 'use strict'
 
 getHash = (x, y, dir) ->
-  "#{x}_#{y}_#{dir}"
+	"#{x}_#{y}_#{dir}"
 
 
 PathSet = ->
-  @set = {}
-  return
+	@map = new Map
+	return
 
 
 PathSet::add = (path) ->
-  hash = getHash path.list[0].x, path.list[0].y, path.list[0].dir
-  @set[hash] = path
-  @
+	head = path.list[0]
+	hash = getHash head.x, head.y, head.dir
+	@map.set hash, path
+	@
 
 
 PathSet::has = (x, y, dir) ->
-  hash = getHash x, y, dir
-  @set[hash]?
+	hash = getHash x, y, dir
+	@map.has hash
 
 
 PathSet::getStartingFrom = (x, y, dir) ->
-  hash = getHash x, y, dir
-  @set[hash]
+	hash = getHash x, y, dir
+	@map.get hash
 
 
 PathSet::remove = (path) ->
-  hash = getHash path.list[0].x, path.list[0].y, path.list[0].dir
-  delete @set[hash]
-  @
+	head = path.list[0]
+	hash = getHash head.x, head.y, head.dir
+	@map.delete hash
+	@
 
 
 PathSet::clear = ->
-	@set = {}
+	@map.clear()
 	@
 
 
