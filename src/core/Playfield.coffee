@@ -69,9 +69,10 @@ Playfield::setAt = (x, y, char) ->
 
 
 Playfield::addPath = (path) ->
-	path.list.forEach (entry) =>
-		@setAt entry.x, entry.y, entry.char
+	path.list.forEach (entry) ->
 		@pathPlane[entry.y][entry.x][path.id] = path
+		return
+	, @
 	@
 
 
