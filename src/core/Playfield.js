@@ -73,12 +73,9 @@
   };
 
   Playfield.prototype.addPath = function(path) {
-    path.list.forEach((function(_this) {
-      return function(entry) {
-        _this.setAt(entry.x, entry.y, entry.char);
-        return _this.pathPlane[entry.y][entry.x][path.id] = path;
-      };
-    })(this));
+    path.list.forEach(function(entry) {
+      this.pathPlane[entry.y][entry.x][path.id] = path;
+    }, this);
     return this;
   };
 
