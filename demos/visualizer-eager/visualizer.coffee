@@ -51,7 +51,12 @@ run = ->
 	playfield.fromString sourceEditor.getValue(), 16, 10
 
 	runtime = new bef.EagerRuntime()
-	runtime.execute playfield, jumpLimit: 100, inputEditor.getValue()
+	runtime.execute(
+		playfield
+		{ jumpLimit: 100, compiler: bef.StackingCompiler }
+#		{ jumpLimit: 100, compiler: bef.OptimizingCompiler }
+		inputEditor.getValue()
+	)
 
 	rawJs = runtime.code
 	prettyJs = js_beautify rawJs

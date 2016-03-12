@@ -23,6 +23,11 @@ ProgramState::pop = ->
 	@stack.pop()
 
 
+ProgramState::peek = ->
+	return 0 if @stack.length < 1
+	@stack[@stack.length - 1]
+
+
 ProgramState::out = (e) ->
 	@outRecord.push e
 
