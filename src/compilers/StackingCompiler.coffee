@@ -120,14 +120,13 @@ codeMap =
 		return
 
 
-	# these need to be declared like pops
 	'&': (x, y, dir, index, stack) ->
-		stack.push 'programState.next()'
+		stack.push stack.next()
 		return
 
 
 	'~': (x, y, dir, index, stack) ->
-		stack.push 'programState.nextChar()'
+		stack.push stack.nextChar()
 		return
 
 
@@ -142,6 +141,7 @@ StackingCompiler = ->
 makeStack = (uid) ->
 	stack = []
 	pre = []
+	read = []
 	int = []
 	post = []
 	exit = false
@@ -168,6 +168,15 @@ makeStack = (uid) ->
 			pre.push "const #{name} = programState.peek()"
 			name
 
+	makeNext = (methodName) ->
+		->
+			name = "r#{uid}_#{read.length}"
+			read.push "const #{name} = programState.#{methodName}()"
+			name
+
+	stackish.next = makeNext 'next'
+	stackish.nextChar = makeNext 'nextChar'
+
 	stackish.out = (entry) ->
 		post.push entry
 		return
@@ -175,12 +184,14 @@ makeStack = (uid) ->
 	stackish.dump = ->
 		int.push """
 			#{pre.join '\n'}
+			#{read.join '\n'}
 			programState.push(#{stack.join ', '})
 			#{post.join '\n'}
 		"""
 
 		stack = []
 		pre = []
+		read = []
 		post = []
 
 		return
