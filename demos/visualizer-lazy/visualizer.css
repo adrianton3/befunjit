@@ -86,6 +86,10 @@ div .editor {
     border-bottom-color: hsl(220, 100%, 35%);
 }
 
+.wide {
+    width: 300px;
+}
+
 option {
     border-width: 0;
 }

@@ -27,6 +27,13 @@
     return this.stack.pop();
   };
 
+  ProgramState.prototype.peek = function() {
+    if (this.stack.length < 1) {
+      return 0;
+    }
+    return this.stack[this.stack.length - 1];
+  };
+
   ProgramState.prototype.out = function(e) {
     return this.outRecord.push(e);
   };
