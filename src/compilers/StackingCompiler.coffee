@@ -13,8 +13,8 @@ digitPusher = (digit) ->
 
 binaryOperator = (operatorFunction, operatorChar, stringFunction) ->
 	(x, y, dir, index, stack) ->
-		operand1 = stack.popish()
-		operand2 = stack.popish()
+		operand1 = stack.pop()
+		operand2 = stack.pop()
 
 		fun = if (isNumber operand1) and (isNumber operand2)
 			operatorFunction
@@ -42,15 +42,15 @@ codeMap =
 	'9': digitPusher 9
 
 
-	'+': binaryOperator ((o1, o2) -> o1 + o2), '+', (o1, o2) -> "(#{o1} + #{o2})"
-	'-': binaryOperator ((o1, o2) -> o2 - o1), '-', (o1, o2) -> "(-#{o1} + #{o2})"
-	'*': binaryOperator ((o1, o2) -> o1 * o2), '*', (o1, o2) -> "(#{o1} * #{o2})"
+	'+': binaryOperator ((o1, o2) -> o2 + o1), '+', (o1, o2) -> "(#{o2} + #{o1})"
+	'-': binaryOperator ((o1, o2) -> o2 - o1), '-', (o1, o2) -> "(#{o2} - #{o1})"
+	'*': binaryOperator ((o1, o2) -> o2 * o1), '*', (o1, o2) -> "(#{o2} * #{o1})"
 	'/': binaryOperator ((o1, o2) -> o2 // o1), '/', (o1, o2) -> "Math.floor(#{o2} / #{o1})"
 	'%': binaryOperator ((o1, o2) -> o2 % o1), '%', (o1, o2) -> "(#{o2} % #{o1})"
 
 
 	'!': (x, y, dir, index, stack) ->
-		stack.push "(+!#{stack.popish()})"
+		stack.push "(+!#{stack.pop()})"
 		return
 
 
@@ -74,24 +74,24 @@ codeMap =
 
 
 	'\\': (x, y, dir, index, stack) ->
-		e1 = stack.popish()
-		e2 = stack.popish()
+		e1 = stack.pop()
+		e2 = stack.pop()
 		stack.push e1, e2
 		return
 
 
 	'$': (x, y, dir, index, stack) ->
-		stack.popish()
+		stack.pop()
 		return
 
 
 	'.': (x, y, dir, index, stack) ->
-		stack.out("programState.out(#{stack.popish()})")
+		stack.out("programState.out(#{stack.pop()})")
 		return
 
 
 	',': (x, y, dir, index, stack) ->
-		stack.out("programState.out(String.fromCharCode(#{stack.popish()}))")
+		stack.out("programState.out(String.fromCharCode(#{stack.pop()}))")
 		return
 
 
@@ -100,11 +100,11 @@ codeMap =
 
 	'p': (x, y, dir, index, stack, from, to) ->
 		stack.dump()
-		stack.int """
+		stack.pushChunk """
 			programState.put(
-				#{stack.popish()},
-				#{stack.popish()},
-				#{stack.popish()},
+				#{stack.pop()},
+				#{stack.pop()},
+				#{stack.pop()},
 				#{x}, #{y}, '#{dir}', #{index},
 				'#{from}', '#{to}'
 			)
@@ -116,7 +116,7 @@ codeMap =
 
 
 	'g': (x, y, dir, index, stack) ->
-		stack.push "programState.get(#{stack.popish()}, #{stack.popish()})"
+		stack.push "programState.get(#{stack.pop()}, #{stack.pop()})"
 		return
 
 
@@ -140,80 +140,79 @@ StackingCompiler = ->
 
 makeStack = (uid) ->
 	stack = []
-	pre = []
-	read = []
-	int = []
-	post = []
-	exit = false
+	declarations = []
+	reads = []
+	writes = []
+	chunks = []
+	exitRequest = false
 
-	stackish = {}
+	stackObj = {}
 
-	stackish.push = ->
+	stackObj.push = ->
 		Array::push.apply stack, arguments
 		return
 
-	stackish.popish = ->
+	stackObj.pop = ->
 		if stack.length > 0
 			stack.pop()
 		else
-			name = "p#{uid}_#{pre.length}"
+			name = "p#{uid}_#{declarations.length}"
 			# use const once node supports it
-			pre.push "var #{name} = programState.pop()"
+			declarations.push "var #{name} = programState.pop()"
 			name
 
-	stackish.peek = ->
+	stackObj.peek = ->
 		if stack.length
 			stack[stack.length - 1]
 		else
-			name = "p#{uid}_#{pre.length}"
+			name = "p#{uid}_#{declarations.length}"
 			# use const once node supports it
-			pre.push "var #{name} = programState.peek()"
+			declarations.push "var #{name} = programState.peek()"
 			name
 
 	makeNext = (methodName) ->
 		->
-			name = "r#{uid}_#{read.length}"
+			name = "r#{uid}_#{reads.length}"
 			# use const once node supports it
-			read.push "var #{name} = programState.#{methodName}()"
+			reads.push "var #{name} = programState.#{methodName}()"
 			name
 
-	stackish.next = makeNext 'next'
-	stackish.nextChar = makeNext 'nextChar'
+	stackObj.next = makeNext 'next'
+	stackObj.nextChar = makeNext 'nextChar'
 
-	stackish.out = (entry) ->
-		post.push entry
+	stackObj.out = (entry) ->
+		writes.push entry
 		return
 
-	stackish.dump = ->
-		int.push """
-			#{pre.join '\n'}
-			#{read.join '\n'}
-			programState.push(#{stack.join ', '})
-			#{post.join '\n'}
+	stackObj.dump = ->
+		chunks.push """
+			#{declarations.join '\n'}
+			#{reads.join '\n'}
+			#{if stack.length > 0 then "programState.push(#{stack.join ', '})" else ''}
+			#{writes.join '\n'}
 		"""
 
 		stack = []
-		pre = []
-		read = []
-		post = []
+		declarations = []
+		reads = []
+		writes = []
 
 		return
 
-	stackish.int = (entry) ->
-		int.push entry
+	stackObj.pushChunk = (entry) ->
+		chunks.push entry
 		return
 
-	stackish.stringify = ->
+	stackObj.stringify = ->
 		"""
-			#{int.join '\n'}
-			#{if exit then 'programState.exit()' else ''}
+			#{chunks.join '\n'}
+			#{if exitRequest then 'programState.exit()' else ''}
 		"""
 
+	stackObj.exit = ->
+		exitRequest = true
 
-	stackish.exit = ->
-		exit = true
-
-	stackish
+	stackObj
 
 
 StackingCompiler.assemble = (path) ->
@@ -236,7 +235,7 @@ StackingCompiler.assemble = (path) ->
 
 StackingCompiler.compile = (path) ->
 	code = StackingCompiler.assemble path
-	path.code = code #storing this just for debugging
+	path.code = code # storing this just for debugging
 	compiled = new Function 'programState', code
 	path.body = compiled
 
