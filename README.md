@@ -53,6 +53,18 @@ the current PC.
 Changelog
 ---------
 
+####r13 --- 13 mar 2016
+ + added a better optimizing compiler (the StackingCompiler)
+ + updated the visualizers to allow the user to pick the compiler
+
+####r12 --- 9 mar 2016
+ + fixed operand order for the compare operation
+ + fixed the `\` operation in certain edge cases when using the lazy runtime
+ + fixed the lazy runtime's path caching when any of `_|?` lead to a `^<v>`
+
+####r11 --- 31 jan 2016
+ + added a CLI
+
 ####r10 --- 28 jul 2015
  + reversed operand order for `-/%`
  + fixed the `\` operation for stacks with less than 2 elements
