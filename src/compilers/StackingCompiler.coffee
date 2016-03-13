@@ -116,7 +116,7 @@ codeMap =
 
 
 	'g': (x, y, dir, index, stack) ->
-		stack.push "programState.get(#{stack.popish()}, #{stack.popish()}))"
+		stack.push "programState.get(#{stack.popish()}, #{stack.popish()})"
 		return
 
 
@@ -157,7 +157,8 @@ makeStack = (uid) ->
 			stack.pop()
 		else
 			name = "p#{uid}_#{pre.length}"
-			pre.push "const #{name} = programState.pop()"
+			# use const once node supports it
+			pre.push "var #{name} = programState.pop()"
 			name
 
 	stackish.peek = ->
@@ -165,13 +166,15 @@ makeStack = (uid) ->
 			stack[stack.length - 1]
 		else
 			name = "p#{uid}_#{pre.length}"
-			pre.push "const #{name} = programState.peek()"
+			# use const once node supports it
+			pre.push "var #{name} = programState.peek()"
 			name
 
 	makeNext = (methodName) ->
 		->
 			name = "r#{uid}_#{read.length}"
-			read.push "const #{name} = programState.#{methodName}()"
+			# use const once node supports it
+			read.push "var #{name} = programState.#{methodName}()"
 			name
 
 	stackish.next = makeNext 'next'
