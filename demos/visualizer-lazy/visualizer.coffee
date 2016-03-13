@@ -76,7 +76,7 @@ run = ->
 	lazyRuntime = new bef.LazyRuntime()
 	lazyRuntime.execute(
 		playfield
-		{ jumpLimit: 1000, compiler: compiler }
+		{ jumpLimit: 1000, compiler }
 		inputEditor.getValue()
 	)
 

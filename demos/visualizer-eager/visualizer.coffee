@@ -5,6 +5,8 @@ inputEditor = null
 outputEditor = null
 jsEditor = null
 
+compiler = bef.StackingCompiler
+
 
 setupSamples = ->
 	select = document.getElementById 'sample'
@@ -19,6 +21,25 @@ setupSamples = ->
 		{ input, code } = window.befSample[@value]
 		sourceEditor.setValue code, 1
 		inputEditor.setValue input, 1
+		return
+
+
+setupCompilers = ->
+	select = document.getElementById 'compiler'
+
+	[
+		'StackingCompiler'
+		'OptimizingCompiler'
+		'BasicCompiler'
+	].forEach (sampleName) ->
+		option = document.createElement 'option'
+		option.textContent = sampleName
+		select.appendChild option
+		return
+
+	select.addEventListener 'change', ->
+		compiler = bef[@value]
+		run()
 		return
 
 
@@ -53,8 +74,7 @@ run = ->
 	runtime = new bef.EagerRuntime()
 	runtime.execute(
 		playfield
-		{ jumpLimit: 100, compiler: bef.StackingCompiler }
-#		{ jumpLimit: 100, compiler: bef.OptimizingCompiler }
+		{ jumpLimit: 100, compiler }
 		inputEditor.getValue()
 	)
 
@@ -74,6 +94,7 @@ setupRunButton = ->
 
 
 setupSamples()
+setupCompilers()
 setupEditors()
 setupRunButton()
 run()

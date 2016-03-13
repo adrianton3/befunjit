@@ -54,7 +54,7 @@ div .editor {
 
 #js-editor {
     width: 600px;
-    height: 500px;
+    height: 498px;
     float: left;
 }
 
@@ -63,7 +63,7 @@ div .editor {
 }
 
 .blue {
-    width: 144px;
+    width: 146px;
     color: #F3F4F1;
     font-weight: bold;
     font-size: 16px;
@@ -84,6 +84,10 @@ div .editor {
 .blue:hover {
     background-color: hsl(220, 100%, 60%);
     border-bottom-color: hsl(220, 100%, 35%);
+}
+
+.wide {
+    width: 600px;
 }
 
 option {
