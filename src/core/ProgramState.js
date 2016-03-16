@@ -82,12 +82,7 @@
   };
 
   ProgramState.prototype.duplicate = function() {
-    var e;
-    if (this.stack.length < 1) {
-      return;
-    }
-    e = this.stack[this.stack.length - 1];
-    this.stack.push(e);
+    this.stack.push(this.peek());
   };
 
   ProgramState.prototype.swap = function() {

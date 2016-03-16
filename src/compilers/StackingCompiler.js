@@ -98,8 +98,12 @@
     },
     '#': function() {},
     'p': function(x, y, dir, index, stack, from, to) {
+      var p1, p2, p3;
+      p1 = stack.pop();
+      p2 = stack.pop();
+      p3 = stack.pop();
       stack.dump();
-      stack.pushChunk("programState.put(\n	" + (stack.pop()) + ",\n	" + (stack.pop()) + ",\n	" + (stack.pop()) + ",\n	" + x + ", " + y + ", '" + dir + "', " + index + ",\n	'" + from + "', '" + to + "'\n)\nif (programState.flags.pathInvalidatedAhead) {\n	return\n}");
+      stack.pushChunk("programState.put(\n	" + p1 + ",\n	" + p2 + ",\n	" + p3 + ",\n	" + x + ", " + y + ", '" + dir + "', " + index + ",\n	'" + from + "', '" + to + "'\n)\nif (programState.flags.pathInvalidatedAhead) {\n	return\n}");
     },
     'g': function(x, y, dir, index, stack) {
       stack.push("programState.get(" + (stack.pop()) + ", " + (stack.pop()) + ")");
