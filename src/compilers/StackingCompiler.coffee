@@ -99,12 +99,17 @@ codeMap =
 
 
 	'p': (x, y, dir, index, stack, from, to) ->
+		p1 = stack.pop()
+		p2 = stack.pop()
+		p3 = stack.pop()
+
 		stack.dump()
+
 		stack.pushChunk """
 			programState.put(
-				#{stack.pop()},
-				#{stack.pop()},
-				#{stack.pop()},
+				#{p1},
+				#{p2},
+				#{p3},
 				#{x}, #{y}, '#{dir}', #{index},
 				'#{from}', '#{to}'
 			)

@@ -8,5 +8,6 @@ demos/samples/**/*.js
 
 build
 
-test/*.js
-test/specs/**/*.js
+test/unit/*.js
+test/unit/specs/**/*.js
+test/fuzz/**/*.js

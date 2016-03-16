@@ -74,9 +74,7 @@ ProgramState::mod = (a, b) ->
 
 
 ProgramState::duplicate = ->
-	return if @stack.length < 1
-	e = @stack[@stack.length - 1]
-	@stack.push e
+	@stack.push @peek()
 	return
 
 

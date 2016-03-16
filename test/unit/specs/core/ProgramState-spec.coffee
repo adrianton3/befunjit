@@ -60,6 +60,6 @@ describe 'ProgramState', ->
 			programState.duplicate()
 			(expect programState.stack).toEqual [11, 11]
 
-		it 'does nothing to an empty stack', ->
+		it 'inserts a 0 onto an empty stack', ->
 			programState.duplicate()
-			(expect programState.stack).toEqual []
+			(expect programState.stack).toEqual [0]
