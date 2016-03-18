@@ -90,6 +90,10 @@ describe 'OptimizingCompiler', ->
 				(expect programState.pop.calls.count()).toEqual 2
 				(expect programState.stack).toEqual [-1]
 
+			it 'handles subtracting from a negative number', ->
+				programState = execute '03--', [1]
+				(expect programState.stack).toEqual [4]
+
 		describe '*', ->
 			it 'resolves entirely at compile time', ->
 				programState = execute '23*'

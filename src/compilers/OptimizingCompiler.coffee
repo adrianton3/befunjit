@@ -38,7 +38,7 @@ codeMap =
 
 
 	'+': binaryOperator ((o1, o2) -> o1 + o2), '+', (o1, o2) -> "programState.push(#{o1} + #{o2})"
-	'-': binaryOperator ((o1, o2) -> o2 - o1), '-', (o1, o2) -> "programState.push(-#{o1} + #{o2})"
+	'-': binaryOperator ((o1, o2) -> o2 - o1), '-', (o1, o2) -> "programState.push(- #{o1} + #{o2})"
 	'*': binaryOperator ((o1, o2) -> o1 * o2), '*', (o1, o2) -> "programState.push(#{o1} * #{o2})"
 	'/': binaryOperator ((o1, o2) -> o2 // o1), '/', (o1, o2) -> "programState.div(#{o1}, #{o2})"
 	'%': binaryOperator ((o1, o2) -> o2 % o1), '%', (o1, o2) -> "programState.mod(#{o1}, #{o2})"

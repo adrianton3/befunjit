@@ -11,7 +11,7 @@
 
 
 generateCommand = do ->
-	commands = '+-*/%!`:\\$.,pg' # ~&
+	commands = '0123456789+-*/%!`:\\$.,pg' # ~&
 
 	->
 		commands[Math.floor Math.random() * commands.length]
