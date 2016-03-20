@@ -96,6 +96,10 @@ runSpec = (spec, executeList) ->
 	return
 
 
+randInt = (min, max) ->
+	min + Math.floor Math.random() * (max - min + 1)
+
+
 runAll = (count) ->
 	executeList = [
 		BasicCompiler
@@ -105,7 +109,7 @@ runAll = (count) ->
 
 	for i in [0...count]
 		spec = {
-			code: generateCode 15
+			code: generateCode randInt 1, 20
 			input: []
 			pathInvalidatedAhead: Math.random() < 0.5
 		}
