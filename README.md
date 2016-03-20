@@ -31,8 +31,8 @@ longest static path, compiles it, stores it and executes it as in the previous c
 
 A "static path" is simply the list of commands the PC encounters while running through the playfield up to
 reaching an instruction which conditionally changes its direction (`|`, `_` or `?`) or detecting a cycle.
-[This visualizer](http://adrianton3.github.io/befunjit/src/visualizer/visualizer.html) shows what static paths
-remained cached after the execution of a program (hover the small arrows).
+[This visualizer](http://adrianton3.github.io/befunjit/demos/visualizer-lazy/visualizer.html) shows what 
+static paths remained cached after the execution of a program (hover the small arrows).
 
 One of the advantages of compiling paths over interpreting them is that some instructions don't generate any
 code: `^<v>`, `#`, `"` and whitespace. Even more, once isolated, a static path can be optimised using constant
