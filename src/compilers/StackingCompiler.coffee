@@ -50,7 +50,13 @@ codeMap =
 
 
 	'!': (x, y, dir, index, stack) ->
-		stack.push "(+!#{stack.pop()})"
+		operand = stack.pop()
+
+		stack.push if isNumber operand
+			 +!operand
+		else
+			"(+!#{operand})"
+
 		return
 
 
