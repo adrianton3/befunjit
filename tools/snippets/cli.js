@@ -3,32 +3,22 @@
 
 
 	function processArguments(argv) {
-		if (argv.length < 3 || argv.length > 5) {
-			console.error('Use: node befunjit.node.js [--lazy] [--time] <source>');
+		if (argv.length < 3 || argv.length > 6) {
+			console.error('Use: node befunjit.node.js [--lazy] [--stacking|--optimizing|--basic] [--time] <source>');
 			process.exit(1);
 		}
 
-		if (argv.length === 3) {
-			return {
-				runtimeConstructor: bef.EagerRuntime,
-				sourcePath: argv[2],
-				time: false
-			}
-		} else if (argv.length === 4) {
-			return {
-				runtimeConstructor: argv[2] === '--lazy' ? bef.LazyRuntime : bef.EagerRuntime,
-				sourcePath: argv[3],
-				time: argv[2] === '--time'
-			}
-		} else {
-			return {
-				runtimeConstructor: (argv[2] === '--lazy') || (argv[3] === '--lazy') ?
-					bef.LazyRuntime :
-					bef.EagerRuntime,
-				sourcePath: argv[4],
-				time: (argv[2] === '--time') || (argv[3] === '--time')
-			}
-		}
+		const options = new Set(argv.slice(2, argv.length - 1));
+
+		return {
+			sourcePath: argv[argv.length - 1],
+			time: options.has('--time'),
+			runtimeConstructor: options.has('--lazy') ? bef.LazyRuntime : bef.EagerRuntime,
+			compiler: options.has('--stacking') ? bef.StackingCompiler
+				: options.has('--optimizing') ? bef.OptimizingCompiler
+				: options.has('--basic') ? bef.BasicCompiler
+				: bef.BinaryCompiler
+		};
 	}
 
 	function setupStdin(ready) {
@@ -49,15 +39,12 @@
 		});
 	}
 
-	function run(runtimeConstructor, source, input) {
+	function run(runtimeConstructor, compiler, source, input) {
 		var playfield = new bef.Playfield();
 		playfield.fromString(source);
 
 		var runtime = new runtimeConstructor;
-		//runtime.execute(playfield, { jumpLimit: Infinity, compiler: bef.BasicCompiler }, input);
-		//runtime.execute(playfield, { jumpLimit: Infinity, compiler: bef.OptimizingCompiler }, input);
-		//runtime.execute(playfield, { jumpLimit: Infinity, compiler: bef.StackingCompiler }, input);
-		runtime.execute(playfield, { jumpLimit: Infinity, compiler: bef.BinaryCompiler }, input);
+		runtime.execute(playfield, { jumpLimit: Infinity, compiler: compiler }, input);
 
 		return runtime.programState.outRecord.join('');
 	}
@@ -76,7 +63,7 @@
 				start = process.hrtime();
 			}
 
-			var output = run(args.runtimeConstructor, source, input);
+			var output = run(args.runtimeConstructor, args.compiler, source, input);
 
 			if (args.time) {
 				var diff = process.hrtime(start);
