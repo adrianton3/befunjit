@@ -1,6 +1,8 @@
 changelog
 =========
 
+####r14 --- 4 jun 2016
+ + added the BinaryCompiler - based on the StackingCompiler
 
 ####r13 --- 13 mar 2016
  + added a better optimizing compiler (the StackingCompiler)
