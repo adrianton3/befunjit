@@ -1,8 +1,5 @@
 'use strict'
 
-{ StackingCompiler } = window.bef
-
-
 consumePair = (consume, delta) ->
 	{ consume, delta }
 
@@ -96,11 +93,13 @@ generateTree = (codes, id) ->
 
 
 generateCode = (path, maxDepth) ->
+	{ makeStack, codeMap } = window.bef.StackingCompiler
+
 	startStack = (0 for i in [0...maxDepth])
 
 	charList = path.getAsList()
 
-	stack = StackingCompiler.makeStack(
+	stack = makeStack(
 		"#{path.id}_#{maxDepth}"
 		startStack
 		{ popMethod: 'popUnsafe' }
@@ -110,7 +109,7 @@ generateCode = (path, maxDepth) ->
 		if entry.string
 			stack.push entry.char.charCodeAt 0
 		else
-			codeGenerator = StackingCompiler.codeMap[entry.char]
+			codeGenerator = codeMap[entry.char]
 			if codeGenerator?
 				codeGenerator entry.x, entry.y, entry.dir, i, stack, path.from, path.to
 		return
