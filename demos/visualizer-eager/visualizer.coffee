@@ -5,7 +5,7 @@ inputEditor = null
 outputEditor = null
 jsEditor = null
 
-compiler = bef.StackingCompiler
+compiler = bef.BinaryCompiler
 
 
 setupSamples = ->
@@ -28,6 +28,7 @@ setupCompilers = ->
 	select = document.getElementById 'compiler'
 
 	[
+		'BinaryCompiler'
 		'StackingCompiler'
 		'OptimizingCompiler'
 		'BasicCompiler'
@@ -74,7 +75,7 @@ run = ->
 	runtime = new bef.EagerRuntime()
 	runtime.execute(
 		playfield
-		{ jumpLimit: 100, compiler }
+		{ jumpLimit: 1000, compiler }
 		inputEditor.getValue()
 	)
 

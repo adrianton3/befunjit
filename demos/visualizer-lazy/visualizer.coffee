@@ -7,7 +7,7 @@ jsEditor = null
 
 grid = null
 
-compiler = bef.StackingCompiler
+compiler = bef.BinaryCompiler
 
 
 setupSamples = ->
@@ -30,6 +30,7 @@ setupCompilers = ->
 	select = document.getElementById 'compiler'
 
 	[
+		'BinaryCompiler'
 		'StackingCompiler'
 		'OptimizingCompiler'
 		'BasicCompiler'

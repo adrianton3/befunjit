@@ -1,0 +1,144 @@
+'use strict'
+
+{ StackingCompiler } = window.bef
+
+
+consumePair = (consume, delta) ->
+	{ consume, delta }
+
+
+consumeCount = new Map [
+	[' ', consumePair 0, 0]
+
+	['0', consumePair 0, 1]
+	['1', consumePair 0, 1]
+	['2', consumePair 0, 1]
+	['3', consumePair 0, 1]
+	['4', consumePair 0, 1]
+	['5', consumePair 0, 1]
+	['6', consumePair 0, 1]
+	['7', consumePair 0, 1]
+	['8', consumePair 0, 1]
+	['9', consumePair 0, 1]
+
+	['+', consumePair 2, -1]
+	['-', consumePair 2, -1]
+	['*', consumePair 2, -1]
+	['/', consumePair 2, -1]
+	['%', consumePair 2, -1]
+
+	['!', consumePair 1, 0]
+	['`', consumePair 2, -1]
+
+	['^', consumePair 0, 0]
+	['<', consumePair 0, 0]
+	['v', consumePair 0, 0]
+	['>', consumePair 0, 0]
+	['?', consumePair 0, 0]
+	['_', consumePair 0, 0]
+	['|', consumePair 0, 0]
+	['"', consumePair 0, 0]
+
+	[':', consumePair 0, 0]
+	['\\', consumePair 2, 0]
+	['$', consumePair 0, 0]
+
+	['.', consumePair 1, -1]
+	[',', consumePair 1, -1]
+	['#', consumePair 0, 0]
+	['p', consumePair 3, -3]
+	['g', consumePair 2, -1]
+	['&', consumePair 0, 1]
+	['~', consumePair 0, 1]
+	['@', consumePair 0, 0]
+]
+
+
+getMaxDepth = (path) ->
+	{ max } = path.getAsList().reduce ({ max, sum }, { char, string }) ->
+		{ consume, delta } = if string
+			{ consume: 0, delta: 1 }
+		else if consumeCount.has char
+			consumeCount.get char
+		else
+			{ consume: 0, delta: 0 }
+
+		sum: sum + delta
+		max: Math.min max, sum - consume
+	, { max: 0, sum: 0 }
+
+	-max
+
+
+generateTree = (codes, id) ->
+	generate = (from, to) ->
+		if from >= to
+			codes[from]
+		else
+			mid = (from + to) // 2
+			"""
+				if (length_#{id} < #{mid + 1}) {
+					#{generate from, mid}
+				} else {
+					#{generate mid + 1, to}
+				}
+			"""
+
+	if codes.length == 0
+		''
+	else if codes.length == 1
+		codes[0]
+	else
+		"""
+			const length_#{id} = programState.getLength()
+			#{generate 0, codes.length - 1}
+		"""
+
+
+generateCode = (path, maxDepth) ->
+	startStack = (0 for i in [0...maxDepth])
+
+	charList = path.getAsList()
+
+	stack = StackingCompiler.makeStack(
+		"#{path.id}_#{maxDepth}"
+		startStack
+		{ popMethod: 'popUnsafe' }
+	)
+
+	charList.forEach (entry, i) ->
+		if entry.string
+			stack.push entry.char.charCodeAt 0
+		else
+			codeGenerator = StackingCompiler.codeMap[entry.char]
+			if codeGenerator?
+				codeGenerator entry.x, entry.y, entry.dir, i, stack, path.from, path.to
+		return
+
+	stack.dump()
+	stack.stringify()
+
+
+assemble = (path) ->
+	maxDepth = getMaxDepth path
+	codes = ((generateCode path, (maxDepth - i)) for i in [0..maxDepth])
+	generateTree codes, path.id
+
+
+compile = (path) ->
+	code = assemble path
+	path.code = code # storing this just for debugging
+	compiled = new Function 'programState', code
+	path.body = compiled
+
+
+BinaryCompiler = ->
+Object.assign(BinaryCompiler, {
+	getMaxDepth
+	generateTree
+	assemble
+	compile
+})
+
+window.bef ?= {}
+window.bef.BinaryCompiler = BinaryCompiler

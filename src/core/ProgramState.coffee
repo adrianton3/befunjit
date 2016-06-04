@@ -13,6 +13,10 @@ ProgramState = (@interpreter) ->
 	return
 
 
+ProgramState::getLength = ->
+	@stack.length
+
+
 ProgramState::push = ->
 	@stack.push.apply @stack, arguments
 	return
@@ -20,6 +24,10 @@ ProgramState::push = ->
 
 ProgramState::pop = ->
 	return 0 if @stack.length < 1
+	@stack.pop()
+
+
+ProgramState::popUnsafe = ->
 	@stack.pop()
 
 

@@ -169,6 +169,7 @@ runSuite = (specs, execute) ->
 window.befTest ?= {}
 window.befTest.makeExecute = makeExecute
 window.befTest.runSuite = runSuite
+window.befTest.getPath = getPath
 
 window.befTest.compilerSpecs =
 	general: generalSpecs

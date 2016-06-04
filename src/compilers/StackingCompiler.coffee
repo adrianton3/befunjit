@@ -146,11 +146,10 @@ codeMap =
 		return
 
 
-StackingCompiler = ->
+makeStack = (uid, startStack = [], options = {}) ->
+	popMethod = options.popMethod ? 'pop'
 
-
-makeStack = (uid) ->
-	stack = []
+	stack = startStack
 	declarations = []
 	reads = []
 	writes = []
@@ -169,11 +168,11 @@ makeStack = (uid) ->
 		else
 			name = "p#{uid}_#{declarations.length}"
 			# use const once node supports it
-			declarations.push "var #{name} = programState.pop()"
+			declarations.push "var #{name} = programState.#{popMethod}()"
 			name
 
 	stackObj.peek = ->
-		if stack.length
+		if stack.length > 0
 			stack[stack.length - 1]
 		else
 			name = "p#{uid}_#{declarations.length}"
@@ -226,7 +225,7 @@ makeStack = (uid) ->
 	stackObj
 
 
-StackingCompiler.assemble = (path) ->
+assemble = (path) ->
 	charList = path.getAsList()
 
 	stack = makeStack path.id
@@ -244,11 +243,20 @@ StackingCompiler.assemble = (path) ->
 	stack.stringify()
 
 
-StackingCompiler.compile = (path) ->
-	code = StackingCompiler.assemble path
+compile = (path) ->
+	code = assemble path
 	path.code = code # storing this just for debugging
 	compiled = new Function 'programState', code
 	path.body = compiled
+
+
+StackingCompiler = ->
+Object.assign(StackingCompiler, {
+	codeMap
+	makeStack
+	assemble
+	compile
+})
 
 
 window.bef ?= {}
