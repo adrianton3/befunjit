@@ -56,7 +56,8 @@
 		var runtime = new runtimeConstructor;
 		//runtime.execute(playfield, { jumpLimit: Infinity, compiler: bef.BasicCompiler }, input);
 		//runtime.execute(playfield, { jumpLimit: Infinity, compiler: bef.OptimizingCompiler }, input);
-		runtime.execute(playfield, { jumpLimit: Infinity, compiler: bef.StackingCompiler }, input);
+		//runtime.execute(playfield, { jumpLimit: Infinity, compiler: bef.StackingCompiler }, input);
+		runtime.execute(playfield, { jumpLimit: Infinity, compiler: bef.BinaryCompiler }, input);
 
 		return runtime.programState.outRecord.join('');
 	}
