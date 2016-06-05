@@ -146,10 +146,11 @@ codeMap =
 		return
 
 
-makeStack = (uid, startStack = [], options = {}) ->
+makeStack = (uid, options = {}) ->
 	popMethod = options.popMethod ? 'pop'
+	freePops = options.freePops ? Infinity
 
-	stack = startStack
+	stack = []
 	declarations = []
 	reads = []
 	writes = []
@@ -165,7 +166,10 @@ makeStack = (uid, startStack = [], options = {}) ->
 	stackObj.pop = ->
 		if stack.length > 0
 			stack.pop()
+		else if freePops <= 0
+			0
 		else
+			freePops--
 			name = "p#{uid}_#{declarations.length}"
 			# use const once node supports it
 			declarations.push "var #{name} = programState.#{popMethod}()"

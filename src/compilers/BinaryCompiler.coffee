@@ -36,9 +36,9 @@ consumeCount = new Map [
 	['|', consumePair 0, 0]
 	['"', consumePair 0, 0]
 
-	[':', consumePair 0, 0]
+	[':', consumePair 0, 1]
 	['\\', consumePair 2, 0]
-	['$', consumePair 0, 0]
+	['$', consumePair 1, -1]
 
 	['.', consumePair 1, -1]
 	[',', consumePair 1, -1]
@@ -95,14 +95,11 @@ generateTree = (codes, id) ->
 generateCode = (path, maxDepth) ->
 	{ makeStack, codeMap } = window.bef.StackingCompiler
 
-	startStack = (0 for i in [0...maxDepth])
-
 	charList = path.getAsList()
 
 	stack = makeStack(
 		"#{path.id}_#{maxDepth}"
-		startStack
-		{ popMethod: 'popUnsafe' }
+		{ popMethod: 'popUnsafe', freePops: maxDepth }
 	)
 
 	charList.forEach (entry, i) ->
@@ -120,7 +117,7 @@ generateCode = (path, maxDepth) ->
 
 assemble = (path) ->
 	maxDepth = getMaxDepth path
-	codes = ((generateCode path, (maxDepth - i)) for i in [0..maxDepth])
+	codes = ((generateCode path, depth) for depth in [0..maxDepth])
 	generateTree codes, path.id
 
 
