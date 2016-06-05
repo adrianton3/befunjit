@@ -1,14 +1,13 @@
 (function () {
-	'use strict';
+	'use strict'
 
-
-	function processArguments(argv) {
+	function processArguments (argv) {
 		if (argv.length < 3 || argv.length > 6) {
-			console.error('Use: node befunjit.node.js [--lazy] [--stacking|--optimizing|--basic] [--time] <source>');
-			process.exit(1);
+			console.error('Use: node befunjit.node.js [--lazy] [--stacking|--optimizing|--basic] [--time] <source>')
+			process.exit(1)
 		}
 
-		const options = new Set(argv.slice(2, argv.length - 1));
+		const options = new Set(argv.slice(2, argv.length - 1))
 
 		return {
 			sourcePath: argv[argv.length - 1],
@@ -18,61 +17,64 @@
 				: options.has('--optimizing') ? bef.OptimizingCompiler
 				: options.has('--basic') ? bef.BasicCompiler
 				: bef.BinaryCompiler
-		};
+		}
 	}
 
-	function setupStdin(ready) {
-		var input = '';
+	function setupStdin (ready) {
+		let input = ''
 
-		process.stdin.setEncoding('utf8');
+		process.stdin.setEncoding('utf8')
 
-		process.stdin.on('readable', function () {
-			var chunk = process.stdin.read();
+		process.stdin.on('readable', () => {
+			const chunk = process.stdin.read()
 
 			if (chunk !== null) {
-				input += chunk;
+				input += chunk
 			}
-		});
+		})
 
-		process.stdin.on('end', function () {
-			ready(input);
-		});
+		process.stdin.on('end', () => {
+			ready(input)
+		})
 	}
 
-	function run(runtimeConstructor, compiler, source, input) {
-		var playfield = new bef.Playfield();
-		playfield.fromString(source);
+	function run (runtimeConstructor, compiler, source, input) {
+		const playfield = new bef.Playfield()
+		playfield.fromString(source)
 
-		var runtime = new runtimeConstructor;
-		runtime.execute(playfield, { jumpLimit: Infinity, compiler: compiler }, input);
+		const runtime = new runtimeConstructor
+		runtime.execute(
+			playfield,
+			{ compiler, jumpLimit: Infinity },
+			input
+		)
 
-		return runtime.programState.outRecord.join('');
+		return runtime.programState.outRecord.join('')
 	}
-
 
 	if (require.main === module) {
-		var fs = require('fs');
+		const fs = require('fs')
 
-		var args = processArguments(process.argv);
+		const args = processArguments(process.argv)
 
 		setupStdin(function (input) {
-			var source = fs.readFileSync(args.sourcePath).toString();
+			const source = fs.readFileSync(args.sourcePath).toString()
 
-			var start;
+			let start
 			if (args.time) {
-				start = process.hrtime();
+				start = process.hrtime()
 			}
 
-			var output = run(args.runtimeConstructor, args.compiler, source, input);
+			const output = run(args.runtimeConstructor, args.compiler, source, input)
 
 			if (args.time) {
-				var diff = process.hrtime(start);
-				process.stdout.write('execution took ' + (diff[0] * 1e9 + diff[1]) + 'ns');
+				const diff = process.hrtime(start)
+				process.stdout.write(`execution took ${diff[0] * 1e9 + diff[1]}ns`)
 			} else {
-				process.stdout.write(output);
+				process.stdout.write(output)
 			}
 		})
 	} else {
-		module.exports = bef;
+		module.exports = bef
 	}
-})();
+})()
