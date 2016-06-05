@@ -19,7 +19,7 @@ Playfield::_initPathPlane = (width = DEFAULT.WIDTH, height = DEFAULT.HEIGHT) ->
 		line = []
 
 		for j in [1..width]
-			line.push {}
+			line.push new Map
 
 		@pathPlane.push line
 
@@ -70,7 +70,8 @@ Playfield::setAt = (x, y, char) ->
 
 Playfield::addPath = (path) ->
 	path.list.forEach (entry) ->
-		@pathPlane[entry.y][entry.x][path.id] = path
+		cell = @pathPlane[entry.y][entry.x]
+		cell.set path.id, path
 		return
 	, @
 	@
@@ -81,17 +82,13 @@ Playfield::isInside = (x, y) ->
 
 
 Playfield::getPathsThrough = (x, y) ->
-	cell = @pathPlane[y][x]
-	keys = Object.keys cell
-	paths = []
-	keys.forEach (key) -> paths.push cell[key]
-	paths
+	Array.from @pathPlane[y][x].values()
 
 
 Playfield::removePath = (path) ->
 	path.list.forEach (entry) =>
 		cell = @pathPlane[entry.y][entry.x]
-		delete cell[path.id]
+		cell.delete path.id
 		return
 
 	return
@@ -105,7 +102,7 @@ Playfield::getSize = ->
 Playfield::clearPaths = ->
 	for i in [0...@height]
 		for j in [0...@width]
-			@pathPlane[i][j] = {}
+			@pathPlane[i][j] = new Map
 
 	return
 
