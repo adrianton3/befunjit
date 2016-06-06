@@ -2,6 +2,7 @@
 node_modules
 
 src/**/*.js
+demos/common/**/*.js
 demos/visualizer-eager/**/*.js
 demos/visualizer-lazy/**/*.js
 demos/samples/**/*.js
