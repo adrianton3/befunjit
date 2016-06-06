@@ -70,7 +70,25 @@ setupEditors = ->
 	jsEditor.setFontSize 14
 
 
+setupRunButton = ->
+	(document.getElementById 'run').addEventListener 'click', run
+
+
+saveProgram = ->
+	if localStorage['dev']?
+		localStorage['last-run-source'] = sourceEditor.getValue()
+		localStorage['last-run-input'] = inputEditor.getValue()
+
+
+loadProgram = ->
+	if localStorage['dev']? and localStorage['last-run-source']?
+		sourceEditor.setValue localStorage['last-run-source'], 1
+		inputEditor.setValue localStorage['last-run-input'], 1
+
+
 run = ->
+	saveProgram()
+
 	playfield = new bef.Playfield()
 	playfield.fromString sourceEditor.getValue(), 16, 10
 
@@ -92,12 +110,9 @@ run = ->
 		jsEditor.setValue path?.code ? ''
 
 
-setupRunButton = ->
-	(document.getElementById 'run').addEventListener 'click', run
-
-
 setupSamples()
 setupCompilers()
 setupEditors()
 setupRunButton()
+loadProgram()
 run()
