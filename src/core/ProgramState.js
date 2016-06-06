@@ -16,6 +16,10 @@
     this.maxChecks = Infinity;
   };
 
+  ProgramState.prototype.getLength = function() {
+    return this.stack.length;
+  };
+
   ProgramState.prototype.push = function() {
     this.stack.push.apply(this.stack, arguments);
   };
@@ -24,6 +28,10 @@
     if (this.stack.length < 1) {
       return 0;
     }
+    return this.stack.pop();
+  };
+
+  ProgramState.prototype.popUnsafe = function() {
     return this.stack.pop();
   };
 

@@ -50,7 +50,7 @@
     '-': binaryOperator((function(o1, o2) {
       return o2 - o1;
     }), '-', function(o1, o2) {
-      return "programState.push(-" + o1 + " + " + o2 + ")";
+      return "programState.push(- " + o1 + " + " + o2 + ")";
     }),
     '*': binaryOperator((function(o1, o2) {
       return o1 * o2;

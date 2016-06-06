@@ -27,7 +27,7 @@
     for (i = _i = 1; 1 <= height ? _i <= height : _i >= height; i = 1 <= height ? ++_i : --_i) {
       line = [];
       for (j = _j = 1; 1 <= width ? _j <= width : _j >= width; j = 1 <= width ? ++_j : --_j) {
-        line.push({});
+        line.push(new Map);
       }
       this.pathPlane.push(line);
     }
@@ -74,7 +74,9 @@
 
   Playfield.prototype.addPath = function(path) {
     path.list.forEach(function(entry) {
-      this.pathPlane[entry.y][entry.x][path.id] = path;
+      var cell;
+      cell = this.pathPlane[entry.y][entry.x];
+      cell.set(path.id, path);
     }, this);
     return this;
   };
@@ -84,14 +86,7 @@
   };
 
   Playfield.prototype.getPathsThrough = function(x, y) {
-    var cell, keys, paths;
-    cell = this.pathPlane[y][x];
-    keys = Object.keys(cell);
-    paths = [];
-    keys.forEach(function(key) {
-      return paths.push(cell[key]);
-    });
-    return paths;
+    return Array.from(this.pathPlane[y][x].values());
   };
 
   Playfield.prototype.removePath = function(path) {
@@ -99,7 +94,7 @@
       return function(entry) {
         var cell;
         cell = _this.pathPlane[entry.y][entry.x];
-        delete cell[path.id];
+        cell["delete"](path.id);
       };
     })(this));
   };
@@ -115,7 +110,7 @@
     var i, j, _i, _j, _ref, _ref1;
     for (i = _i = 0, _ref = this.height; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
       for (j = _j = 0, _ref1 = this.width; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
-        this.pathPlane[i][j] = {};
+        this.pathPlane[i][j] = new Map;
       }
     }
   };
