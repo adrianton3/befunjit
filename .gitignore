@@ -9,6 +9,8 @@ demos/samples/**/*.js
 
 build
 
+bench/**/results.json
+
 test/unit/*.js
 test/unit/specs/**/*.js
 test/fuzz/**/*.js
