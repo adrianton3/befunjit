@@ -2,8 +2,14 @@
 	'use strict'
 
 	function processArguments (argv) {
-		if (argv.length < 3 || argv.length > 6) {
-			console.error('Use: node befunjit.node.js [--lazy] [--stacking|--optimizing|--basic] [--time] <source>')
+		if (argv.length < 3 || argv.length > 7) {
+			console.error([
+				'Use: node befunjit.node.js [--lazy]',
+				' [--stacking|--optimizing|--basic]',
+				' [--time] [--no-input]',
+				' <source>'
+			].join('\n'))
+
 			process.exit(1)
 		}
 
@@ -11,6 +17,7 @@
 
 		return {
 			sourcePath: argv[argv.length - 1],
+			noInput: options.has('--no-input'),
 			time: options.has('--time'),
 			runtimeConstructor: options.has('--lazy') ? bef.LazyRuntime : bef.EagerRuntime,
 			compiler: options.has('--stacking') ? bef.StackingCompiler
@@ -57,7 +64,7 @@
 
 		const args = processArguments(process.argv)
 
-		setupStdin(function (input) {
+		const launch = function (input) {
 			const source = fs.readFileSync(args.sourcePath).toString()
 
 			let start
@@ -73,7 +80,13 @@
 			} else {
 				process.stdout.write(output)
 			}
-		})
+		}
+
+		if (args.noInput) {
+			launch('')
+		} else {
+			setupStdin(launch)
+		}
 	} else {
 		module.exports = bef
 	}
