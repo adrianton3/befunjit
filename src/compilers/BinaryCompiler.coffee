@@ -88,7 +88,11 @@ generateTree = (codes, id) ->
 	else
 		"""
 			const length_#{id} = programState.getLength()
-			#{generate 0, codes.length - 1}
+			if (length_#{id} < #{codes.length - 1}) {
+				#{generate 0, codes.length - 2}
+			} else {
+				#{codes[codes.length - 1]}
+			}
 		"""
 
 
