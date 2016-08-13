@@ -18,7 +18,7 @@ computeIndegree = (nodes) ->
 assemble = (graph) ->
 	cycledNodes = new Set
 
-	wrapIfLooping = (stack, node, code) ->
+	wrapIfLooping = (node, code) ->
 		if cycledNodes.has node
 			"""
 				while (programState.isAlive()) _#{node}: {
@@ -73,23 +73,44 @@ assemble = (graph) ->
 						}
 					"""
 
-					wrapIfLooping cycledNodes, node, randomCode
+					wrapIfLooping node, randomCode
 
 				when 2
-					branch0 = df neighbours[0].to, newStack
-					branch1 = df neighbours[1].to, newStack
+					if node == neighbours[0].to
+						branch1 = df neighbours[1].to, newStack
 
-					selectCode = """
-						if (programState.pop()) {
-							#{neighbours[0].code}
-							#{branch0}
-						} else {
+						selectCode = """
+							while (programState.pop()) {
+								#{neighbours[0].code}
+							}
 							#{neighbours[1].code}
 							#{branch1}
-						}
-					"""
+						"""
+					else if node == neighbours[1].to
+						branch0 = df neighbours[0].to, newStack
 
-					wrapIfLooping cycledNodes, node, selectCode
+						selectCode = """
+							while (!programState.pop()) {
+								#{neighbours[1].code}
+							}
+							#{neighbours[0].code}
+							#{branch0}
+						"""
+					else
+						branch0 = df neighbours[0].to, newStack
+						branch1 = df neighbours[1].to, newStack
+
+						selectCode = """
+							if (programState.pop()) {
+								#{neighbours[0].code}
+								#{branch0}
+							} else {
+								#{neighbours[1].code}
+								#{branch1}
+							}
+						"""
+
+					wrapIfLooping node, selectCode
 
 				when 1
 					branch = df neighbours[0].to, newStack
@@ -101,7 +122,7 @@ assemble = (graph) ->
 
 					# this might not be necessary if only
 					# the starting node can have a single neighbour
-					wrapIfLooping cycledNodes, node, edgeCode
+					wrapIfLooping node, edgeCode
 
 				when 0
 					'return;'

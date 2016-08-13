@@ -24,6 +24,10 @@ describe 'GraphCompiler', ->
 			programState
 
 
+		beforeEach ->
+			jasmine.addMatchers befTest.CustomMatchers
+
+
 		it 'assembles a tree', ->
 			graph =
 				start: 'a'
@@ -66,4 +70,4 @@ describe 'GraphCompiler', ->
 			programState = execute (assemble graph), [true, true, false, true]
 
 			expect programState.messages
-			.toEqual ['p1', 'p2', 'p1', 'p1']
+			.toStartWith ['p1', 'p2', 'p1', 'p1']
