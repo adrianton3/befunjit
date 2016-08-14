@@ -146,10 +146,10 @@ getProgramState = (input = [], pathInvalidatedAhead) ->
 	programState
 
 
-makeExecute = (compiler) ->
+makeExecute = (compiler, options = {}) ->
 	(code, input, pathInvalidatedAhead = false) ->
 		path = getPath code
-		compiler.compile path
+		compiler.compile path, options
 
 		programState = getProgramState input, pathInvalidatedAhead
 		path.body programState

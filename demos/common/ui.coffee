@@ -51,8 +51,8 @@ setupCompilers = (onChange) ->
 	select = document.getElementById 'compiler'
 
 	[
-		'BinaryCompiler'
 		'StackingCompiler'
+		'BinaryCompiler'
 		'OptimizingCompiler'
 		'BasicCompiler'
 	].forEach (sampleName) ->

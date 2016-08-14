@@ -15,7 +15,8 @@ computeIndegree = (nodes) ->
 	, new Map
 
 
-assemble = (graph) ->
+assemble = (graph, options) ->
+	fastConditionals = options?.fastConditionals
 	cycledNodes = new Set
 
 	wrapIfLooping = (node, code) ->
@@ -52,6 +53,7 @@ assemble = (graph) ->
 					branch3 = df neighbours[3].to, newStack
 
 					randomCode = """
+						#{if fastConditionals then 'programState.push(branchFlag);' else ''}
 						var choice = programState.randInt(4);
 						switch (choice) {
 							case 0:
@@ -76,11 +78,13 @@ assemble = (graph) ->
 					wrapIfLooping node, randomCode
 
 				when 2
+					conditionalChunk = if fastConditionals then 'branchFlag' else 'programState.pop()'
+
 					if node == neighbours[0].to
 						branch1 = df neighbours[1].to, newStack
 
 						selectCode = """
-							while (programState.pop()) {
+							while (#{conditionalChunk}) {
 								#{neighbours[0].code}
 							}
 							#{neighbours[1].code}
@@ -90,7 +94,7 @@ assemble = (graph) ->
 						branch0 = df neighbours[0].to, newStack
 
 						selectCode = """
-							while (!programState.pop()) {
+							while (!#{conditionalChunk}) {
 								#{neighbours[1].code}
 							}
 							#{neighbours[0].code}
@@ -101,7 +105,7 @@ assemble = (graph) ->
 						branch1 = df neighbours[1].to, newStack
 
 						selectCode = """
-							if (programState.pop()) {
+							if (#{conditionalChunk}) {
 								#{neighbours[0].code}
 								#{branch0}
 							} else {
@@ -116,6 +120,7 @@ assemble = (graph) ->
 					branch = df neighbours[0].to, newStack
 
 					edgeCode = """
+						#{if fastConditionals then 'var branchFlag = 0' else ''}
 						#{neighbours[0].code}
 						#{branch}
 					"""

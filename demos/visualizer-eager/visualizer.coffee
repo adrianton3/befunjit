@@ -19,7 +19,7 @@ run = (editors, compiler) ->
 	runtime = new bef.EagerRuntime()
 	runtime.execute(
 		playfield
-		{ jumpLimit: 1000, compiler }
+		{ jumpLimit: 1000, compiler, fastConditionals: true }
 		editors.input.getValue()
 	)
 
@@ -35,7 +35,7 @@ run = (editors, compiler) ->
 
 
 do ->
-	compiler = bef.BinaryCompiler
+	compiler = bef.StackingCompiler
 
 	editors = setupEditors()
 

@@ -149,6 +149,7 @@ codeMap =
 makeStack = (uid, options = {}) ->
 	popMethod = options.popMethod ? 'pop'
 	freePops = options.freePops ? Infinity
+	fastConditionals = options.fastConditionals ? false
 
 	stack = []
 	declarations = []
@@ -199,10 +200,29 @@ makeStack = (uid, options = {}) ->
 		return
 
 	stackObj.dump = ->
+		stackChunk =
+			if fastConditionals
+				if stack.length == 0
+					'branchFlag = programState.pop();'
+				else if stack.length == 1
+					"branchFlag = #{stack[0]};"
+				else
+					branchChunk = "branchFlag = #{stack[stack.length - 1]};"
+					stack.pop()
+					"""
+						programState.push(#{stack.join ', '});
+						#{branchChunk}
+					"""
+			else
+				if stack.length == 0
+					''
+				else
+					"programState.push(#{stack.join ', '});"
+
 		chunks.push """
 			#{declarations.join '\n'}
 			#{reads.join '\n'}
-			#{if stack.length > 0 then "programState.push(#{stack.join ', '})" else ''}
+			#{stackChunk}
 			#{writes.join '\n'}
 		"""
 
@@ -229,10 +249,10 @@ makeStack = (uid, options = {}) ->
 	stackObj
 
 
-assemble = (path) ->
+assemble = (path, options) ->
 	charList = path.getAsList()
 
-	stack = makeStack path.id
+	stack = makeStack path.id, options
 
 	charList.forEach (entry, i) ->
 		if entry.string
@@ -247,8 +267,8 @@ assemble = (path) ->
 	stack.stringify()
 
 
-compile = (path) ->
-	code = assemble path
+compile = (path, options) ->
+	code = assemble path, options
 	path.code = code # storing this just for debugging
 	compiled = new Function 'programState', code
 	path.body = compiled

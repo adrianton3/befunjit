@@ -212,24 +212,25 @@ EagerRuntime::compile = (graph, options) ->
 			edge.code = switch type
 				when 'composed'
 					"""
-						#{assemble path.initialPath}
+						#{assemble path.initialPath, options}
 						while (programState.isAlive()) {
-							#{assemble path.loopingPath}
+							#{assemble path.loopingPath, options}
 						}
 					"""
 				when 'looping'
 					"""
 						while (programState.isAlive()) {
-							#{assemble path.loopingPath}
+							#{assemble path.loopingPath, options}
 						}
 					"""
 				when 'simple'
-					assemble path.path
+					assemble path.path, options
 
 	# generate code for the whole graph
-	@code = bef.GraphCompiler.assemble
-		start: 'start'
-		nodes: graph
+	@code = bef.GraphCompiler.assemble(
+		{ start: 'start', nodes: graph }
+		options
+	)
 
 	new Function 'programState', @code
 
@@ -260,6 +261,7 @@ EagerRuntime::execute = (@playfield, options, input = []) ->
 	options ?= {}
 	options.jumpLimit ?= -1
 	options.compiler ?= bef.OptimizingCompiler
+	options.fastConditionals ?= false
 
 	@stats.compileCalls = 0
 	@stats.jumpsPerformed = 0
