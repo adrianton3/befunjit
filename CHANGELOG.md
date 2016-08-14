@@ -1,6 +1,10 @@
 changelog
 =========
 
+####r15 --- 14 aug 2016
+ + the GraphCompiler generates simpler code for looping paths that originate from `_|`
+ + the StackingCompiler uses a special variable for branching instead of the stack
+
 ####r14 --- 4 jun 2016
  + added the BinaryCompiler - based on the StackingCompiler
 
