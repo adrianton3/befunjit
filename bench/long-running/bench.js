@@ -1,6 +1,7 @@
 'use strict'
 
 const fs = require('fs')
+const path = require('path')
 
 const { execSync } = require('child_process')
 
@@ -57,14 +58,15 @@ const scripts = [
 	'count-up.bef',
 	'count-up-extra.bef',
 	'count-down.bef'
-].map((name) => `scripts/${name}`)
+].map((name) => path.join(__dirname, 'scripts', name))
 
 const runs = 10
 
 const argSet = generateProduct([compilers, runtimes, scripts])
 
 const results = argSet.map((args) => {
-	const command = `node ../../build/befunjit.node.js --no-input --time ${args.join(' ')}`
+	const befunjit = path.join(__dirname, '..', '..', 'build/befunjit.node.js')
+	const command = `node ${befunjit} --no-input --time ${args.join(' ')}`
 	const time = execAverage(command, runs)
 
 	return { args, time }
