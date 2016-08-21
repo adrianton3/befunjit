@@ -210,14 +210,14 @@ makeStack = (uid, options = {}) ->
 					branchChunk = "branchFlag = #{stack[stack.length - 1]};"
 					stack.pop()
 					"""
-						programState.push(#{stack.join ', '});
+						stack.push(#{stack.join ', '});
 						#{branchChunk}
 					"""
 			else
 				if stack.length == 0
 					''
 				else
-					"programState.push(#{stack.join ', '});"
+					"stack.push(#{stack.join ', '});"
 
 		chunks.push """
 			#{declarations.join '\n'}

@@ -53,7 +53,7 @@ assemble = (graph, options) ->
 					branch3 = df neighbours[3].to, newStack
 
 					randomCode = """
-						#{if fastConditionals then 'programState.push(branchFlag);' else ''}
+						#{if fastConditionals then 'stack.push(branchFlag);' else ''}
 						var choice = programState.randInt(4);
 						switch (choice) {
 							case 0:
@@ -120,7 +120,8 @@ assemble = (graph, options) ->
 					branch = df neighbours[0].to, newStack
 
 					edgeCode = """
-						#{if fastConditionals then 'var branchFlag = 0' else ''}
+						stack = programState.stack;
+						#{if fastConditionals then 'var branchFlag = 0;' else ''}
 						#{neighbours[0].code}
 						#{branch}
 					"""
