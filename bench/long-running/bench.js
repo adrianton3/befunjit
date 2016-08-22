@@ -72,4 +72,7 @@ const results = argSet.map((args) => {
 	return { args, time }
 })
 
-fs.writeFileSync('./results.json', JSON.stringify(results))
+fs.writeFileSync(
+	path.join(__dirname, 'results.json'),
+	JSON.stringify(results)
+)
