@@ -54,7 +54,7 @@ LazyRuntime::_getPath = (x, y, dir) ->
 
 		path.push pointer.x, pointer.y, pointer.dir, currentChar
 
-		if currentChar in ['|', '_', '?', '@']
+		if currentChar in ['|', '_', '?', '@', 'p']
 			return {
 				type: 'simple'
 				path: path
@@ -66,22 +66,16 @@ LazyRuntime::_getPath = (x, y, dir) ->
 		pointer.advance()
 
 
-LazyRuntime::put = (x, y, e, currentX, currentY, currentDir, currentIndex) ->
+LazyRuntime::put = (x, y, e) ->
 	return if not @playfield.isInside x, y # exit early
 
 	paths = @playfield.getPathsThrough x, y
 	paths.forEach (path) =>
 		@pathSet.remove path
 		@playfield.removePath path
-	@playfield.setAt x, y, e
+		return
 
-	lastEntry = @currentPath.getLastEntryThrough x, y
-	if lastEntry?.index > currentIndex
-		@programState.flags.pathInvalidatedAhead = true
-		@programState.flags.exitPoint =
-			x: currentX
-			y: currentY
-			dir: currentDir
+	@playfield.setAt x, y, e
 
 	return
 
@@ -131,15 +125,22 @@ LazyRuntime::_getCurrentPath = ({ x, y, dir }, compiler) ->
 
 
 LazyRuntime::_turn = (pointer, char) ->
-	dir = switch char
-		when '|'
-			if @programState.pop() then '^' else 'v'
-		when '_'
-			if @programState.pop() then '<' else '>'
-		when '?'
-			'^<v>'[Math.random() * 4 | 0]
+	if char == 'p'
+		e = String.fromCharCode @programState.pop()
+		y = @programState.pop()
+		x = @programState.pop()
+		@put x, y, e
+	else
+		dir = switch char
+			when '|'
+				if @programState.pop() then '^' else 'v'
+			when '_'
+				if @programState.pop() then '<' else '>'
+			when '?'
+				'^<v>'[Math.random() * 4 | 0]
 
-	pointer.turn dir
+		pointer.turn dir
+	
 	pointer.advance()
 
 	return
@@ -168,13 +169,6 @@ LazyRuntime::execute = (@playfield, options, input = []) ->
 
 		# executing the compiled path
 		@currentPath.body @programState
-
-		if @programState.flags.pathInvalidatedAhead
-			@programState.flags.pathInvalidatedAhead = false
-			exitPoint = @programState.flags.exitPoint
-			pointer.set exitPoint.x, exitPoint.y, exitPoint.dir
-			pointer.advance()
-			continue
 
 		if @currentPath.list.length
 			pathEndPoint = @currentPath.getEndPoint()
