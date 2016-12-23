@@ -95,8 +95,14 @@ LazyRuntime::get = (x, y) ->
 
 LazyRuntime::_registerPath = (path, compiler) ->
 	@stats.compileCalls++
-	compiler.compile path
-	if path.list.length
+	code ="""
+		stack = programState.stack;
+		#{compiler.assemble path}
+	"""
+	path.code = code
+	path.body = new Function 'programState', code
+
+	if path.list.length > 0
 		@pathSet.add path
 		@playfield.addPath path
 
