@@ -207,8 +207,7 @@ makeStack = (uid, options = {}) ->
 				else if stack.length == 1
 					"branchFlag = #{stack[0]};"
 				else
-					branchChunk = "branchFlag = #{stack[stack.length - 1]};"
-					stack.pop()
+					branchChunk = "branchFlag = #{stack.pop()};"
 					"""
 						stack.push(#{stack.join ', '});
 						#{branchChunk}
