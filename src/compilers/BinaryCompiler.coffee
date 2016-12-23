@@ -112,10 +112,9 @@ generateCode = (path, maxDepth) ->
 		else
 			codeGenerator = codeMap[entry.char]
 			if codeGenerator?
-				codeGenerator entry.x, entry.y, entry.dir, i, stack, path.from, path.to
+				codeGenerator stack
 		return
 
-	stack.dump()
 	stack.stringify()
 
 

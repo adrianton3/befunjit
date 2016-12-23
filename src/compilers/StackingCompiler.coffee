@@ -6,13 +6,13 @@ isNumber = (obj) ->
 
 
 digitPusher = (digit) ->
-	(x, y, dir, index, stack) ->
+	(stack) ->
 		stack.push digit
 		return
 
 
 binaryOperator = (operatorFunction, operatorChar, stringFunction) ->
-	(x, y, dir, index, stack) ->
+	(stack) ->
 		operand1 = stack.pop()
 		operand2 = stack.pop()
 
@@ -49,7 +49,7 @@ codeMap =
 	'%': binaryOperator ((o1, o2) -> o2 % o1), '%', (o1, o2) -> "(#{o2} % #{o1})"
 
 
-	'!': (x, y, dir, index, stack) ->
+	'!': (stack) ->
 		operand = stack.pop()
 
 		stack.push if isNumber operand
@@ -73,30 +73,30 @@ codeMap =
 	'"': ->
 
 
-	':': (x, y, dir, index, stack) ->
+	':': (stack) ->
 		top = stack.peek()
 		stack.push top
 		return
 
 
-	'\\': (x, y, dir, index, stack) ->
+	'\\': (stack) ->
 		e1 = stack.pop()
 		e2 = stack.pop()
 		stack.push e1, e2
 		return
 
 
-	'$': (x, y, dir, index, stack) ->
+	'$': (stack) ->
 		stack.pop()
 		return
 
 
-	'.': (x, y, dir, index, stack) ->
+	'.': (stack) ->
 		stack.out("programState.out(#{stack.pop()})")
 		return
 
 
-	',': (x, y, dir, index, stack) ->
+	',': (stack) ->
 		stack.out("programState.out(String.fromCharCode(#{stack.pop()}))")
 		return
 
@@ -104,44 +104,25 @@ codeMap =
 	'#': ->
 
 
-	'p': (x, y, dir, index, stack, from, to) ->
-		p1 = stack.pop()
-		p2 = stack.pop()
-		p3 = stack.pop()
-
-		stack.dump()
-
-		stack.pushChunk """
-			programState.put(
-				#{p1},
-				#{p2},
-				#{p3},
-				#{x}, #{y}, '#{dir}', #{index},
-				'#{from}', '#{to}'
-			)
-			if (programState.flags.pathInvalidatedAhead) {
-				return
-			}
-		"""
-		return
+	'p': -> ''
 
 
-	'g': (x, y, dir, index, stack) ->
+	'g': (stack) ->
 		stack.push "programState.get(#{stack.pop()}, #{stack.pop()})"
 		return
 
 
-	'&': (x, y, dir, index, stack) ->
+	'&': (stack) ->
 		stack.push stack.next()
 		return
 
 
-	'~': (x, y, dir, index, stack) ->
+	'~': (stack) ->
 		stack.push stack.nextChar()
 		return
 
 
-	'@': (x, y, dir, index, stack) ->
+	'@': (stack) ->
 		stack.exit()
 		return
 
@@ -155,7 +136,6 @@ makeStack = (uid, options = {}) ->
 	declarations = []
 	reads = []
 	writes = []
-	chunks = []
 	exitRequest = false
 
 	stackObj = {}
@@ -199,7 +179,7 @@ makeStack = (uid, options = {}) ->
 		writes.push entry
 		return
 
-	stackObj.dump = ->
+	stackObj.stringify = ->
 		stackChunk =
 			if fastConditionals
 				if stack.length == 0
@@ -218,27 +198,11 @@ makeStack = (uid, options = {}) ->
 				else
 					"stack.push(#{stack.join ', '});"
 
-		chunks.push """
+		"""
 			#{declarations.join '\n'}
 			#{reads.join '\n'}
 			#{stackChunk}
 			#{writes.join '\n'}
-		"""
-
-		stack = []
-		declarations = []
-		reads = []
-		writes = []
-
-		return
-
-	stackObj.pushChunk = (entry) ->
-		chunks.push entry
-		return
-
-	stackObj.stringify = ->
-		"""
-			#{chunks.join '\n'}
 			#{if exitRequest then 'programState.exit()' else ''}
 		"""
 
@@ -253,16 +217,15 @@ assemble = (path, options) ->
 
 	stack = makeStack path.id, options
 
-	charList.forEach (entry, i) ->
+	charList.forEach (entry) ->
 		if entry.string
 			stack.push entry.char.charCodeAt 0
 		else
 			codeGenerator = codeMap[entry.char]
 			if codeGenerator?
-				codeGenerator entry.x, entry.y, entry.dir, i, stack, path.from, path.to
+				codeGenerator stack
 		return
 
-	stack.dump()
 	stack.stringify()
 
 
