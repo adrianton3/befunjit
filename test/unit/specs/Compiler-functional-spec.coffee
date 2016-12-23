@@ -22,15 +22,6 @@ generalSpecs = [{
 	code: '77*,@'
 	outRecord: ['1']
 }, {
-	text: 'mutates the current path, before the current index'
-	code: '2077*p5.@'
-	outRecord: [5]
-}, {
-	text: 'mutates the current path, after the current index'
-	code: '8077*4.p5.@'
-	pathInvalidatedAhead: true
-	outRecord: [4]
-}, {
 	text: 'evaluates an addition'
 	code: '49+.@'
 	outRecord: [13]
@@ -115,10 +106,6 @@ edgeCasesSpecs = [{
 	code: '&&&&&.....@'
 	input: [1, 2, 3]
 	outRecord: [0, 0, 3, 2, 1]
-}, {
-	text: 'does not crash when trying to write outside of the playfield'
-	code: '999p@'
-	outRecord: []
 }]
 
 
