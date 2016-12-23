@@ -311,25 +311,6 @@ describe 'BasicCompiler', ->
 				(expect programState.pop.calls.count()).toEqual 0
 				(expect programState.stack).toEqual [52]
 
-	describe 'p', ->
-		it 'gets stack entries at compile time', ->
-			programState = execute '123p'
-			(expect programState.push.calls.count()).toEqual 3
-			(expect programState.pop.calls.count()).toEqual 3
-			(expect programState.put.calls.count()).toEqual 1
-
-		it 'gets no stack entries at compile time', ->
-			programState = execute 'p', [1, 2, 3]
-			(expect programState.push.calls.count()).toEqual 0
-			(expect programState.pop.calls.count()).toEqual 3
-			(expect programState.put.calls.count()).toEqual 1
-
-		it 'dumps the stack if path was invalidated ahead', ->
-			programState = execute '123456p789', [], [], true
-			(expect programState.push.calls.count()).toEqual 6
-			(expect programState.pop.calls.count()).toEqual 3
-			(expect programState.put.calls.count()).toEqual 1
-			(expect programState.stack).toEqual [1, 2, 3]
 
 	describe 'g', ->
 		it 'gets all stack entries at compile time', ->
