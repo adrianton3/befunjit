@@ -52,7 +52,13 @@ EagerRuntime::_getPath = (x, y, dir) ->
 
 		path.push pointer.x, pointer.y, pointer.dir, currentChar
 
-		if currentChar in ['|', '_', '?', '@']
+		if currentChar in ['|', '_', '?', '@', 'p']
+			path.ending = {
+				x: pointer.x
+				y: pointer.y
+				dir: pointer.dir
+				char: currentChar
+			}
 			return {
 				type: 'simple'
 				path: path
@@ -84,7 +90,7 @@ getPath = (graph, from, to) ->
 	return
 
 
-EagerRuntime::put = (x, y, e, currentX, currentY, currentDir, currentIndex, from, to) ->
+EagerRuntime::put = (x, y, e, currentX, currentY, currentDir, from, to) ->
 	# exit early if the coordinates are not valid
 	return if not @playfield.isInside x, y
 
@@ -161,6 +167,8 @@ EagerRuntime::buildGraph = (start) ->
 				buildEdge hash, partial 'v'
 				buildEdge hash, partial '<'
 				buildEdge hash, partial '>'
+			when 'p'
+				buildEdge hash, partial destination.dir
 
 		return
 
