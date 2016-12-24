@@ -37,12 +37,14 @@ codeMap =
   'g': '/* g */  programState.push(programState.get(programState.pop(), programState.pop()))'
   '&': '/* & */  programState.push(programState.next())'
   '~': '/* ~ */  programState.push(programState.nextChar())'
-  '@': '/* @ */  programState.exit(); /*return;*/'
+  '@': '/* @ */  programState.exit() /*return;*/'
 
 BasicCompiler = ->
 
 
-BasicCompiler.assemble = (path) ->
+BasicCompiler.assemble = (path, options = {}) ->
+  fastConditionals = options.fastConditionals ? false
+
   charList = path.getAsList()
 
   lines = charList.map ({ char, string }) ->
@@ -51,7 +53,13 @@ BasicCompiler.assemble = (path) ->
     else
       codeMap[char] ? "/* __ #{char} */"
 
-  lines.join '\n'
+  if fastConditionals and path.ending.char in ['|', '_']
+    """
+      #{lines.join '\n'}
+      branchFlag = stack.pop()
+    """
+  else
+    lines.join '\n'
 
 
 window.bef ?= {}
