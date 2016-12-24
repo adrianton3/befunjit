@@ -57,19 +57,19 @@ assemble = (graph, options) ->
 						var choice = programState.randInt(4);
 						switch (choice) {
 							case 0:
-								#{neighbours[0].code}
+								#{neighbours[0].assemble()}
 								#{branch0}
 								break;
 							case 1:
-								#{neighbours[1].code}
+								#{neighbours[1].assemble()}
 								#{branch1}
 								break;
 							case 2:
-								#{neighbours[2].code}
+								#{neighbours[2].assemble()}
 								#{branch2}
 								break;
 							case 3:
-								#{neighbours[3].code}
+								#{neighbours[3].assemble()}
 								#{branch3}
 								break;
 						}
@@ -82,34 +82,62 @@ assemble = (graph, options) ->
 
 					if node == neighbours[0].to
 						branch1 = df neighbours[1].to, neighbours[1], newStack
+						maybeTight = (neighbours[0].assembleTight ? neighbours[0].assemble)()
 
-						selectCode = """
-							while (#{conditionalChunk}) {
-								#{neighbours[0].code}
-							}
-							#{neighbours[1].code}
-							#{branch1}
-						"""
+						selectCode = if typeof maybeTight == 'string'
+							"""
+								while (#{conditionalChunk}) {
+									#{maybeTight}
+								}
+								#{neighbours[1].assemble()}
+								#{branch1}
+							"""
+						else
+							"""
+								if (#{conditionalChunk}) {
+									#{maybeTight.pre}
+									while (#{conditionalChunk}) {
+										#{maybeTight.body}
+									}
+									#{maybeTight.post}
+								}
+								#{neighbours[1].assemble()}
+								#{branch1}
+							"""
 					else if node == neighbours[1].to
 						branch0 = df neighbours[0].to, neighbours[0], newStack
+						maybeTight = (neighbours[1].assembleTight ? neighbours[1].assemble)()
 
-						selectCode = """
-							while (!#{conditionalChunk}) {
-								#{neighbours[1].code}
-							}
-							#{neighbours[0].code}
-							#{branch0}
-						"""
+						selectCode = if typeof maybeTight == 'string'
+							"""
+								while (!#{conditionalChunk}) {
+									#{neighbours[1].assemble()}
+								}
+								#{neighbours[0].assemble()}
+								#{branch0}
+							"""
+						else
+							"""
+								if (!#{conditionalChunk}) {
+									#{maybeTight.pre}
+									while (!#{conditionalChunk}) {
+										#{maybeTight.body}
+									}
+									#{maybeTight.post}
+								}
+								#{neighbours[0].assemble()}
+								#{branch0}
+							"""
 					else
 						branch0 = df neighbours[0].to, neighbours[0], newStack
 						branch1 = df neighbours[1].to, neighbours[1], newStack
 
 						selectCode = """
 							if (#{conditionalChunk}) {
-								#{neighbours[0].code}
+								#{neighbours[0].assemble()}
 								#{branch0}
 							} else {
-								#{neighbours[1].code}
+								#{neighbours[1].assemble()}
 								#{branch1}
 							}
 						"""
@@ -138,7 +166,7 @@ assemble = (graph, options) ->
 						stack = programState.stack;
 						#{if fastConditionals then 'var branchFlag = 0;' else ''}
 						#{pBit}
-						#{neighbours[0].code}
+						#{neighbours[0].assemble()}
 						#{branch}
 					"""
 

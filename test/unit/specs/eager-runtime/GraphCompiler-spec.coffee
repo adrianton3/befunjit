@@ -24,6 +24,11 @@ describe 'GraphCompiler', ->
 			programState
 
 
+		makeEdge = (code, to) ->
+			assemble: -> code
+			to: to
+
+
 		beforeEach ->
 			jasmine.addMatchers befTest.CustomMatchers
 
@@ -32,8 +37,13 @@ describe 'GraphCompiler', ->
 			graph =
 				start: 'a'
 				nodes:
-					a: [{ code: 'programState.emit("p1")', to: 'b' }]
-					b: [{ code: 'programState.emit("p2")', to: 'c' }, { code: 'programState.emit("p3")', to: 'd' }]
+					a: [
+						(makeEdge 'programState.emit("p1")', 'b')
+					]
+					b: [
+						(makeEdge 'programState.emit("p2")', 'c')
+						(makeEdge 'programState.emit("p3")', 'd')
+					]
 
 			programState = execute (assemble graph), [true]
 
@@ -45,12 +55,12 @@ describe 'GraphCompiler', ->
 				start: 'a'
 				nodes:
 					a: [
-						{ code: 'programState.emit("p11")', to: 'b' },
-						{ code: 'programState.emit("p12")', to: 'b' }
+						(makeEdge 'programState.emit("p11")', 'b')
+						(makeEdge 'programState.emit("p12")', 'b')
 					]
 					b: [
-						{ code: 'programState.emit("p21")', to: 'a' },
-						{ code: 'programState.emit("p22")', to: 'a' }
+						(makeEdge 'programState.emit("p21")', 'a')
+						(makeEdge 'programState.emit("p22")', 'a')
 					]
 
 			programState = execute (assemble graph), [true, true]
@@ -63,8 +73,8 @@ describe 'GraphCompiler', ->
 				start: 'a'
 				nodes:
 					a: [
-						{ code: 'programState.emit("p1")', to: 'a' },
-						{ code: 'programState.emit("p2")', to: 'a' }
+						(makeEdge 'programState.emit("p1")', 'a')
+						(makeEdge 'programState.emit("p2")', 'a')
 					]
 
 			programState = execute (assemble graph), [true, true, false, true]

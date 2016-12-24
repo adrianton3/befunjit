@@ -210,29 +210,35 @@ EagerRuntime::buildGraph = (start) ->
 
 
 EagerRuntime::compile = (graph, options) ->
-	assemble = options.compiler.assemble
+	{ assemble, assembleTight } = options.compiler
 
 	# generate code for all paths
 	(Object.keys graph).forEach (nodeName) ->
 		edges = graph[nodeName]
 		edges.forEach (edge) ->
 			{ path, path: { type }} = edge
-			edge.code = switch type
+
+			switch type
 				when 'composed'
-					"""
+					edge.assemble = -> """
 						#{assemble path.initialPath, options}
 						while (programState.isAlive()) {
 							#{assemble path.loopingPath, options}
 						}
 					"""
 				when 'looping'
-					"""
+					edge.assemble = -> """
 						while (programState.isAlive()) {
 							#{assemble path.loopingPath, options}
 						}
 					"""
 				when 'simple'
-					assemble path.path, options
+					edge.assemble = ->
+						assemble path.path, options
+
+					if assembleTight?
+						edge.assembleTight = ->
+							assembleTight path.path, options
 
 	# generate code for the whole graph
 	@code = bef.GraphCompiler.assemble(
