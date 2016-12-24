@@ -158,7 +158,9 @@ codeMap =
 OptimizingCompiler = ->
 
 
-OptimizingCompiler.assemble = (path) ->
+OptimizingCompiler.assemble = (path, options = {}) ->
+	fastConditionals = options.fastConditionals ? false
+	
 	charList = path.getAsList()
 
 	stack = []
@@ -180,8 +182,20 @@ OptimizingCompiler.assemble = (path) ->
 			else
 				"/* __ #{entry.char} */"
 
-	if stack.length
-		lines.push "programState.push(#{stack.join ', '})"
+	if fastConditionals
+		if stack.length == 0
+			lines.push "branchFlag = stack.pop()"
+		else if stack.length == 1
+			lines.push "branchFlag = #{stack[0]}"
+		else
+			last = stack.pop()
+			lines.push(
+				"programState.push(#{stack.join ', '})"
+				"branchFlag = #{last}"
+			)
+	else
+		if stack.length > 0
+			lines.push "programState.push(#{stack.join ', '})"
 
 	lines.join '\n'
 
