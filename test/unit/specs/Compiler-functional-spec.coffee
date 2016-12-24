@@ -22,15 +22,6 @@ generalSpecs = [{
 	code: '77*,@'
 	outRecord: ['1']
 }, {
-	text: 'mutates the current path, before the current index'
-	code: '2077*p5.@'
-	outRecord: [5]
-}, {
-	text: 'mutates the current path, after the current index'
-	code: '8077*4.p5.@'
-	pathInvalidatedAhead: true
-	outRecord: [4]
-}, {
 	text: 'evaluates an addition'
 	code: '49+.@'
 	outRecord: [13]
@@ -115,10 +106,6 @@ edgeCasesSpecs = [{
 	code: '&&&&&.....@'
 	input: [1, 2, 3]
 	outRecord: [0, 0, 3, 2, 1]
-}, {
-	text: 'does not crash when trying to write outside of the playfield'
-	code: '999p@'
-	outRecord: []
 }]
 
 
@@ -135,10 +122,9 @@ getPath = (string) ->
 	path
 
 
-getProgramState = (input = [], pathInvalidatedAhead) ->
+getProgramState = (input = []) ->
 	programState = new ProgramState()
 	programState.setInput input
-	programState.flags.pathInvalidatedAhead = pathInvalidatedAhead
 
 	programState.put = ->
 	programState.get = -> 55
@@ -146,12 +132,21 @@ getProgramState = (input = [], pathInvalidatedAhead) ->
 	programState
 
 
-makeExecute = (compiler, options = {}) ->
-	(code, input, pathInvalidatedAhead = false) ->
-		path = getPath code
-		compiler.compile path, options
+compile = (compiler, path) ->
+	code ="""
+			stack = programState.stack;
+			#{compiler.assemble path}
+		"""
+	path.code = code
+	path.body = new Function 'programState', code
 
-		programState = getProgramState input, pathInvalidatedAhead
+
+makeExecute = (compiler) ->
+	(code, input) ->
+		path = getPath code
+		compile compiler, path
+
+		programState = getProgramState input
 		path.body programState
 
 		programState

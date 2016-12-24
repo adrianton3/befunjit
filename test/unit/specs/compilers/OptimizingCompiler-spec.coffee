@@ -28,12 +28,20 @@ describe 'OptimizingCompiler', ->
 		programState
 
 
-	execute = (string, stack, input, pathInvalidatedAhead = false) ->
+	compile = (path) ->
+		code ="""
+			stack = programState.stack;
+			#{OptimizingCompiler.assemble path}
+		"""
+		path.code = code
+		path.body = new Function 'programState', code
+
+
+	execute = (string, stack, input) ->
 		path = getPath string
-		OptimizingCompiler.compile path
+		compile path
 
 		programState = getProgramState stack, input
-		programState.flags.pathInvalidatedAhead = pathInvalidatedAhead
 		path.body programState
 
 		programState
@@ -320,25 +328,6 @@ describe 'OptimizingCompiler', ->
 				(expect programState.pop.calls.count()).toEqual 0
 				(expect programState.stack).toEqual [52]
 
-	describe 'p', ->
-		it 'gets stack entries at compile time', ->
-			programState = execute '123p'
-			(expect programState.push.calls.count()).toEqual 0
-			(expect programState.pop.calls.count()).toEqual 0
-			(expect programState.put.calls.count()).toEqual 1
-
-		it 'gets no stack entries at compile time', ->
-			programState = execute 'p', [1, 2, 3]
-			(expect programState.push.calls.count()).toEqual 0
-			(expect programState.pop.calls.count()).toEqual 3
-			(expect programState.put.calls.count()).toEqual 1
-
-		it 'dumps the stack if path was invalidated ahead', ->
-			programState = execute '123456p789', [], [], true
-			(expect programState.push.calls.count()).toEqual 1
-			(expect programState.pop.calls.count()).toEqual 0
-			(expect programState.put.calls.count()).toEqual 1
-			(expect programState.stack).toEqual [1, 2, 3]
 
 	describe 'g', ->
 		it 'gets all stack entries at compile time', ->

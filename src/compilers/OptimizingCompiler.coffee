@@ -127,24 +127,7 @@ codeMap =
 	'#': -> '/* # */'
 
 
-	'p': (x, y, dir, index, stack, from, to) ->
-		operand1 = if stack.length then stack.pop() else 'programState.pop()'
-		operand2 = if stack.length then stack.pop() else 'programState.pop()'
-		operand3 = if stack.length then stack.pop() else 'programState.pop()'
-		"""
-			/* p */
-			programState.put(
-				#{operand1},
-				#{operand2},
-				#{operand3},
-				#{x}, #{y}, '#{dir}', #{index},
-				'#{from}', '#{to}'
-			);
-			if (programState.flags.pathInvalidatedAhead) {
-				#{if stack.length then "programState.push(#{stack.join ', '});" else ''}
-				return;
-			}
-		"""
+	'p': -> ''
 
 
 	'g': (x, y, dir, index, stack) ->
@@ -201,13 +184,6 @@ OptimizingCompiler.assemble = (path) ->
 		lines.push "programState.push(#{stack.join ', '})"
 
 	lines.join '\n'
-
-
-OptimizingCompiler.compile = (path) ->
-	code = OptimizingCompiler.assemble path
-	path.code = code #storing this just for debugging
-	compiled = new Function 'programState', code
-	path.body = compiled
 
 
 window.bef ?= {}
