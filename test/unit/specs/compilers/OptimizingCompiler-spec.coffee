@@ -28,12 +28,20 @@ describe 'OptimizingCompiler', ->
 		programState
 
 
-	execute = (string, stack, input, pathInvalidatedAhead = false) ->
+	compile = (path) ->
+		code ="""
+			stack = programState.stack;
+			#{OptimizingCompiler.assemble path}
+		"""
+		path.code = code
+		path.body = new Function 'programState', code
+
+
+	execute = (string, stack, input) ->
 		path = getPath string
-		OptimizingCompiler.compile path
+		compile path
 
 		programState = getProgramState stack, input
-		programState.flags.pathInvalidatedAhead = pathInvalidatedAhead
 		path.body programState
 
 		programState

@@ -229,19 +229,11 @@ assemble = (path, options) ->
 	stack.stringify()
 
 
-compile = (path, options) ->
-	code = assemble path, options
-	path.code = code # storing this just for debugging
-	compiled = new Function 'programState', code
-	path.body = compiled
-
-
 StackingCompiler = ->
 Object.assign(StackingCompiler, {
 	codeMap
 	makeStack
 	assemble
-	compile
 })
 
 

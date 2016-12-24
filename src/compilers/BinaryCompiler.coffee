@@ -124,19 +124,11 @@ assemble = (path) ->
 	generateTree codes, path.id
 
 
-compile = (path) ->
-	code = assemble path
-	path.code = code # storing this just for debugging
-	compiled = new Function 'programState', code
-	path.body = compiled
-
-
 BinaryCompiler = ->
 Object.assign(BinaryCompiler, {
 	getMaxDepth
 	generateTree
 	assemble
-	compile
 })
 
 window.bef ?= {}

@@ -54,12 +54,5 @@ BasicCompiler.assemble = (path) ->
   lines.join '\n'
 
 
-BasicCompiler.compile = (path) ->
-  code = BasicCompiler.assemble path
-  path.code = code #storing this just for debugging
-  compiled = new Function 'programState', code
-  path.body = compiled
-
-
 window.bef ?= {}
 window.bef.BasicCompiler = BasicCompiler

@@ -122,10 +122,9 @@ getPath = (string) ->
 	path
 
 
-getProgramState = (input = [], pathInvalidatedAhead) ->
+getProgramState = (input = []) ->
 	programState = new ProgramState()
 	programState.setInput input
-	programState.flags.pathInvalidatedAhead = pathInvalidatedAhead
 
 	programState.put = ->
 	programState.get = -> 55
@@ -133,12 +132,21 @@ getProgramState = (input = [], pathInvalidatedAhead) ->
 	programState
 
 
-makeExecute = (compiler, options = {}) ->
-	(code, input, pathInvalidatedAhead = false) ->
-		path = getPath code
-		compiler.compile path, options
+compile = (compiler, path) ->
+	code ="""
+			stack = programState.stack;
+			#{compiler.assemble path}
+		"""
+	path.code = code
+	path.body = new Function 'programState', code
 
-		programState = getProgramState input, pathInvalidatedAhead
+
+makeExecute = (compiler) ->
+	(code, input) ->
+		path = getPath code
+		compile compiler, path
+
+		programState = getProgramState input
 		path.body programState
 
 		programState
