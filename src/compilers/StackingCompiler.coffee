@@ -1,6 +1,73 @@
 'use strict'
 
 
+consumePair = (consume, delta) ->
+	{ consume, delta }
+
+
+consumeCount = new Map [
+	[' ', consumePair 0, 0]
+
+	['0', consumePair 0, 1]
+	['1', consumePair 0, 1]
+	['2', consumePair 0, 1]
+	['3', consumePair 0, 1]
+	['4', consumePair 0, 1]
+	['5', consumePair 0, 1]
+	['6', consumePair 0, 1]
+	['7', consumePair 0, 1]
+	['8', consumePair 0, 1]
+	['9', consumePair 0, 1]
+
+	['+', consumePair 2, -1]
+	['-', consumePair 2, -1]
+	['*', consumePair 2, -1]
+	['/', consumePair 2, -1]
+	['%', consumePair 2, -1]
+
+	['!', consumePair 1, 0]
+	['`', consumePair 2, -1]
+
+	['^', consumePair 0, 0]
+	['<', consumePair 0, 0]
+	['v', consumePair 0, 0]
+	['>', consumePair 0, 0]
+	['?', consumePair 0, 0]
+	['_', consumePair 1, -1]
+	['|', consumePair 1, -1]
+	['"', consumePair 0, 0]
+
+	[':', consumePair 0, 1]
+	['\\', consumePair 2, 0]
+	['$', consumePair 1, -1]
+
+	['.', consumePair 1, -1]
+	[',', consumePair 1, -1]
+	['#', consumePair 0, 0]
+	['p', consumePair 3, -3]
+	['g', consumePair 2, -1]
+	['&', consumePair 0, 1]
+	['~', consumePair 0, 1]
+	['@', consumePair 0, 0]
+]
+
+
+getMaxDepth = (path) ->
+	{ max, sum } = path.getAsList().reduce ({ max, sum }, { char, string }) ->
+		{ consume, delta } = if string
+			{ consume: 0, delta: 1 }
+		else if consumeCount.has char
+			consumeCount.get char
+		else
+			{ consume: 0, delta: 0 }
+
+		sum: sum + delta
+		max: Math.min max, sum - consume
+	, { max: 0, sum: 0 }
+
+	{ max: -max, sum }
+
+
 isNumber = (obj) ->
 	typeof obj == 'number'
 
@@ -131,6 +198,8 @@ makeStack = (uid, options = {}) ->
 	popMethod = options.popMethod ? 'pop'
 	freePops = options.freePops ? Infinity
 	fastConditionals = options.fastConditionals ? false
+	popCount = options.popCount ? 0
+	pushCount = options.pushCount ? 0
 
 	stack = []
 	declarations = []
@@ -153,7 +222,13 @@ makeStack = (uid, options = {}) ->
 			freePops--
 			name = "p#{uid}_#{declarations.length}"
 			# use const once node supports it
-			declarations.push "var #{name} = programState.#{popMethod}()"
+			declarations.push(
+				if popCount > 0
+					"var #{name} = t#{uid}_#{popCount - 1}"
+				else
+					"var #{name} = programState.#{popMethod}()"
+			)
+			popCount = Math.max 0, popCount - 1
 			name
 
 	stackObj.peek = ->
@@ -162,7 +237,12 @@ makeStack = (uid, options = {}) ->
 		else
 			name = "p#{uid}_#{declarations.length}"
 			# use const once node supports it
-			declarations.push "var #{name} = programState.peek()"
+			declarations.push(
+				if popCount > 0
+					"var #{name} = t#{uid}_#{popCount - 1}"
+				else
+					"var #{name} = programState.peek()"
+			)
 			name
 
 	makeNext = (methodName) ->
@@ -179,6 +259,17 @@ makeStack = (uid, options = {}) ->
 		writes.push entry
 		return
 
+	pushBack = (stack, pushCount) ->
+		copies = ("t#{uid}_#{i} = #{stack[i]}" for i in [0...pushCount])
+		if pushCount < stack.length
+			pushes = stack.slice pushCount
+			"""
+				#{copies.join '\n'}
+				stack.push(#{pushes.join ', '})
+			"""
+		else
+			copies.join '\n'
+
 	stackObj.stringify = ->
 		stackChunk =
 			if fastConditionals
@@ -189,14 +280,14 @@ makeStack = (uid, options = {}) ->
 				else
 					branchChunk = "branchFlag = #{stack.pop()};"
 					"""
-						stack.push(#{stack.join ', '});
+						#{pushBack stack, pushCount}
 						#{branchChunk}
 					"""
 			else
 				if stack.length == 0
 					''
 				else
-					"stack.push(#{stack.join ', '});"
+					pushBack stack, pushCount
 
 		"""
 			#{declarations.join '\n'}
@@ -229,11 +320,33 @@ assemble = (path, options) ->
 	stack.stringify()
 
 
+writeBack = (count, uid) ->
+	temps = ("t#{uid}_#{i}" for i in [0...count])
+	"stack.push(#{temps.join ', '})"
+
+
+assembleTight = (path, options) ->
+	{ max, sum } = getMaxDepth path
+
+	tempCount = Math.min max, max + sum
+
+	if tempCount <= 0
+		assemble path, options
+	else
+		pushCount = tempCount
+		popCount = tempCount
+
+		pre: assemble path, Object.assign { pushCount }, options
+		body: assemble path, Object.assign { popCount, pushCount }, options
+		post: writeBack tempCount, path.id
+
+
 StackingCompiler = ->
 Object.assign(StackingCompiler, {
 	codeMap
 	makeStack
 	assemble
+	assembleTight
 })
 
 
