@@ -1,6 +1,10 @@
 changelog
 =========
 
+####r16 --- 25 dec 2016
+ + `p` is now a static path delimiter
+ + tight loops bypass the stack
+
 ####r15 --- 14 aug 2016
  + the GraphCompiler generates simpler code for looping paths that originate from `_|`
  + the StackingCompiler uses a special variable for branching instead of the stack
