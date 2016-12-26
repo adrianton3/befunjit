@@ -102,24 +102,8 @@ codeMap =
 
 
 	',': (stack) ->
-		if stack.length
-			char = String.fromCharCode stack.pop()
-
-			safeChar = switch char
-				when "'"
-					"\\'"
-				when '\\'
-					'\\\\'
-				when '\n'
-					'\\n'
-				when '\r'
-					'\\r'
-				when '\t'
-					'\\t'
-				else
-					char
-
-			"/* , */  programState.out('#{safeChar}')"
+		if stack.length > 0
+			"/* , */  programState.out(String.fromCharCode(#{stack.pop()}))"
 		else
 			'/* , */  programState.out(String.fromCharCode(programState.pop()))'
 
