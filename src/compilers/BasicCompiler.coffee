@@ -57,7 +57,7 @@ BasicCompiler.assemble = (path, options = {}) ->
 	if fastConditionals and path.ending.char in ['|', '_']
 		"""
 			#{lines.join '\n'}
-			branchFlag = stack.pop()
+			branchFlag = programState.pop()
 		"""
 	else
 		lines.join '\n'

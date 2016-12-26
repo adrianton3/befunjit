@@ -151,9 +151,9 @@ assemble = (graph, options) ->
 						{ path } = prev.path
 						{ ending } = path
 						"""
-							var x = stack.pop();
-							var y = stack.pop();
-							var e = stack.pop();
+							var x = programState.pop();
+							var y = programState.pop();
+							var e = programState.pop();
 							programState.put(x, y, e, #{ending.x}, #{ending.y}, '#{ending.dir}', '#{path.from}', '#{path.to}');
 							if (programState.flags.pathInvalidatedAhead) {
 								return;

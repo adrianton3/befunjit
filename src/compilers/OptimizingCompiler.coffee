@@ -168,7 +168,7 @@ OptimizingCompiler.assemble = (path, options = {}) ->
 
 	if fastConditionals
 		if stack.length == 0
-			lines.push "branchFlag = stack.pop()"
+			lines.push "branchFlag = programState.pop()"
 		else if stack.length == 1
 			lines.push "branchFlag = #{stack[0]}"
 		else
