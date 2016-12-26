@@ -38,7 +38,7 @@ run = (editors, compiler) ->
 
 
 do ->
-	compiler = bef.BinaryCompiler
+	compiler = bef.StackingCompiler
 
 	editors = setupEditors()
 
