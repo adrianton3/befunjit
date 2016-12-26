@@ -5,13 +5,13 @@ isNumber = (obj) ->
 
 
 digitPusher = (digit) ->
-	(x, y, dir, index, stack) ->
+	(stack) ->
 		stack.push digit
 		"/* #{digit} */"
 
 
 binaryOperator = (operatorFunction, operatorChar, stringFunction) ->
-	(x, y, dir, index, stack) ->
+	(stack) ->
 		operand1 = if stack.length then stack.pop() else 'programState.pop()'
 		operand2 = if stack.length then stack.pop() else 'programState.pop()'
 		if (isNumber operand1) and (isNumber operand2)
@@ -44,7 +44,7 @@ codeMap =
 	'%': binaryOperator ((o1, o2) -> o2 % o1), '%', (o1, o2) -> "programState.mod(#{o1}, #{o2})"
 
 
-	'!': (x, y, dir, index, stack) ->
+	'!': (stack) ->
 		if stack.length
 			stack.push +!stack.pop()
 			'/* ! */'
@@ -65,7 +65,7 @@ codeMap =
 	'"': -> '/* " */'
 
 
-	':': (x, y, dir, index, stack) ->
+	':': (stack) ->
 		if stack.length
 			stack.push stack[stack.length - 1]
 			'/* : */'
@@ -73,7 +73,7 @@ codeMap =
 			'/* : */  programState.duplicate()'
 
 
-	'\\': (x, y, dir, index, stack) ->
+	'\\': (stack) ->
 		if stack.length > 1
 			e1 = stack[stack.length - 1]
 			e2 = stack[stack.length - 2]
@@ -86,7 +86,7 @@ codeMap =
 			'/* \\ */  programState.swap()'
 
 
-	'$': (x, y, dir, index, stack) ->
+	'$': (stack) ->
 		if stack.length
 			stack.pop()
 			'/* $ */'
@@ -94,14 +94,14 @@ codeMap =
 			'/* $ */  programState.pop()'
 
 
-	'.': (x, y, dir, index, stack) ->
+	'.': (stack) ->
 		if stack.length
 			"/* . */  programState.out(#{stack.pop()})"
 		else
 			'/* . */  programState.out(programState.pop())'
 
 
-	',': (x, y, dir, index, stack) ->
+	',': (stack) ->
 		if stack.length
 			char = String.fromCharCode stack.pop()
 
@@ -130,7 +130,7 @@ codeMap =
 	'p': -> ''
 
 
-	'g': (x, y, dir, index, stack) ->
+	'g': (stack) ->
 		operand1 = if stack.length then stack.pop() else 'programState.pop()'
 		operand2 = if stack.length then stack.pop() else 'programState.pop()'
 		if stack.length
@@ -177,7 +177,7 @@ OptimizingCompiler.assemble = (path, options = {}) ->
 					if stack.length
 						ret += "programState.push(#{stack.join ', '});\n"
 					stack = []
-				ret += codeGenerator entry.x, entry.y, entry.dir, i, stack, path.from, path.to
+				ret += codeGenerator stack
 				ret
 			else
 				"/* __ #{entry.char} */"
