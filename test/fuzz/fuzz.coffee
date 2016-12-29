@@ -70,11 +70,9 @@ makeExecute = (compiler) ->
 arraysEqual = (a, b) ->
 	return false if a.length != b.length
 
-	for i in [0...a.length]
-		return false unless Object.is a[i], b[i]
-
-	true
-
+	a.every (elementA, i) ->
+		elementB = b[i]
+		elementA == elementB or ((isNaN elementA) and (isNaN elementB))
 
 
 runSpec = ({ code, input }, executeList) ->
