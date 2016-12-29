@@ -7,6 +7,7 @@
 	BasicCompiler
 	OptimizingCompiler
 	StackingCompiler
+	BinaryCompiler
 } = bef
 
 
@@ -112,6 +113,7 @@ runAll = (count) ->
 		BasicCompiler
 		OptimizingCompiler
 		StackingCompiler
+		BinaryCompiler
 	].map makeExecute
 
 	for i in [0...count]
