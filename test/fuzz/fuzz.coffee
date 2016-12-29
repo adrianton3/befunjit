@@ -11,7 +11,7 @@
 
 
 generateCommand = do ->
-	commands = '0123456789+-*/%!`:\\$.,pg' # ~&
+	commands = '0123456789+-*/%!`:\\$.,g' # ~&
 
 	->
 		commands[Math.floor Math.random() * commands.length]
@@ -36,10 +36,9 @@ getPath = (string) ->
 	path
 
 
-getProgramState = (input = [], pathInvalidatedAhead) ->
+getProgramState = (input = []) ->
 	programState = new ProgramState()
 	programState.setInput input
-	programState.flags.pathInvalidatedAhead = pathInvalidatedAhead
 
 	programState.put = ->
 	programState.get = -> 55
@@ -47,12 +46,21 @@ getProgramState = (input = [], pathInvalidatedAhead) ->
 	programState
 
 
-makeExecute = (compiler) ->
-	(code, input, pathInvalidatedAhead) ->
-		path = getPath code
-		compiler.compile path
+compile = (compiler, path) ->
+	code ="""
+			stack = programState.stack;
+			#{compiler.assemble path}
+		"""
+	path.code = code
+	path.body = new Function 'programState', code
 
-		programState = getProgramState input, pathInvalidatedAhead
+
+makeExecute = (compiler) ->
+	(code, input) ->
+		path = getPath code
+		compile compiler, path
+
+		programState = getProgramState input
 		path.body programState
 
 		programState
@@ -67,14 +75,13 @@ arraysEqual = (a, b) ->
 	true
 
 
-runSpec = (spec, executeList) ->
-	{ code, input, pathInvalidatedAhead } = spec
 
+runSpec = ({ code, input }, executeList) ->
 	execute = executeList[0]
-	firstResult = execute code, input, pathInvalidatedAhead
+	firstResult = execute code, input
 
 	(executeList.slice 1).forEach (execute, index) ->
-		result = execute code, input, pathInvalidatedAhead
+		result = execute code, input
 
 		if not arraysEqual firstResult.outRecord, result.outRecord
 			throw new Error """
@@ -111,11 +118,10 @@ runAll = (count) ->
 		spec = {
 			code: generateCode randInt 1, 20
 			input: []
-			pathInvalidatedAhead: Math.random() < 0.5
 		}
 
+		console.log 'running', spec.code
 		runSpec spec, executeList
-		console.log spec.code
 
 	return
 
