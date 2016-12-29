@@ -70,17 +70,16 @@ EagerRuntime::_getPath = (x, y, dir) ->
 		pointer.advance()
 
 
-canReach = do ->
+canReach = (graph, start, targets) ->
 	visited = new Set
 
-	(graph, start, targets) ->
-		traverse = (start) ->
-			return true if targets.has start
-			return false if visited.has start
-			visited.add start
-			graph[start].some ({ to }) -> traverse to
+	traverse = (start) ->
+		return true if targets.has start
+		return false if visited.has start
+		visited.add start
+		graph[start].some ({ to }) -> traverse to
 
-		traverse start
+	traverse start
 
 
 getPath = (graph, from, to) ->
@@ -109,6 +108,7 @@ EagerRuntime::put = (x, y, e, currentX, currentY, currentDir, from, to) ->
 		# check if the affected edges are reachable
 		targets = paths.reduce (targets, path) ->
 			targets.add path.from
+			targets
 		, new Set
 
 		# check if current edge is affected
