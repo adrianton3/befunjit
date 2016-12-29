@@ -165,16 +165,16 @@ LazyRuntime::execute = (@playfield, options, input = []) ->
 
 		@stats.jumpsPerformed++
 
-		@currentPath = @_getCurrentPath pointer, options.compiler
+		currentPath = @_getCurrentPath pointer, options.compiler
 
 		# executing the compiled path
-		@currentPath.body @programState
+		currentPath.body @programState
 
-		if @currentPath.list.length
-			pathEndPoint = @currentPath.getEndPoint()
+		if currentPath.list.length
+			pathEndPoint = currentPath.getEndPoint()
 			pointer.set pathEndPoint.x, pathEndPoint.y, pathEndPoint.dir
 
-			if @currentPath.looping
+			if currentPath.looping
 				pointer.advance()
 				continue
 
