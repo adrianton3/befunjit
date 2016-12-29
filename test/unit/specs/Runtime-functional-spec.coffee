@@ -34,6 +34,15 @@ generalSpecs = [{
 	code: '6077*p5.@'
 	outRecord: [1]
 }, {
+	text: 'mutates the current path twice, after the current index'
+	code: '''
+			>2377*pv
+			v      <
+			>2396*pv
+			@.9 _1 <
+		'''
+	outRecord: [6]
+}, {
 	text: 'mutates a conditional'
 	code: '''
 			v>>>>>>>8v
