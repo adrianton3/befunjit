@@ -295,6 +295,15 @@ describe 'EagerRuntime', ->
 			(expect outRecord).toEqual [9]
 			(expect stats.compileCalls).toEqual 1
 
+		it 'does not recompile if altered is on the current path which and is unreachable', ->
+			{ stack, outRecord, stats } = execute '''
+					00p9.@
+				'''
+
+			(expect stack).toEqual []
+			(expect outRecord).toEqual [9]
+			(expect stats.compileCalls).toEqual 1
+
 		it 'recompiles if altered cell is on a reachable path', ->
 			{ stack, outRecord, stats } = execute '''
 					2177*p0v

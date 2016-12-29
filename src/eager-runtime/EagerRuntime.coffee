@@ -82,13 +82,6 @@ canReach = (graph, start, targets) ->
 	traverse start
 
 
-getPath = (graph, from, to) ->
-	for edge in graph[from]
-		if edge.to == to
-			return edge
-	return
-
-
 EagerRuntime::put = (x, y, e, currentX, currentY, currentDir, from, to) ->
 	# exit early if the coordinates are not valid
 	return if not @playfield.isInside x, y
@@ -111,18 +104,7 @@ EagerRuntime::put = (x, y, e, currentX, currentY, currentDir, from, to) ->
 			targets
 		, new Set
 
-		# check if current edge is affected
-		{ path: currentPath } = getPath @graph, from, to
-		lastEntry = switch currentPath.type
-			when 'simple'
-				currentPath.path.getLastEntryThrough x, y
-			when 'looping'
-				currentPath.loopingPath.getLastEntryThrough x, y
-			when 'composed'
-				(currentPath.initialPath.getLastEntryThrough x, y) ?
-					(currentPath.loopingPath.getLastEntryThrough x, y)
-
-		if lastEntry? or (canReach @graph, to, targets)
+		if canReach @graph, to, targets
 			@programState.flags.pathInvalidatedAhead = true
 			@programState.flags.exitPoint =
 				x: currentX
