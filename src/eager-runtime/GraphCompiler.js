@@ -68,7 +68,7 @@
             return wrapIfLooping(node, selectCode);
           case 1:
             branch = df(neighbours[0].to, neighbours[0], newStack);
-            pBit = (prev != null ? (ref2 = prev.path.path) != null ? ref2.ending.char : void 0 : void 0) === 'p' ? ((ref3 = prev.path, path = ref3.path, ref3), (ending = path.ending, path), "var x = stack.pop();\nvar y = stack.pop();\nvar e = stack.pop();\nprogramState.put(x, y, e, " + ending.x + ", " + ending.y + ", '" + ending.dir + "', '" + path.from + "', '" + path.to + "');\nif (programState.flags.pathInvalidatedAhead) {\n	return;\n}") : '';
+            pBit = (prev != null ? (ref2 = prev.path.path) != null ? ref2.ending.char : void 0 : void 0) === 'p' ? ((ref3 = prev.path, path = ref3.path, ref3), (ending = path.ending, path), "var x = programState.pop();\nvar y = programState.pop();\nvar e = programState.pop();\nprogramState.put(x, y, e, " + ending.x + ", " + ending.y + ", '" + ending.dir + "', '" + path.from + "', '" + path.to + "');\nif (programState.flags.pathInvalidatedAhead) {\n	return;\n}") : '';
             edgeCode = "stack = programState.stack;\n" + (fastConditionals ? 'var branchFlag = 0;' : '') + "\n" + pBit + "\n" + (neighbours[0].assemble()) + "\n" + branch;
             return wrapIfLooping(node, edgeCode);
           case 0:

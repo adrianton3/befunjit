@@ -62,7 +62,7 @@
       }
     });
     if (fastConditionals && ((ref1 = path.ending.char) === '|' || ref1 === '_')) {
-      return (lines.join('\n')) + "\nbranchFlag = stack.pop()";
+      return (lines.join('\n')) + "\nbranchFlag = programState.pop()";
     } else {
       return lines.join('\n');
     }

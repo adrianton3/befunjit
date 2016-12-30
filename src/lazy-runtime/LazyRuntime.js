@@ -127,40 +127,33 @@
   };
 
   LazyRuntime.prototype._turn = function(pointer, char) {
-    var dir, e, x, y;
-    if (char === 'p') {
-      e = String.fromCharCode(this.programState.pop());
-      y = this.programState.pop();
-      x = this.programState.pop();
-      this.put(x, y, e);
-    } else {
-      dir = (function() {
-        switch (char) {
-          case '|':
-            if (this.programState.pop()) {
-              return '^';
-            } else {
-              return 'v';
-            }
-            break;
-          case '_':
-            if (this.programState.pop()) {
-              return '<';
-            } else {
-              return '>';
-            }
-            break;
-          case '?':
-            return '^<v>'[Math.random() * 4 | 0];
-        }
-      }).call(this);
-      pointer.turn(dir);
-    }
+    var dir;
+    dir = (function() {
+      switch (char) {
+        case '|':
+          if (this.programState.pop()) {
+            return '^';
+          } else {
+            return 'v';
+          }
+          break;
+        case '_':
+          if (this.programState.pop()) {
+            return '<';
+          } else {
+            return '>';
+          }
+          break;
+        case '?':
+          return '^<v>'[Math.random() * 4 | 0];
+      }
+    }).call(this);
+    pointer.turn(dir);
     pointer.advance();
   };
 
   LazyRuntime.prototype.execute = function(playfield, options, input) {
-    var currentChar, pathEndPoint, pointer;
+    var currentChar, currentPath, e, pathEndPoint, pointer, x, y;
     this.playfield = playfield;
     if (input == null) {
       input = [];
@@ -185,12 +178,12 @@
         break;
       }
       this.stats.jumpsPerformed++;
-      this.currentPath = this._getCurrentPath(pointer, options.compiler);
-      this.currentPath.body(this.programState);
-      if (this.currentPath.list.length) {
-        pathEndPoint = this.currentPath.getEndPoint();
+      currentPath = this._getCurrentPath(pointer, options.compiler);
+      currentPath.body(this.programState);
+      if (currentPath.list.length) {
+        pathEndPoint = currentPath.getEndPoint();
         pointer.set(pathEndPoint.x, pathEndPoint.y, pathEndPoint.dir);
-        if (this.currentPath.looping) {
+        if (currentPath.looping) {
           pointer.advance();
           continue;
         }
@@ -199,7 +192,15 @@
       if (currentChar === '@') {
         break;
       }
-      this._turn(pointer, currentChar);
+      if (currentChar === 'p') {
+        e = String.fromCharCode(this.programState.pop());
+        y = this.programState.pop();
+        x = this.programState.pop();
+        this.put(x, y, e);
+        pointer.advance();
+      } else {
+        this._turn(pointer, currentChar);
+      }
     }
   };
 
