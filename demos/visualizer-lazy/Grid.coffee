@@ -9,13 +9,16 @@ Grid = (@playfield, @pathSet, @canvas) ->
 		PATHINDICATOR: 'rgb(24, 155, 230)'
 		FONT: '#EDF'
 
+	@FONTS =
+		NORMAL: '20px Consolas, monospace'
+		SMALL: '14px Consolas, monospace'
+
 	@canvas.width = @playfield.width * @cellSize
 	@canvas.height = @playfield.height * @cellSize
 
 	@con2d = @canvas.getContext '2d'
 	@con2d.textAlign = 'center'
 	@con2d.textBaseline = 'middle'
-	@con2d.font = '20px Consolas, monospace'
 	@con2d.strokeStyle = '#FFF'
 	@con2d.lineWidth = 0.8
 
@@ -146,11 +149,22 @@ Grid::draw = ->
 	@con2d.fillStyle = @COLORS.FONT
 	for i in [0...@playfield.width]
 		for j in [0...@playfield.height]
-			@con2d.fillText(
-				(@playfield.getAt i, j),
-				i * @cellSize + @cellSize / 2,
-				j * @cellSize + @cellSize / 2
-			)
+			charRaw = @playfield.getAt i, j
+			charCode = charRaw.charCodeAt 0
+
+			if charCode > 0
+				charPretty = if 32 <= charCode <= 126
+					@con2d.font = @FONTS.NORMAL
+					charRaw
+				else
+					@con2d.font = @FONTS.SMALL
+					"##{charCode}"
+
+				@con2d.fillText(
+					charPretty
+					i * @cellSize + @cellSize / 2
+					j * @cellSize + @cellSize / 2
+				)
 
 	#path indicators
 		for hitRegion in @hitRegions
