@@ -171,6 +171,9 @@ Grid::draw = ->
 			@con2d.drawImage @arrowImages[hitRegion.dir], hitRegion.start.x, hitRegion.start.y
 
 	#grid
+	@con2d.save()
+	@con2d.translate 0.5, 0.5
+
 	@con2d.strokeStyle = @COLORS.GRID
 	@con2d.beginPath()
 	for i in [1...@playfield.width]
@@ -181,6 +184,8 @@ Grid::draw = ->
 		@con2d.moveTo 0, i * @cellSize
 		@con2d.lineTo @canvas.width, i * @cellSize
 	@con2d.stroke()
+
+	@con2d.restore()
 
 	return
 
