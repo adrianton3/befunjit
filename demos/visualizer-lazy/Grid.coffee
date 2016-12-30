@@ -77,7 +77,7 @@ directionsIndexed = directions.reduce (ret, { char, offset }) ->
 
 
 Grid::_setupHitRegions = ->
-	getCellRegion = ((x, y, offX, offY, dir) ->
+	getCellRegion = (x, y, offX, offY, dir) =>
 		x: x
 		y: y
 		dir: dir
@@ -90,7 +90,6 @@ Grid::_setupHitRegions = ->
 		size:
 			width: @cellSize / 3
 			height: @cellSize / 3
-	).bind @
 
 	for i in [0...@playfield.width]
 		for j in [0...@playfield.height]
