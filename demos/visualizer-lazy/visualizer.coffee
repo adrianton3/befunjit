@@ -34,7 +34,9 @@ run = (editors, compiler) ->
 	grid?.destroy()
 	grid = new viz.Grid playfield, lazyRuntime.pathSet, document.getElementById 'can'
 	grid.setListener (path) ->
-		editors.js.setValue path?.code ? ''
+		code = path?.code ? ''
+		editors.js.setValue code, -1
+		return
 
 
 do ->
