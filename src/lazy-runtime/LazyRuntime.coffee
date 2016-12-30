@@ -125,21 +125,15 @@ LazyRuntime::_getCurrentPath = ({ x, y, dir }, compiler) ->
 
 
 LazyRuntime::_turn = (pointer, char) ->
-	if char == 'p'
-		e = String.fromCharCode @programState.pop()
-		y = @programState.pop()
-		x = @programState.pop()
-		@put x, y, e
-	else
-		dir = switch char
-			when '|'
-				if @programState.pop() then '^' else 'v'
-			when '_'
-				if @programState.pop() then '<' else '>'
-			when '?'
-				'^<v>'[Math.random() * 4 | 0]
+	dir = switch char
+		when '|'
+			if @programState.pop() then '^' else 'v'
+		when '_'
+			if @programState.pop() then '<' else '>'
+		when '?'
+			'^<v>'[Math.random() * 4 | 0]
 
-		pointer.turn dir
+	pointer.turn dir
 	
 	pointer.advance()
 
@@ -183,7 +177,14 @@ LazyRuntime::execute = (@playfield, options, input = []) ->
 		# program ended
 		break if currentChar == '@'
 
-		@_turn pointer, currentChar
+		if currentChar == 'p'
+			e = String.fromCharCode @programState.pop()
+			y = @programState.pop()
+			x = @programState.pop()
+			@put x, y, e
+			pointer.advance()
+		else
+			@_turn pointer, currentChar
 
 	return
 
