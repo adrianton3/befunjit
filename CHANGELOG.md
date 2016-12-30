@@ -1,6 +1,12 @@
 changelog
 =========
 
+####r17 --- 30 dec 2016
+ + fix paths not recompiling if they've already been "explored" by the graph compiler
+ + fix current path not having to be recompiled if altered
+ + fix popping off the stack directly
+ + fix the fuzz tests
+
 ####r16 --- 25 dec 2016
  + `p` is now a static path delimiter
  + tight loops bypass the stack
