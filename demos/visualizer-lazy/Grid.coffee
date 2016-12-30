@@ -1,17 +1,18 @@
 'use strict'
 
+COLORS =
+	BACKGROUND: '#272822'
+	PATHBACKGROUND: '#49483E'
+	GRID: '#EDF'
+	PATHINDICATOR: 'rgb(24, 155, 230)'
+	FONT: '#EDF'
+
+FONTS =
+	NORMAL: '20px Consolas, monospace'
+	SMALL: '14px Consolas, monospace'
+
 Grid = (@playfield, @pathSet, @canvas) ->
 	@cellSize = 36
-	@COLORS =
-		BACKGROUND: '#272822'
-		PATHBACKGROUND: '#49483E'
-		GRID: '#EDF'
-		PATHINDICATOR: 'rgb(24, 155, 230)'
-		FONT: '#EDF'
-
-	@FONTS =
-		NORMAL: '20px Consolas, monospace'
-		SMALL: '14px Consolas, monospace'
 
 	@canvas.width = @playfield.width * @cellSize
 	@canvas.height = @playfield.height * @cellSize
@@ -31,12 +32,12 @@ Grid = (@playfield, @pathSet, @canvas) ->
 
 	@hitRegions = []
 	@_setupHitRegions()
-	@arrowImages = getArrowImages @cellSize / 3, @COLORS
+	@arrowImages = getArrowImages @cellSize / 3, COLORS
 	@draw()
 	return
 
 
-getArrowImage = (size, angle, COLORS) ->
+getArrowImage = (size, angle) ->
 	canvas = document.createElement 'canvas'
 	canvas.width = size
 	canvas.height = size
@@ -54,11 +55,11 @@ getArrowImage = (size, angle, COLORS) ->
 	con2d.stroke()
 	canvas
 
-getArrowImages = (size, COLORS) ->
-	'^': getArrowImage size, 0, COLORS
-	'<': getArrowImage size, -Math.PI / 2, COLORS
-	'v': getArrowImage size, Math.PI, COLORS
-	'>': getArrowImage size, Math.PI / 2, COLORS
+getArrowImages = (size) ->
+	'^': getArrowImage size, 0
+	'<': getArrowImage size, -Math.PI / 2
+	'v': getArrowImage size, Math.PI
+	'>': getArrowImage size, Math.PI / 2
 
 
 directions = [
@@ -137,16 +138,16 @@ Grid::_setupMouseListener = ->
 
 Grid::draw = ->
 	#background
-	@con2d.fillStyle = @COLORS.BACKGROUND
+	@con2d.fillStyle = COLORS.BACKGROUND
 	@con2d.fillRect 0, 0, @canvas.width, @canvas.height
 
 	#active path
-	@con2d.fillStyle = @COLORS.PATHBACKGROUND
+	@con2d.fillStyle = COLORS.PATHBACKGROUND
 	@highlightedPath?.list.forEach (entry) =>
 		@con2d.fillRect entry.x * @cellSize, entry.y * @cellSize, @cellSize, @cellSize
 
 	#chars
-	@con2d.fillStyle = @COLORS.FONT
+	@con2d.fillStyle = COLORS.FONT
 	for i in [0...@playfield.width]
 		for j in [0...@playfield.height]
 			charRaw = @playfield.getAt i, j
@@ -154,10 +155,10 @@ Grid::draw = ->
 
 			if charCode > 0
 				charPretty = if 32 <= charCode <= 126
-					@con2d.font = @FONTS.NORMAL
+					@con2d.font = FONTS.NORMAL
 					charRaw
 				else
-					@con2d.font = @FONTS.SMALL
+					@con2d.font = FONTS.SMALL
 					"##{charCode}"
 
 				@con2d.fillText(
@@ -174,7 +175,7 @@ Grid::draw = ->
 	@con2d.save()
 	@con2d.translate 0.5, 0.5
 
-	@con2d.strokeStyle = @COLORS.GRID
+	@con2d.strokeStyle = COLORS.GRID
 	@con2d.beginPath()
 	for i in [1...@playfield.width]
 		@con2d.moveTo i * @cellSize, 0
