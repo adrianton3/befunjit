@@ -12,12 +12,19 @@
 
 grid = null
 
+width = 16
+height = 10
 
 run = (editors, compiler) ->
 	saveProgram editors
 
+	source = editors.source.getValue()
+
+	original = new bef.Playfield()
+	original.fromString source, width, height
+
 	playfield = new bef.Playfield()
-	playfield.fromString editors.source.getValue(), 16, 10
+	playfield.fromString source, width, height
 
 	lazyRuntime = new bef.LazyRuntime()
 	lazyRuntime.execute(
@@ -32,9 +39,16 @@ run = (editors, compiler) ->
 	editors.output.setValue "Stack: #{stringedStack}\nOutput: #{stringedOutput}", 1
 
 	grid?.destroy()
-	grid = new viz.Grid playfield, lazyRuntime.pathSet, document.getElementById 'can'
+	grid = new viz.Grid(
+		original
+		playfield
+		lazyRuntime.pathSet
+		document.getElementById 'can'
+	)
 	grid.setListener (path) ->
-		editors.js.setValue path?.code ? ''
+		code = path?.code ? ''
+		editors.js.setValue code, -1
+		return
 
 
 do ->
