@@ -2,13 +2,13 @@
 
 
 colors =
-	background: '#272822'
-	grid: '#EDF'
+	background: 'hsl(70, 8%, 15%)'
+	grid: 'hsl(270, 100%, 93%)'
 	path:
-		arrow: 'rgb(24, 155, 230)'
-		background: '#49483E'
-	text: '#EDF'
-	altered: '#6e2121'
+		arrow: 'hsl(202, 81%, 50%)'
+		background: 'hsl(55, 8%, 26%)'
+	text: 'hsl(270, 100%, 93%)'
+	altered: 'hsl(0, 54%, 28%)'
 
 
 fonts =
