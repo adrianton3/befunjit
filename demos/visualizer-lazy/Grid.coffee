@@ -5,13 +5,15 @@ COLORS =
 	PATHBACKGROUND: '#49483E'
 	GRID: '#EDF'
 	PATHINDICATOR: 'rgb(24, 155, 230)'
-	FONT: '#EDF'
+	TEXT: '#EDF'
+	ALTERED: '#6e2121'
 
 FONTS =
 	NORMAL: '20px Consolas, monospace'
 	SMALL: '14px Consolas, monospace'
 
-Grid = (@playfield, @pathSet, @canvas) ->
+
+Grid = (@original, @playfield, @pathSet, @canvas) ->
 	@cellSize = 36
 
 	@canvas.width = @playfield.width * @cellSize
@@ -137,8 +139,21 @@ Grid::_setupMouseListener = ->
 
 Grid::draw = ->
 	#background
-	@con2d.fillStyle = COLORS.BACKGROUND
-	@con2d.fillRect 0, 0, @canvas.width, @canvas.height
+	for i in [0...@playfield.width]
+		for j in [0...@playfield.height]
+			charOriginal = @original.getAt i, j
+			charNow = @playfield.getAt i, j
+			@con2d.fillStyle = if charNow == charOriginal
+					COLORS.BACKGROUND
+				else
+					COLORS.ALTERED
+
+			@con2d.fillRect(
+				i * @cellSize
+				j * @cellSize
+				@cellSize
+				@cellSize
+			)
 
 	#active path
 	@con2d.fillStyle = COLORS.PATHBACKGROUND
@@ -146,7 +161,7 @@ Grid::draw = ->
 		@con2d.fillRect entry.x * @cellSize, entry.y * @cellSize, @cellSize, @cellSize
 
 	#chars
-	@con2d.fillStyle = COLORS.FONT
+	@con2d.fillStyle = COLORS.TEXT
 	for i in [0...@playfield.width]
 		for j in [0...@playfield.height]
 			charRaw = @playfield.getAt i, j
