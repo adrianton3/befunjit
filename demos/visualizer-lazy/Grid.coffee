@@ -1,16 +1,19 @@
 'use strict'
 
-COLORS =
-	BACKGROUND: '#272822'
-	PATHBACKGROUND: '#49483E'
-	GRID: '#EDF'
-	PATHINDICATOR: 'rgb(24, 155, 230)'
-	TEXT: '#EDF'
-	ALTERED: '#6e2121'
 
-FONTS =
-	NORMAL: '20px Consolas, monospace'
-	SMALL: '14px Consolas, monospace'
+colors =
+	background: '#272822'
+	grid: '#EDF'
+	path:
+		arrow: 'rgb(24, 155, 230)'
+		background: '#49483E'
+	text: '#EDF'
+	altered: '#6e2121'
+
+
+fonts =
+	normal: '20px Consolas, monospace'
+	small: '14px Consolas, monospace'
 
 
 Grid = (@original, @playfield, @pathSet, @canvas) ->
@@ -34,7 +37,7 @@ Grid = (@original, @playfield, @pathSet, @canvas) ->
 
 	@hitRegions = []
 	@_setupHitRegions()
-	@arrowImages = getArrowImages @cellSize / 3, COLORS
+	@arrowImages = getArrowImages @cellSize / 3
 	@draw()
 	return
 
@@ -44,7 +47,7 @@ getArrowImage = (size, angle) ->
 	canvas.width = size
 	canvas.height = size
 	con2d = canvas.getContext '2d'
-	con2d.strokeStyle = COLORS.PATHINDICATOR
+	con2d.strokeStyle = colors.path.arrow
 	con2d.lineWidth = 2
 
 	con2d.translate size / 2, size / 2
@@ -56,6 +59,7 @@ getArrowImage = (size, angle) ->
 	con2d.lineTo  size / 2 + 1, size / 2 - 4
 	con2d.stroke()
 	canvas
+
 
 getArrowImages = (size) ->
 	'^': getArrowImage size, 0
@@ -144,9 +148,9 @@ Grid::draw = ->
 			charOriginal = @original.getAt i, j
 			charNow = @playfield.getAt i, j
 			@con2d.fillStyle = if charNow == charOriginal
-					COLORS.BACKGROUND
+					colors.background
 				else
-					COLORS.ALTERED
+					colors.altered
 
 			@con2d.fillRect(
 				i * @cellSize
@@ -156,12 +160,12 @@ Grid::draw = ->
 			)
 
 	#active path
-	@con2d.fillStyle = COLORS.PATHBACKGROUND
+	@con2d.fillStyle = colors.path.background
 	@highlightedPath?.list.forEach (entry) =>
 		@con2d.fillRect entry.x * @cellSize, entry.y * @cellSize, @cellSize, @cellSize
 
 	#chars
-	@con2d.fillStyle = COLORS.TEXT
+	@con2d.fillStyle = colors.text
 	for i in [0...@playfield.width]
 		for j in [0...@playfield.height]
 			charRaw = @playfield.getAt i, j
@@ -169,10 +173,10 @@ Grid::draw = ->
 
 			if charCode > 0
 				charPretty = if 32 <= charCode <= 126
-					@con2d.font = FONTS.NORMAL
+					@con2d.font = fonts.normal
 					charRaw
 				else
-					@con2d.font = FONTS.SMALL
+					@con2d.font = fonts.small
 					"##{charCode}"
 
 				@con2d.fillText(
@@ -189,7 +193,7 @@ Grid::draw = ->
 	@con2d.save()
 	@con2d.translate 0.5, 0.5
 
-	@con2d.strokeStyle = COLORS.GRID
+	@con2d.strokeStyle = colors.grid
 	@con2d.beginPath()
 	for i in [1...@playfield.width]
 		@con2d.moveTo i * @cellSize, 0
