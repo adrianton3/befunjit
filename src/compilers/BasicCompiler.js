@@ -53,12 +53,16 @@
     fastConditionals = (ref = options.fastConditionals) != null ? ref : false;
     charList = path.getAsList();
     lines = charList.map(function(arg) {
-      var char, ref1, string;
+      var char, string;
       char = arg.char, string = arg.string;
       if (string) {
         return "/* '" + char + "' */  programState.push(" + (char.charCodeAt(0)) + ")";
+      } else if (codeMap[char] != null) {
+        return codeMap[char];
+      } else if ((' ' <= char && char <= '~')) {
+        return "/* '" + char + "' */";
       } else {
-        return (ref1 = codeMap[char]) != null ? ref1 : "/* __ " + char + " */";
+        return "/* #" + (char.charCodeAt(0)) + " */";
       }
     });
     if (fastConditionals && ((ref1 = path.ending.char) === '|' || ref1 === '_')) {

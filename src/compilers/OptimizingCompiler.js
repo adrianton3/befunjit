@@ -187,16 +187,17 @@
     fastConditionals = (ref = options.fastConditionals) != null ? ref : false;
     charList = path.getAsList();
     stack = [];
-    lines = charList.map(function(entry, i) {
-      var codeGenerator, ret;
-      if (entry.string) {
-        stack.push(entry.char.charCodeAt(0));
-        return "/* '" + entry.char + "' */";
+    lines = charList.map(function(arg) {
+      var char, codeGenerator, ret, string;
+      char = arg.char, string = arg.string;
+      if (string) {
+        stack.push(char.charCodeAt(0));
+        return "/* '" + char + "' */";
       } else {
-        codeGenerator = codeMap[entry.char];
+        codeGenerator = codeMap[char];
         if (codeGenerator != null) {
           ret = '';
-          if (entry.char === '&' || entry.char === '~') {
+          if (char === '&' || char === '~') {
             if (stack.length) {
               ret += "programState.push(" + (stack.join(', ')) + ");\n";
             }
@@ -204,8 +205,10 @@
           }
           ret += codeGenerator(stack);
           return ret;
+        } else if ((' ' <= char && char <= '~')) {
+          return "/* '" + char + "' */";
         } else {
-          return "/* __ " + entry.char + " */";
+          return "/* #" + (char.charCodeAt(0)) + " */";
         }
       }
     });
