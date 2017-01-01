@@ -235,7 +235,7 @@ describe 'LazyRuntime', ->
 			hits = []
 			# run for a couple of times
 			# just enough so all directions should be hit
-			for i in [1..20]
+			for i in [1..40]
 				programState = thunk()
 				output = programState.outRecord[0]
 				sum += output
