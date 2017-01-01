@@ -51,8 +51,12 @@ BasicCompiler.assemble = (path, options = {}) ->
 	lines = charList.map ({ char, string }) ->
 		if string
 			"/* '#{char}' */  programState.push(#{char.charCodeAt 0})"
+		else if codeMap[char]?
+			codeMap[char]
+		else if ' ' <= char <= '~'
+			"/* '#{char}' */"
 		else
-			codeMap[char] ? "/* __ #{char} */"
+			"/* ##{char.charCodeAt 0} */"
 
 	if fastConditionals and path.ending.char in ['|', '_']
 		"""

@@ -148,23 +148,25 @@ OptimizingCompiler.assemble = (path, options = {}) ->
 	charList = path.getAsList()
 
 	stack = []
-	lines = charList.map (entry, i) ->
-		if entry.string
-			stack.push entry.char.charCodeAt 0
-			"/* '#{entry.char}' */"
+	lines = charList.map ({ char, string }) ->
+		if string
+			stack.push char.charCodeAt 0
+			"/* '#{char}' */"
 		else
-			codeGenerator = codeMap[entry.char]
+			codeGenerator = codeMap[char]
 			if codeGenerator?
 				ret = ''
-				if entry.char == '&' or entry.char == '~'
+				if char == '&' or char == '~'
 					# dump the stack
 					if stack.length
 						ret += "programState.push(#{stack.join ', '});\n"
 					stack = []
 				ret += codeGenerator stack
 				ret
+			else if ' ' <= char <= '~'
+				"/* '#{char}' */"
 			else
-				"/* __ #{entry.char} */"
+				"/* ##{char.charCodeAt 0} */"
 
 	if fastConditionals
 		if stack.length == 0
