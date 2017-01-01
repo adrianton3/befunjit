@@ -10,6 +10,14 @@
 } = window.viz
 
 
+prettify = (code) ->
+	# workarounds until js_beautify gets fixed
+	# https://github.com/beautify-web/js-beautify/issues/815
+	semicolons = code.replace /([\w)])$/gm, '$1;'
+	beautified = js_beautify semicolons
+	beautified.replace /;$/gm, ''
+
+
 run = (editors, compiler) ->
 	saveProgram editors
 
@@ -23,8 +31,7 @@ run = (editors, compiler) ->
 		editors.input.getValue()
 	)
 
-	rawJs = runtime.code
-	prettyJs = js_beautify rawJs
+	prettyJs = prettify runtime.code
 
 	editors.js.setValue prettyJs, 1
 
