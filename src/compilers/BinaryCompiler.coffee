@@ -96,14 +96,14 @@ generateTree = (codes, id) ->
 		"""
 
 
-generateCode = (path, maxDepth) ->
+generateCode = (path, maxDepth, options) ->
 	{ makeStack, codeMap } = window.bef.StackingCompiler
 
 	charList = path.getAsList()
 
 	stack = makeStack(
 		"#{path.id}_#{maxDepth}"
-		{ popMethod: 'popUnsafe', freePops: maxDepth }
+		Object.assign { popMethod: 'popUnsafe', freePops: maxDepth }, options
 	)
 
 	charList.forEach (entry, i) ->
@@ -118,9 +118,9 @@ generateCode = (path, maxDepth) ->
 	stack.stringify()
 
 
-assemble = (path) ->
+assemble = (path, options = {}) ->
 	maxDepth = getMaxDepth path
-	codes = ((generateCode path, depth) for depth in [0..maxDepth])
+	codes = ((generateCode path, depth, options) for depth in [0..maxDepth])
 	generateTree codes, path.id
 
 
