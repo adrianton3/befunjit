@@ -56,14 +56,14 @@
     }
   };
 
-  generateCode = function(path, maxDepth) {
+  generateCode = function(path, maxDepth, options) {
     var charList, codeMap, makeStack, ref, stack;
     ref = window.bef.StackingCompiler, makeStack = ref.makeStack, codeMap = ref.codeMap;
     charList = path.getAsList();
-    stack = makeStack(path.id + "_" + maxDepth, {
+    stack = makeStack(path.id + "_" + maxDepth, Object.assign({
       popMethod: 'popUnsafe',
       freePops: maxDepth
-    });
+    }, options));
     charList.forEach(function(entry, i) {
       var codeGenerator;
       if (entry.string) {
@@ -78,14 +78,17 @@
     return stack.stringify();
   };
 
-  assemble = function(path) {
+  assemble = function(path, options) {
     var codes, depth, maxDepth;
+    if (options == null) {
+      options = {};
+    }
     maxDepth = getMaxDepth(path);
     codes = (function() {
       var j, ref, results;
       results = [];
       for (depth = j = 0, ref = maxDepth; 0 <= ref ? j <= ref : j >= ref; depth = 0 <= ref ? ++j : --j) {
-        results.push(generateCode(path, depth));
+        results.push(generateCode(path, depth, options));
       }
       return results;
     })();
