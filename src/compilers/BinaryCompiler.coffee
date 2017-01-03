@@ -32,8 +32,8 @@ consumeCount = new Map [
 	['v', consumePair 0, 0]
 	['>', consumePair 0, 0]
 	['?', consumePair 0, 0]
-	['_', consumePair 0, 0]
-	['|', consumePair 0, 0]
+	['_', consumePair 1, -1]
+	['|', consumePair 1, -1]
 	['"', consumePair 0, 0]
 
 	[':', consumePair 0, 1]

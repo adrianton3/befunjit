@@ -274,7 +274,7 @@ makeStack = (uid, options = {}) ->
 		stackChunk =
 			if fastConditionals
 				if stack.length == 0
-					'branchFlag = programState.pop();'
+					"branchFlag = #{@pop()};"
 				else if stack.length == 1
 					"branchFlag = #{stack[0]};"
 				else
