@@ -163,21 +163,21 @@ assemble = (graph, options) ->
 						''
 
 					edgeCode = """
-						stack = programState.stack;
-						#{if fastConditionals then 'var branchFlag = 0;' else ''}
 						#{pBit}
 						#{neighbours[0].assemble()}
 						#{branch}
 					"""
 
-					# this might not be necessary if only
-					# the starting node can have a single neighbour
 					wrapIfLooping node, edgeCode
 
 				when 0
 					'return;'
 
-	df graph.start, null, List.EMPTY
+	"""
+		var stack = programState.stack
+		var branchFlag = 0
+		#{df graph.start, null, List.EMPTY}
+	"""
 
 
 GraphCompiler =
