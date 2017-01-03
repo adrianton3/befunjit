@@ -180,11 +180,10 @@
   OptimizingCompiler = function() {};
 
   OptimizingCompiler.assemble = function(path, options) {
-    var charList, fastConditionals, last, lines, ref, stack;
+    var charList, last, lines, ref, ref1, stack;
     if (options == null) {
       options = {};
     }
-    fastConditionals = (ref = options.fastConditionals) != null ? ref : false;
     charList = path.getAsList();
     stack = [];
     lines = charList.map(function(arg) {
@@ -212,7 +211,7 @@
         }
       }
     });
-    if (fastConditionals) {
+    if ((ref = (ref1 = path.ending) != null ? ref1.char : void 0) === '|' || ref === '_') {
       if (stack.length === 0) {
         lines.push("branchFlag = programState.pop()");
       } else if (stack.length === 1) {

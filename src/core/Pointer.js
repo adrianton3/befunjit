@@ -34,6 +34,10 @@
     this._updateDir(dir);
   };
 
+  Pointer.prototype.clone = function() {
+    return new Pointer(this.x, this.y, this.dir, this.space);
+  };
+
   Pointer.prototype._updateDir = function(dir) {
     var entry;
     this.dir = dir;

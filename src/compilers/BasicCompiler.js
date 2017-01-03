@@ -46,11 +46,10 @@
   BasicCompiler = function() {};
 
   BasicCompiler.assemble = function(path, options) {
-    var charList, fastConditionals, lines, ref, ref1;
+    var charList, lines, ref, ref1;
     if (options == null) {
       options = {};
     }
-    fastConditionals = (ref = options.fastConditionals) != null ? ref : false;
     charList = path.getAsList();
     lines = charList.map(function(arg) {
       var char, string;
@@ -65,7 +64,7 @@
         return "/* #" + (char.charCodeAt(0)) + " */";
       }
     });
-    if (fastConditionals && ((ref1 = path.ending.char) === '|' || ref1 === '_')) {
+    if ((ref = (ref1 = path.ending) != null ? ref1.char : void 0) === '|' || ref === '_') {
       return (lines.join('\n')) + "\nbranchFlag = programState.pop()";
     } else {
       return lines.join('\n');
