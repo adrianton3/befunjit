@@ -14,18 +14,6 @@ describe 'EagerRuntime', ->
 		eagerRuntime
 
 
-	describe 'getPath', ->
-		it 'can handle jumps on path endings', ->
-			eagerRuntime = getInterpreter 'a_b#c_d'
-
-			path = eagerRuntime._getPath 2, 0, '>'
-			pathAsList = path.path.getAsList()
-			(expect pathAsList).toEqual [
-				{ x: 2, y: 0, dir: '>', char: 'b', string: false }
-				{ x: 3, y: 0, dir: '>', char: '#', string: false }
-				{ x: 5, y: 0, dir: '>', char: '_', string: false }
-			]
-
 	describe 'buildGraph', ->
 		buildGraph = (string) ->
 			eagerRuntime = getInterpreter string

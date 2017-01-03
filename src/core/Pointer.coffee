@@ -14,6 +14,10 @@ Pointer = (@x, @y, dir, @space) ->
 	return
 
 
+Pointer::clone = ->
+	new Pointer @x, @y, @dir, @space
+
+
 Pointer::_updateDir = (dir) ->
 	@dir = dir
 	entry = dirTable.get dir

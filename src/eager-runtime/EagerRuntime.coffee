@@ -1,5 +1,9 @@
 'use strict'
 
+
+{ findPath } = bef.PathFinder
+
+
 EagerRuntime = ->
 	@playfield = null
 	@pathSet = null
@@ -10,64 +14,6 @@ EagerRuntime = ->
 		jumpsPerformed: 0
 
 	return
-
-
-EagerRuntime::_getPath = (x, y, dir) ->
-	path = new bef.Path()
-	pointer = new bef.Pointer x, y, dir, @playfield.getSize()
-
-	loop
-		currentChar = @playfield.getAt pointer.x, pointer.y
-
-		# processing string
-		if currentChar == '"'
-			path.push pointer.x, pointer.y, pointer.dir, currentChar
-			loop
-				pointer.advance()
-				currentChar = @playfield.getAt pointer.x, pointer.y
-				if currentChar == '"'
-					path.push pointer.x, pointer.y, pointer.dir, currentChar
-					break
-				path.push pointer.x, pointer.y, pointer.dir, currentChar, true
-			pointer.advance()
-			continue
-
-		pointer.turn currentChar
-
-		if path.hasNonString pointer.x, pointer.y, pointer.dir
-			splitPosition = (path.getEntryAt pointer.x, pointer.y, pointer.dir).index
-			if splitPosition > 0
-				initialPath = path.prefix splitPosition
-				loopingPath = path.suffix splitPosition
-				return {
-					type: 'composed'
-					initialPath: initialPath
-					loopingPath: loopingPath
-				}
-			else
-				return {
-					type: 'looping'
-					loopingPath: path
-				}
-
-		path.push pointer.x, pointer.y, pointer.dir, currentChar
-
-		if currentChar in ['|', '_', '?', '@', 'p']
-			path.ending = {
-				x: pointer.x
-				y: pointer.y
-				dir: pointer.dir
-				char: currentChar
-			}
-			return {
-				type: 'simple'
-				path: path
-			}
-
-		if currentChar == '#'
-			pointer.advance()
-
-		pointer.advance()
 
 
 canReach = (graph, start, targets) ->
@@ -157,7 +103,7 @@ EagerRuntime::buildGraph = (start) ->
 
 	buildEdge = (hash, pointer) =>
 		# seek out a path
-		newPath = @_getPath pointer.x, pointer.y, pointer.dir
+		newPath = findPath @playfield, pointer
 
 		# remember where this path comes from and where it leads to
 		newPath.path?.from = hash
