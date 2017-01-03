@@ -1,5 +1,9 @@
 'use strict'
 
+
+{ findPath } = bef.PathFinder
+
+
 LazyRuntime = ->
 	@playfield = null
 	@pathSet = null
@@ -12,62 +16,8 @@ LazyRuntime = ->
 	return
 
 
-LazyRuntime::_getPath = (x, y, dir) ->
-	path = new bef.Path()
-	pointer = new bef.Pointer x, y, dir, @playfield.getSize()
-
-	loop
-		currentChar = @playfield.getAt pointer.x, pointer.y
-
-		# processing string
-		if currentChar == '"'
-			path.push pointer.x, pointer.y, pointer.dir, currentChar
-			loop
-				pointer.advance()
-				currentChar = @playfield.getAt pointer.x, pointer.y
-				if currentChar == '"'
-					path.push pointer.x, pointer.y, pointer.dir, currentChar
-					break
-				path.push pointer.x, pointer.y, pointer.dir, currentChar, true
-			pointer.advance()
-			continue
-
-		pointer.turn currentChar
-
-		if path.hasNonString pointer.x, pointer.y, pointer.dir
-			splitPosition = (path.getEntryAt pointer.x, pointer.y, pointer.dir).index
-			if splitPosition > 0
-				initialPath = path.prefix splitPosition
-				loopingPath = path.suffix splitPosition
-				loopingPath.looping = true
-				return {
-					type: 'composed'
-					initialPath: initialPath
-					loopingPath: loopingPath
-				}
-			else
-				path.looping = true
-				return {
-					type: 'looping'
-					loopingPath: path
-				}
-
-		path.push pointer.x, pointer.y, pointer.dir, currentChar
-
-		if currentChar in ['|', '_', '?', '@', 'p']
-			return {
-				type: 'simple'
-				path: path
-			}
-
-		if currentChar == '#'
-			pointer.advance()
-
-		pointer.advance()
-
-
 LazyRuntime::put = (x, y, e) ->
-	return if not @playfield.isInside x, y # exit early
+	return if not @playfield.isInside x, y
 
 	paths = @playfield.getPathsThrough x, y
 	paths.forEach (path) =>
@@ -103,20 +53,24 @@ LazyRuntime::_registerPath = (path, compiler) ->
 	return
 
 
-LazyRuntime::_getCurrentPath = ({ x, y, dir }, compiler) ->
-	path = @pathSet.getStartingFrom x, y, dir
+LazyRuntime::_getCurrentPath = (start, compiler) ->
+	path = @pathSet.getStartingFrom start.x, start.y, start.dir
 
 	if not path?
-		newPath = @_getPath x, y, dir
+		newPath = findPath @playfield, start
 
 		path = switch newPath.type
 			when 'simple'
+				newPath.path.ending = null
 				@_registerPath newPath.path, compiler
 				newPath.path
 			when 'looping'
+				newPath.loopingPath.ending = null
 				@_registerPath newPath.loopingPath, compiler
 				newPath.loopingPath
 			when 'composed'
+				newPath.initialPath.ending = null
+				newPath.loopingPath.ending = null
 				@_registerPath newPath.initialPath, compiler
 				@_registerPath newPath.loopingPath, compiler
 				newPath.initialPath
