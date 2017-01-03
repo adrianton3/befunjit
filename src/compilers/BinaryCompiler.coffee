@@ -103,6 +103,7 @@ generateCode = (path, maxDepth, options) ->
 
 	stack = makeStack(
 		"#{path.id}_#{maxDepth}"
+		path.ending
 		Object.assign { popMethod: 'popUnsafe', freePops: maxDepth }, options
 	)
 

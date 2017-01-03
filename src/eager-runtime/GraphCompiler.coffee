@@ -40,8 +40,6 @@ assemble = (graph, options) ->
 		else
 			neighbours = graph.nodes[node]
 
-			# all nodes of a befunge program have 2 outgoing edges
-			# except the initial node
 			newStack = stack.con node
 
 			switch neighbours.length
@@ -53,7 +51,6 @@ assemble = (graph, options) ->
 					branch3 = df neighbours[3].to, neighbours[3], newStack
 
 					randomCode = """
-						#{if fastConditionals then 'stack.push(branchFlag);' else ''}
 						var choice = programState.randInt(4);
 						switch (choice) {
 							case 0:
