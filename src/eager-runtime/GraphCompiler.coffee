@@ -2,18 +2,6 @@
 
 List = bef.List
 
-# obsolete?
-computeIndegree = (nodes) ->
-	(Object.keys nodes).reduce (indegree, nodeName) ->
-		nodes[nodeName].forEach (edge) ->
-			to = edge.to
-			if indegree.has to
-				indegree.set to, (indegree.get to) + 1
-			else
-				indegree.set to, 1
-		indegree
-	, new Map
-
 
 assemble = (graph, options = {}) ->
 	cycledNodes = new Set
