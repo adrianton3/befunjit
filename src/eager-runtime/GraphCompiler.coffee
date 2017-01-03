@@ -15,8 +15,7 @@ computeIndegree = (nodes) ->
 	, new Map
 
 
-assemble = (graph, options) ->
-	fastConditionals = options?.fastConditionals
+assemble = (graph, options = {}) ->
 	cycledNodes = new Set
 
 	wrapIfLooping = (node, code) ->
@@ -75,15 +74,13 @@ assemble = (graph, options) ->
 					wrapIfLooping node, randomCode
 
 				when 2
-					conditionalChunk = if fastConditionals then 'branchFlag' else 'programState.pop()'
-
 					if node == neighbours[0].to
 						branch1 = df neighbours[1].to, neighbours[1], newStack
 						maybeTight = (neighbours[0].assembleTight ? neighbours[0].assemble)()
 
 						selectCode = if typeof maybeTight == 'string'
 							"""
-								while (#{conditionalChunk}) {
+								while (branchFlag) {
 									#{maybeTight}
 								}
 								#{neighbours[1].assemble()}
@@ -91,9 +88,9 @@ assemble = (graph, options) ->
 							"""
 						else
 							"""
-								if (#{conditionalChunk}) {
+								if (branchFlag) {
 									#{maybeTight.pre}
-									while (#{conditionalChunk}) {
+									while (branchFlag) {
 										#{maybeTight.body}
 									}
 									#{maybeTight.post}
@@ -107,7 +104,7 @@ assemble = (graph, options) ->
 
 						selectCode = if typeof maybeTight == 'string'
 							"""
-								while (!#{conditionalChunk}) {
+								while (!branchFlag) {
 									#{neighbours[1].assemble()}
 								}
 								#{neighbours[0].assemble()}
@@ -115,9 +112,9 @@ assemble = (graph, options) ->
 							"""
 						else
 							"""
-								if (!#{conditionalChunk}) {
+								if (!branchFlag) {
 									#{maybeTight.pre}
-									while (!#{conditionalChunk}) {
+									while (!branchFlag) {
 										#{maybeTight.body}
 									}
 									#{maybeTight.post}
@@ -130,7 +127,7 @@ assemble = (graph, options) ->
 						branch1 = df neighbours[1].to, neighbours[1], newStack
 
 						selectCode = """
-							if (#{conditionalChunk}) {
+							if (branchFlag) {
 								#{neighbours[0].assemble()}
 								#{branch0}
 							} else {
