@@ -44,8 +44,6 @@ BasicCompiler = ->
 
 
 BasicCompiler.assemble = (path, options = {}) ->
-	fastConditionals = options.fastConditionals ? false
-
 	charList = path.getAsList()
 
 	lines = charList.map ({ char, string }) ->
@@ -58,7 +56,7 @@ BasicCompiler.assemble = (path, options = {}) ->
 		else
 			"/* ##{char.charCodeAt 0} */"
 
-	if fastConditionals and path.ending.char in ['|', '_']
+	if path.ending?.char in ['|', '_']
 		"""
 			#{lines.join '\n'}
 			branchFlag = programState.pop()

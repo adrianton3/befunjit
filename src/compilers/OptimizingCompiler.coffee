@@ -143,8 +143,6 @@ OptimizingCompiler = ->
 
 
 OptimizingCompiler.assemble = (path, options = {}) ->
-	fastConditionals = options.fastConditionals ? false
-	
 	charList = path.getAsList()
 
 	stack = []
@@ -168,7 +166,7 @@ OptimizingCompiler.assemble = (path, options = {}) ->
 			else
 				"/* ##{char.charCodeAt 0} */"
 
-	if fastConditionals
+	if path.ending?.char in ['|', '_']
 		if stack.length == 0
 			lines.push "branchFlag = programState.pop()"
 		else if stack.length == 1

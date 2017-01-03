@@ -25,7 +25,11 @@ describe 'GraphCompiler', ->
 
 
 		makeEdge = (code, to) ->
-			assemble: -> code
+			assemble: ->
+				"""
+					#{code}
+					branchFlag = programState.pop()
+				"""
 			to: to
 
 
@@ -52,8 +56,11 @@ describe 'GraphCompiler', ->
 
 		it 'assembles the minimal chain', ->
 			graph =
-				start: 'a'
+				start: 's'
 				nodes:
+					s: [
+						(makeEdge 'programState.emit("s")', 'a')
+					]
 					a: [
 						(makeEdge 'programState.emit("p11")', 'b')
 						(makeEdge 'programState.emit("p12")', 'b')
@@ -63,15 +70,18 @@ describe 'GraphCompiler', ->
 						(makeEdge 'programState.emit("p22")', 'a')
 					]
 
-			programState = execute (assemble graph), [true, true]
+			programState = execute (assemble graph), [true, true, true]
 
 			expect programState.messages
-			.toEqual ['p11', 'p21']
+			.toEqual ['s', 'p11', 'p21']
 
 		it 'assembles a cycle', ->
 			graph =
-				start: 'a'
+				start: 's'
 				nodes:
+					s: [
+						(makeEdge 'programState.emit("s")', 'a')
+					]
 					a: [
 						(makeEdge 'programState.emit("p1")', 'a')
 						(makeEdge 'programState.emit("p2")', 'a')
@@ -80,4 +90,4 @@ describe 'GraphCompiler', ->
 			programState = execute (assemble graph), [true, true, false, true]
 
 			expect programState.messages
-			.toStartWith ['p1', 'p2', 'p1', 'p1']
+			.toStartWith ['s', 'p1', 'p2', 'p1', 'p1']

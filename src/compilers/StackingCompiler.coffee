@@ -194,10 +194,9 @@ codeMap =
 		return
 
 
-makeStack = (uid, options = {}) ->
+makeStack = (uid, ending, options = {}) ->
 	popMethod = options.popMethod ? 'pop'
 	freePops = options.freePops ? Infinity
-	fastConditionals = options.fastConditionals ? false
 	popCount = options.popCount ? 0
 	pushCount = options.pushCount ? 0
 
@@ -272,16 +271,16 @@ makeStack = (uid, options = {}) ->
 
 	stackObj.stringify = ->
 		stackChunk =
-			if fastConditionals
+			if ending?.char in ['|', '_']
 				if stack.length == 0
 					"branchFlag = #{@pop()};"
 				else if stack.length == 1
 					"branchFlag = #{stack[0]};"
 				else
-					branchChunk = "branchFlag = #{stack.pop()};"
+					last = stack.pop()
 					"""
 						#{pushBack stack, pushCount}
-						#{branchChunk}
+						branchFlag = #{last}
 					"""
 			else
 				if stack.length == 0
@@ -306,7 +305,7 @@ makeStack = (uid, options = {}) ->
 assemble = (path, options) ->
 	charList = path.getAsList()
 
-	stack = makeStack path.id, options
+	stack = makeStack path.id, path.ending, options
 
 	charList.forEach (entry) ->
 		if entry.string
