@@ -1,6 +1,12 @@
 changelog
 =========
 
+####r18 --- 4 jan 2017
+ + lazy visualizer displays altered cells through `p`
+ + both visualizers handle non-printable characters
+ + fast conditionals are always on
+ + multiple refactorings
+
 ####r17 --- 30 dec 2016
  + fix paths not recompiling if they've already been "explored" by the graph compiler
  + fix current path not having to be recompiled if altered
