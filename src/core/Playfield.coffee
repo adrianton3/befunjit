@@ -12,7 +12,7 @@ Playfield = (@width = DEFAULT.WIDTH, @height = DEFAULT.HEIGHT) ->
 	return
 
 
-Playfield::_initPathPlane = (width = DEFAULT.WIDTH, height = DEFAULT.HEIGHT) ->
+Playfield::_initPathPlane = (width, height) ->
 	@pathPlane = []
 
 	for i in [1..height]
@@ -54,7 +54,7 @@ Playfield::fromString = (string, width, height) ->
 
 		@field.push line
 
-	@_initPathPlane width, height
+	@_initPathPlane @width, @height
 
 	@
 
