@@ -1,6 +1,10 @@
 changelog
 =========
 
+####r19 --- 11 feb 2017
+ + merge Playfield::fromString into Playfield constructor
+ + fix dependency issue regarding PathMetrics
+
 ####r18 --- 4 jan 2017
  + lazy visualizer displays altered cells through `p`
  + both visualizers handle non-printable characters
