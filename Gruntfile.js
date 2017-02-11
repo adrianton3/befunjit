@@ -5,7 +5,10 @@ module.exports = function (grunt) {
 		coffee: {
 			all: {
 				files: {
-					'build/befunjit.browser.js': ['src/**/*.coffee']
+					'build/befunjit.browser.js': [
+						'src/compilers/PathMetrics.coffee',
+						'src/**/*.coffee'
+					]
 				}
 			}
 		},
