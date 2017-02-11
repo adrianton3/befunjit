@@ -1,3 +1,6 @@
+'use strict'
+
+
 EMPTY =
 	find: -> null
 	con: (value) -> new List value, EMPTY
