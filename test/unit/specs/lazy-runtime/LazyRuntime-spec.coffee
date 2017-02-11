@@ -4,8 +4,7 @@ describe 'LazyRuntime', ->
 
 	describe 'execute', ->
 		execute = (string, input = [], options = {}) ->
-			playfield = new Playfield
-			playfield.fromString string
+			playfield = new Playfield string
 
 			options.jumpLimit ?= 100
 

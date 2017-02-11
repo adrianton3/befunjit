@@ -12,19 +12,17 @@
 
 grid = null
 
-width = 16
-height = 10
 
 run = (editors, compiler) ->
 	saveProgram editors
 
 	source = editors.source.getValue()
 
-	original = new bef.Playfield()
-	original.fromString source, width, height
+	size = { width: 16, height: 10 }
 
-	playfield = new bef.Playfield()
-	playfield.fromString source, width, height
+	original = new bef.Playfield source, size
+
+	playfield = new bef.Playfield source, size
 
 	lazyRuntime = new bef.LazyRuntime()
 	lazyRuntime.execute(

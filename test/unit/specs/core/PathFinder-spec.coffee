@@ -7,8 +7,7 @@
 describe 'PathFinder', ->
 	describe 'getPath', ->
 		findPath = (source, x = 0, y = 0, dir = '>') ->
-			playfield = new Playfield
-			playfield.fromString source
+			playfield = new Playfield source
 			space = {
 				width: playfield.width
 				height: playfield.height

@@ -1,19 +1,58 @@
 'use strict'
 
 
-DEFAULT =
-	WIDTH: 80
-	HEIGHT: 25
+Playfield = (string, size) ->
+	lines = string.split '\n'
 
+	[@width, @height] = initSize lines, size
+	@field = initField lines, @width, @height
+	@pathPlane = initPathPlane @width, @height
 
-Playfield = (@width = DEFAULT.WIDTH, @height = DEFAULT.HEIGHT) ->
-	@field = []
-	@pathPlane = []
 	return
 
 
-Playfield::_initPathPlane = (width, height) ->
-	@pathPlane = []
+initSize = (lines, size) ->
+	if size?
+		[size.width, size.height]
+	else
+		[
+			Math.max (lines.map (line) -> line.length)...
+			lines.length
+		]
+
+
+initField = (lines, width, height) ->
+	field = []
+
+	i = 0
+	iLimit = Math.min lines.length, height
+	while i < iLimit
+		line = lines[i]
+		chars = line.split ''
+		chars.splice width, chars.length
+
+		for j in [chars.length...width]
+			chars.push ' '
+
+		field.push chars
+		i++
+
+	i = lines.length
+	iLimit = height
+	while i < iLimit
+		line = []
+
+		for j in [0...width]
+			line.push ' '
+
+		field.push line
+		i++
+
+	field
+
+
+initPathPlane = (width, height) ->
+	pathPlane = []
 
 	for i in [1..height]
 		line = []
@@ -21,42 +60,9 @@ Playfield::_initPathPlane = (width, height) ->
 		for j in [1..width]
 			line.push new Map
 
-		@pathPlane.push line
+		pathPlane.push line
 
-	return
-
-
-Playfield::fromString = (string, width, height) ->
-	lines = string.split '\n'
-
-	[@width, @height] = if width? and height?
-		[width, height]
-	else
-		[
-			Math.max (lines.map (line) -> line.length)...
-			lines.length
-		]
-
-	@field = []
-	lines.forEach (line) =>
-		chars = line.split ''
-
-		for i in [chars.length...@width]
-			chars.push ' '
-
-		@field.push chars
-
-	for i in [lines.length...@height]
-		line = []
-
-		for j in [0...@width]
-			line.push ' '
-
-		@field.push line
-
-	@_initPathPlane @width, @height
-
-	@
+	pathPlane
 
 
 Playfield::getAt = (x, y) ->

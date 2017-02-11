@@ -9,25 +9,37 @@ describe 'Playfield', ->
 		dd hh
 	"""
 
-	getSamplePlayfield = ->
-		playfield = new Playfield 7, 5
-		playfield.fromString samplePlayefield, 7, 5
-		playfield
-
 	playfield = null
 
 	beforeEach ->
-		playfield = getSamplePlayfield()
+		playfield = new Playfield samplePlayefield
 
-	describe 'fromString', ->
+	describe 'constructor', ->
 		it 'creates a playfield from a stringed field', ->
 			(expect playfield.field).toEqual [
-				('a  s d '.split ''),
-				('d sa   '.split ''),
-				('       '.split ''),
-				('dd hh  '.split ''),
-				('       '.split '')
+				('a  s d'.split '')
+				('d sa  '.split '')
+				('      '.split '')
+				('dd hh '.split '')
 			]
+
+		it 'pads a playfield with spaces', ->
+			playfield = new Playfield samplePlayefield, { width: 8, height: 5 }
+			(expect playfield.field).toEqual [
+				('a  s d  '.split '')
+				('d sa    '.split '')
+				('        '.split '')
+				('dd hh   '.split '')
+				('        '.split '')
+			]
+
+		it 'trims cells that are outside', ->
+			playfield = new Playfield samplePlayefield, { width: 4, height: 2 }
+			(expect playfield.field).toEqual [
+				('a  s'.split '')
+				('d sa'.split '')
+			]
+
 
 	describe 'getAt', ->
 		it 'gets the char at a position', ->
@@ -35,10 +47,12 @@ describe 'Playfield', ->
 			(expect playfield.getAt 2, 1).toEqual 's'
 			(expect playfield.getAt 2, 3).toEqual ' '
 
+
 	describe 'setAt', ->
 		it 'sets a char at a position', ->
 			expect playfield.setAt 2, 1, 'z'
 			(expect playfield.getAt 2, 1).toEqual 'z'
+
 
 	describe 'addPath', ->
 		it 'adds a path', ->
@@ -74,6 +88,7 @@ describe 'Playfield', ->
 			(expect playfield.getPathsThrough 1, 2).toEqual [path1]
 			(expect playfield.getPathsThrough 2, 1).toEqual [path2]
 			(expect playfield.getPathsThrough 2, 2).toEqual [path2]
+
 
 	describe 'removePath', ->
 		it 'removed a path', ->

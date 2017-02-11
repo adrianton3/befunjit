@@ -21,8 +21,8 @@ prettify = (code) ->
 run = (editors, compiler) ->
 	saveProgram editors
 
-	playfield = new bef.Playfield()
-	playfield.fromString editors.source.getValue(), 16, 10
+	size = { width: 16, height: 10 }
+	playfield = new bef.Playfield editors.source.getValue(), size
 
 	runtime = new bef.EagerRuntime()
 	runtime.execute(

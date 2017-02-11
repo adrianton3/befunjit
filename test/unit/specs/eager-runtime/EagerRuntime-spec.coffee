@@ -2,13 +2,8 @@ describe 'EagerRuntime', ->
 	Playfield = bef.Playfield
 	EagerRuntime = bef.EagerRuntime
 
-	getPlayfield = (string, width, height) ->
-		playfield = new Playfield width, height
-		playfield.fromString string, width, height
-		playfield
-
-	getInterpreter = (string, width, height) ->
-		playfield = getPlayfield string, width, height
+	getInterpreter = (string) ->
+		playfield = new Playfield string
 		eagerRuntime = new EagerRuntime()
 		eagerRuntime.playfield = playfield
 		eagerRuntime
@@ -233,8 +228,7 @@ describe 'EagerRuntime', ->
 
 	describe 'execute', ->
 		execute = (string, input = []) ->
-			playfield = new Playfield
-			playfield.fromString string
+			playfield = new Playfield string
 
 			options =
 				jumpLimit: 10
