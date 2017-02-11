@@ -1,6 +1,9 @@
 'use strict'
 
 
+{ getDepth } = bef.PathMetrics
+
+
 generateTree = (codes, id) ->
 	generate = (from, to) ->
 		if from >= to
@@ -54,7 +57,7 @@ generateCode = (path, maxDepth, options) ->
 
 
 assemble = (path, options = {}) ->
-	{ max } = bef.PathMetrics.getDepth path
+	{ max } = getDepth path
 	codes = ((generateCode path, depth, options) for depth in [0..max])
 	generateTree codes, path.id
 

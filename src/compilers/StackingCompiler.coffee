@@ -1,6 +1,9 @@
 'use strict'
 
 
+{ getDepth } = bef.PathMetrics
+
+
 isNumber = (obj) ->
 	typeof obj == 'number'
 
@@ -258,7 +261,7 @@ writeBack = (count, uid) ->
 
 
 assembleTight = (path, options) ->
-	{ max, sum } = bef.PathMetrics.getDepth path
+	{ max, sum } = getDepth path
 
 	tempCount = Math.min max, max + sum
 
