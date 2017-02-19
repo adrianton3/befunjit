@@ -57,7 +57,8 @@ const runtimes = [
 const scripts = [
 	'count-up.bef',
 	'count-up-extra.bef',
-	'count-down.bef'
+	'count-down.bef',
+	'count-up-put-get.bef',
 ].map((name) => path.join(__dirname, 'scripts', name))
 
 const runs = 10
