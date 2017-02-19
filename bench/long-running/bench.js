@@ -68,7 +68,16 @@ const argSet = generateProduct([compilers, runtimes, scripts])
 const results = argSet.map((args) => {
 	const befunjit = path.join(__dirname, '..', '..', 'build/befunjit.node.js')
 	const command = `node ${befunjit} --no-input --time ${args.join(' ')}`
+
+	console.log(
+		'Executing',
+		...args.slice(0, -1),
+		path.parse(args[args.length - 1]).base
+	)
+
 	const time = execAverage(command, runs)
+
+	console.log('done in ', time, 'ms', '\n')
 
 	return { args, time }
 })
