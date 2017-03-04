@@ -29,30 +29,30 @@ binaryOperator = (operatorFunction, operatorChar, stringFunction) ->
 		return
 
 
-codeMap =
-	' ': ->
+codeMap = new Map [
+	[' ', ->]
 
 
-	'0': digitPusher 0
-	'1': digitPusher 1
-	'2': digitPusher 2
-	'3': digitPusher 3
-	'4': digitPusher 4
-	'5': digitPusher 5
-	'6': digitPusher 6
-	'7': digitPusher 7
-	'8': digitPusher 8
-	'9': digitPusher 9
+	['0', digitPusher 0]
+	['1', digitPusher 1]
+	['2', digitPusher 2]
+	['3', digitPusher 3]
+	['4', digitPusher 4]
+	['5', digitPusher 5]
+	['6', digitPusher 6]
+	['7', digitPusher 7]
+	['8', digitPusher 8]
+	['9', digitPusher 9]
 
 
-	'+': binaryOperator ((o1, o2) -> o2 + o1), '+', (o1, o2) -> "(#{o2} + #{o1})"
-	'-': binaryOperator ((o1, o2) -> o2 - o1), '-', (o1, o2) -> "(#{o2} - #{o1})"
-	'*': binaryOperator ((o1, o2) -> o2 * o1), '*', (o1, o2) -> "(#{o2} * #{o1})"
-	'/': binaryOperator ((o1, o2) -> o2 // o1), '/', (o1, o2) -> "Math.floor(#{o2} / #{o1})"
-	'%': binaryOperator ((o1, o2) -> o2 % o1), '%', (o1, o2) -> "(#{o2} % #{o1})"
+	['+', binaryOperator ((o1, o2) -> o2 + o1), '+', (o1, o2) -> "(#{o2} + #{o1})"]
+	['-', binaryOperator ((o1, o2) -> o2 - o1), '-', (o1, o2) -> "(#{o2} - #{o1})"]
+	['*', binaryOperator ((o1, o2) -> o2 * o1), '*', (o1, o2) -> "(#{o2} * #{o1})"]
+	['/', binaryOperator ((o1, o2) -> o2 // o1), '/', (o1, o2) -> "Math.floor(#{o2} / #{o1})"]
+	['%', binaryOperator ((o1, o2) -> o2 % o1), '%', (o1, o2) -> "(#{o2} % #{o1})"]
 
 
-	'!': (stack) ->
+	['!', (stack) ->
 		operand = stack.pop()
 
 		stack.push if isNumber operand
@@ -61,74 +61,84 @@ codeMap =
 			"(+!#{operand})"
 
 		return
+	]
 
 
-	'`': binaryOperator ((o1, o2) -> +(o1 < o2)), '`', (o1, o2) -> "(+(#{o1} < #{o2}))"
+	['`', binaryOperator ((o1, o2) -> +(o1 < o2)), '`', (o1, o2) -> "(+(#{o1} < #{o2}))"]
 
 
-	'^': ->
-	'<': ->
-	'v': ->
-	'>': ->
-	'?': ->
-	'_': ->
-	'|': ->
-	'"': ->
+	['^', ->]
+	['<', ->]
+	['v', ->]
+	['>', ->]
+	['?', ->]
+	['_', ->]
+	['|', ->]
+	['"', ->]
 
 
-	':': (stack) ->
+	[':', (stack) ->
 		top = stack.peek()
 		stack.push top
 		return
+	]
 
 
-	'\\': (stack) ->
+	['\\', (stack) ->
 		e1 = stack.pop()
 		e2 = stack.pop()
 		stack.push e1, e2
 		return
+	]
 
 
-	'$': (stack) ->
+	['$', (stack) ->
 		stack.pop()
 		return
+	]
 
 
-	'.': (stack) ->
+	['.', (stack) ->
 		stack.out("programState.out(#{stack.pop()})")
 		return
+	]
 
 
-	',': (stack) ->
+	[',', (stack) ->
 		stack.out("programState.out(String.fromCharCode(#{stack.pop()}))")
 		return
+	]
 
 
-	'#': ->
+	['#', ->]
 
 
-	'p': -> ''
+	['p', -> '']
 
 
-	'g': (stack) ->
+	['g', (stack) ->
 		stack.push "programState.get(#{stack.pop()}, #{stack.pop()})"
 		return
+	]
 
 
-	'&': (stack) ->
+	['&', (stack) ->
 		stack.push stack.next()
 		return
+	]
 
 
-	'~': (stack) ->
+	['~', (stack) ->
 		stack.push stack.nextChar()
 		return
+	]
 
 
-	'@': (stack) ->
+	['@', (stack) ->
 		stack.exit()
 		return
-
+	]
+]
 
 makeStack = (uid, ending, options = {}) ->
 	popMethod = options.popMethod ? 'pop'
@@ -247,7 +257,7 @@ assemble = (path, options) ->
 		if entry.string
 			stack.push entry.char.charCodeAt 0
 		else
-			codeGenerator = codeMap[entry.char]
+			codeGenerator = codeMap.get entry.char
 			if codeGenerator?
 				codeGenerator stack
 		return
