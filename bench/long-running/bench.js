@@ -31,26 +31,41 @@ function extractTime (buffer) {
 	return extract / 1e6
 }
 
-function execAverage (command, count) {
-	let sum = 0
+function execStats (command, count) {
+	const times = []
 
 	for (let i = 0; i < count; i++) {
 		const buffer = execSync(command)
-		sum += extractTime(buffer)
+		times.push(extractTime(buffer))
 	}
 
-	return sum / count
+	const sum = times.reduce(
+		(sum, time) => sum + time,
+		0
+	)
+
+	const mean = sum / count
+
+	const squareSum = times.reduce(
+		(sum, time) => sum + (time - mean) ** 2,
+		0
+	)
+
+	return {
+		mean,
+		deviation: Math.sqrt(squareSum / (count - 1))
+	}
 }
 
 const compilers = [
 	//'--basic',
 	//'--optimizing',
 	'--stacking',
-	'--binary'
+	// '--binary'
 ]
 
 const runtimes = [
-	//'--lazy',
+	'--lazy',
 	'--eager'
 ]
 
@@ -76,14 +91,17 @@ const results = argSet.map((args) => {
 		path.parse(args[args.length - 1]).base
 	)
 
-	const time = execAverage(command, runs)
+	const stats = execStats(command, runs)
 
-	console.log('done in ', time, 'ms', '\n')
+	console.log('done in ', stats, 'ms', '\n')
 
-	return { args, time }
+	return { args, stats }
 })
 
 fs.writeFileSync(
 	path.join(__dirname, 'results.json'),
-	JSON.stringify(results)
+	JSON.stringify({
+		runs,
+		results
+	})
 )
