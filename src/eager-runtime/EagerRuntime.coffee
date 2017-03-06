@@ -168,6 +168,8 @@ EagerRuntime::compile = (graph, options) ->
 						edge.assembleTight = ->
 							assembleTight path.path, options
 
+			return
+
 	# generate code for the whole graph
 	@code = bef.GraphCompiler.assemble(
 		{ start: 'start', nodes: graph }

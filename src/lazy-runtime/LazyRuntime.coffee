@@ -56,35 +56,33 @@ LazyRuntime::_registerPath = (path, compiler) ->
 LazyRuntime::_getCurrentPath = (start, compiler) ->
 	path = @pathSet.getStartingFrom start.x, start.y, start.dir
 
-	if not path?
-		newPath = findPath @playfield, start
+	return path if path?
 
-		path = switch newPath.type
-			when 'simple'
-				newPath.path.ending = null
-				@_registerPath newPath.path, compiler
-				newPath.path
-			when 'looping'
-				newPath.loopingPath.ending = null
-				@_registerPath newPath.loopingPath, compiler
-				newPath.loopingPath
-			when 'composed'
-				newPath.initialPath.ending = null
-				newPath.loopingPath.ending = null
-				@_registerPath newPath.initialPath, compiler
-				@_registerPath newPath.loopingPath, compiler
-				newPath.initialPath
+	{ type } = newPath = findPath @playfield, start
 
-	path
+	if type == 'simple'
+		newPath.path.ending = null
+		@_registerPath newPath.path, compiler
+		newPath.path
+	else if type == 'looping'
+		newPath.loopingPath.ending = null
+		@_registerPath newPath.loopingPath, compiler
+		newPath.loopingPath
+	else if type == 'composed'
+		newPath.initialPath.ending = null
+		newPath.loopingPath.ending = null
+		@_registerPath newPath.initialPath, compiler
+		@_registerPath newPath.loopingPath, compiler
+		newPath.initialPath
 
 
 LazyRuntime::_turn = (pointer, char) ->
-	dir = switch char
-		when '|'
+	dir =
+		if char == '|'
 			if @programState.pop() then '^' else 'v'
-		when '_'
+		else if char == '_'
 			if @programState.pop() then '<' else '>'
-		when '?'
+		else if char == '?'
 			'^<v>'[Math.random() * 4 | 0]
 
 	pointer.turn dir
