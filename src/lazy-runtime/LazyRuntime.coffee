@@ -20,10 +20,11 @@ LazyRuntime::put = (x, y, e) ->
 	return if not @playfield.isInside x, y
 
 	paths = @playfield.getPathsThrough x, y
-	paths.forEach (path) =>
+	paths.forEach (path) ->
 		@pathSet.remove path
 		@playfield.removePath path
 		return
+	, @
 
 	@playfield.setAt x, y, e
 

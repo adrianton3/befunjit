@@ -17,8 +17,10 @@ Path = (list = []) ->
 	@list = []
 	@looping = false
 
-	list.forEach (entry) =>
+	list.forEach (entry) ->
 		@push entry.x, entry.y, entry.dir, entry.char, entry.string
+		return
+	, @
 
 	return
 
@@ -80,11 +82,13 @@ Path::getLastEntryThrough = (x, y) ->
 
 	max = -1
 	lastEntry = null
-	possibleEntries.forEach (hash) =>
+	possibleEntries.forEach (hash) ->
 		entry = @entries[hash]
 		if entry?.index > max
 			max = entry.index
 			lastEntry = entry
+		return
+	, @
 
 	lastEntry
 

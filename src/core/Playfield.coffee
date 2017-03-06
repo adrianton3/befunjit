@@ -92,10 +92,11 @@ Playfield::getPathsThrough = (x, y) ->
 
 
 Playfield::removePath = (path) ->
-	path.list.forEach (entry) =>
+	path.list.forEach (entry) ->
 		cell = @pathPlane[entry.y][entry.x]
 		cell.delete path.id
 		return
+	, @
 
 	return
 

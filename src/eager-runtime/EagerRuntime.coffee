@@ -34,10 +34,11 @@ EagerRuntime::put = (x, y, e, currentX, currentY, currentDir, from, to) ->
 
 	# erase all paths that pass through the coordinates
 	paths = @playfield.getPathsThrough x, y
-	paths.forEach (path) =>
+	paths.forEach (path) ->
 		@pathSet.remove path
 		@playfield.removePath path
 		return
+	, @
 
 	# write to the cell
 	@playfield.setAt x, y, e
