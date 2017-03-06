@@ -75,11 +75,10 @@ Playfield::setAt = (x, y, char) ->
 
 
 Playfield::addPath = (path) ->
-	path.list.forEach (entry) ->
+	for entry in path.list
 		cell = @pathPlane[entry.y][entry.x]
 		cell.set path.id, path
-		return
-	, @
+
 	@
 
 
@@ -92,11 +91,9 @@ Playfield::getPathsThrough = (x, y) ->
 
 
 Playfield::removePath = (path) ->
-	path.list.forEach (entry) ->
+	for entry in path.list
 		cell = @pathPlane[entry.y][entry.x]
 		cell.delete path.id
-		return
-	, @
 
 	return
 

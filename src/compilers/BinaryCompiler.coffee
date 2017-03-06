@@ -44,14 +44,13 @@ generateCode = (path, maxDepth, options) ->
 		Object.assign { popMethod: 'popUnsafe', freePops: maxDepth }, options
 	)
 
-	charList.forEach (entry, i) ->
+	for entry in charList
 		if entry.string
 			stack.push entry.char.charCodeAt 0
 		else
 			codeGenerator = codeMap.get entry.char
 			if codeGenerator?
 				codeGenerator stack
-		return
 
 	stack.stringify()
 

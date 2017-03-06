@@ -34,11 +34,9 @@ EagerRuntime::put = (x, y, e, currentX, currentY, currentDir, from, to) ->
 
 	# erase all paths that pass through the coordinates
 	paths = @playfield.getPathsThrough x, y
-	paths.forEach (path) ->
+	for path in paths
 		@pathSet.remove path
 		@playfield.removePath path
-		return
-	, @
 
 	# write to the cell
 	@playfield.setAt x, y, e
@@ -142,7 +140,7 @@ EagerRuntime::compile = (graph, options) ->
 	{ assemble, assembleTight } = options.compiler
 
 	# generate code for all paths
-	(Object.keys graph).forEach (nodeName) ->
+	for nodeName in Object.keys graph
 		edges = graph[nodeName]
 		edges.forEach (edge) ->
 			{ path, path: { type }} = edge
@@ -183,9 +181,10 @@ EagerRuntime::compile = (graph, options) ->
 registerGraph = (graph, playfield, pathSet) ->
 	playfield.clearPaths()
 	pathSet.clear()
-	(Object.keys graph).forEach (node) ->
-		edges = graph[node]
-		edges.forEach ({ path }) ->
+
+	for nodeName in Object.keys graph
+		edges = graph[nodeName]
+		for { path } in edges
 			if path.type == 'simple'
 				pathSet.add path.path
 				playfield.addPath path.path
@@ -197,8 +196,7 @@ registerGraph = (graph, playfield, pathSet) ->
 				pathSet.add path.initialPath
 				playfield.addPath path.loopingPath
 				playfield.addPath path.initialPath
-			return
-		return
+
 	return
 
 

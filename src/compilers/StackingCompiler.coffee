@@ -253,14 +253,13 @@ assemble = (path, options) ->
 
 	stack = makeStack path.id, path.ending, options
 
-	charList.forEach (entry) ->
+	for entry in charList
 		if entry.string
 			stack.push entry.char.charCodeAt 0
 		else
 			codeGenerator = codeMap.get entry.char
 			if codeGenerator?
 				codeGenerator stack
-		return
 
 	stack.stringify()
 
