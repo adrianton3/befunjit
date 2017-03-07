@@ -1,6 +1,12 @@
 changelog
 =========
 
+####r20 --- 7 mar 2017
+ + various micro-optimizations
+ + stop limiting playfield size in the eager runtime demo
+ + add more put-get related benchmarks
+ + benchmarks measure the standard deviation as well
+
 ####r19 --- 11 feb 2017
  + merge Playfield::fromString into Playfield constructor
  + fix dependency issue regarding PathMetrics
