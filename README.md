@@ -14,7 +14,7 @@ node build/befunjit.node.js [--lazy] [--time] <source>
 
 Stdin/stdout are used for IO.
 
-###Under the hood
+### Under the hood
 
 befunjit executes programs in steps, called “jumps”. A naive befunge interpreter would move one cell at a time,
 while befunjit executes more instructions at a time (called “static paths”), making the program counter\* (PC)
@@ -47,6 +47,6 @@ the affected cell comes before the current `p` instruction in the path. Otherwis
 control back to the compiler immediately which will in turn have to compile and execute the path starting from
 the current PC.
 
-*Note: the PC in the context of the befunjit runtime is composed of (line, colon and direction).
+* Note: the PC in the context of the befunjit runtime is composed of (line, colon and direction).
 
-####[Changelog](https://github.com/adrianton3/befunjit/blob/master/CHANGELOG.md)
+#### [Changelog](https://github.com/adrianton3/befunjit/blob/master/CHANGELOG.md)
