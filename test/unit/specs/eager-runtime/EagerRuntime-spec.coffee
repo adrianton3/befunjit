@@ -250,7 +250,7 @@ describe 'EagerRuntime', ->
 			(expect outRecord).toEqual []
 
 		it 'can get a value from the playfield after it was altered', ->
-			{ stack, outRecord, stats } = execute '6077*p560g@'
+			{ stack, outRecord, stats } = execute '77*60p560g@'
 
 			(expect stack).toEqual [1, 49]
 			(expect outRecord).toEqual []
@@ -258,7 +258,7 @@ describe 'EagerRuntime', ->
 
 		it 'does not recompile if altered cell is not on any path', ->
 			{ stack, outRecord, stats } = execute '''
-					6177*p@
+					77*61p@
 					>>>>>>>
 				'''
 
@@ -270,7 +270,7 @@ describe 'EagerRuntime', ->
 			{ stack, outRecord, stats } = execute '''
 					v>1234....@
 					>|
-					>>6077*p9.@
+					>>77*60p9.@
 				'''
 
 			(expect stack).toEqual []
@@ -288,7 +288,7 @@ describe 'EagerRuntime', ->
 
 		it 'recompiles if altered cell is on a reachable path', ->
 			{ stack, outRecord, stats } = execute '''
-					2177*p0v
+					77*21p0v
 					@.8    _9.@
 				'''
 

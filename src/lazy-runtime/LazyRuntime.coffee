@@ -16,7 +16,7 @@ LazyRuntime = ->
 	return
 
 
-LazyRuntime::put = (x, y, e) ->
+LazyRuntime::put = (y, x, v) ->
 	return if not @playfield.isInside x, y
 
 	paths = @playfield.getPathsThrough x, y
@@ -24,7 +24,7 @@ LazyRuntime::put = (x, y, e) ->
 		@pathSet.remove path
 		@playfield.removePath path
 
-	@playfield.setAt x, y, e
+	@playfield.setAt x, y, (String.fromCharCode v)
 
 	return
 
@@ -129,10 +129,7 @@ LazyRuntime::execute = (@playfield, options, input = []) ->
 		break if currentChar == '@'
 
 		if currentChar == 'p'
-			e = String.fromCharCode @programState.pop()
-			y = @programState.pop()
-			x = @programState.pop()
-			@put x, y, e
+			@put @programState.pop(), @programState.pop(), @programState.pop()
 			pointer.advance()
 		else
 			@_turn pointer, currentChar

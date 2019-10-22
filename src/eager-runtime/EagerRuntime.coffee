@@ -28,7 +28,7 @@ canReach = (graph, start, targets) ->
 	traverse start
 
 
-EagerRuntime::put = (x, y, e, currentX, currentY, currentDir, from, to) ->
+EagerRuntime::put = (x, y, v, currentX, currentY, currentDir, from, to) ->
 	# exit early if the coordinates are not valid
 	return if not @playfield.isInside x, y
 
@@ -39,7 +39,7 @@ EagerRuntime::put = (x, y, e, currentX, currentY, currentDir, from, to) ->
 		@playfield.removePath path
 
 	# write to the cell
-	@playfield.setAt x, y, e
+	@playfield.setAt x, y, (String.fromCharCode v)
 
 	# figure out if the current path is invalidated
 	if paths.length > 0
