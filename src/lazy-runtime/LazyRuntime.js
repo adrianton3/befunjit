@@ -14,7 +14,7 @@
     };
   };
 
-  LazyRuntime.prototype.put = function(x, y, e) {
+  LazyRuntime.prototype.put = function(y, x, v) {
     var i, len, path, paths;
     if (!this.playfield.isInside(x, y)) {
       return;
@@ -25,7 +25,7 @@
       this.pathSet.remove(path);
       this.playfield.removePath(path);
     }
-    this.playfield.setAt(x, y, e);
+    this.playfield.setAt(x, y, String.fromCharCode(v));
   };
 
   LazyRuntime.prototype.get = function(x, y) {
@@ -81,7 +81,7 @@
   };
 
   LazyRuntime.prototype.execute = function(playfield, options, input) {
-    var currentChar, currentPath, e, pathEndPoint, pointer, x, y;
+    var currentChar, currentPath, pathEndPoint, pointer;
     this.playfield = playfield;
     if (input == null) {
       input = [];
@@ -121,10 +121,7 @@
         break;
       }
       if (currentChar === 'p') {
-        e = String.fromCharCode(this.programState.pop());
-        y = this.programState.pop();
-        x = this.programState.pop();
-        this.put(x, y, e);
+        this.put(this.programState.pop(), this.programState.pop(), this.programState.pop());
         pointer.advance();
       } else {
         this._turn(pointer, currentChar);

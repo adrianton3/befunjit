@@ -34,7 +34,7 @@
     return traverse(start);
   };
 
-  EagerRuntime.prototype.put = function(x, y, e, currentX, currentY, currentDir, from, to) {
+  EagerRuntime.prototype.put = function(x, y, v, currentX, currentY, currentDir, from, to) {
     var i, len, path, paths, targets;
     if (!this.playfield.isInside(x, y)) {
       return;
@@ -45,7 +45,7 @@
       this.pathSet.remove(path);
       this.playfield.removePath(path);
     }
-    this.playfield.setAt(x, y, e);
+    this.playfield.setAt(x, y, String.fromCharCode(v));
     if (paths.length > 0) {
       targets = paths.reduce(function(targets, path) {
         targets.add(path.from);
