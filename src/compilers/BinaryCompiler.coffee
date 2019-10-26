@@ -46,9 +46,9 @@ generateCode = (path, maxDepth, options) ->
 
 	for entry in charList
 		if entry.string
-			stack.push entry.char.charCodeAt 0
+			stack.push entry.charCode
 		else
-			codeGenerator = codeMap.get entry.char
+			codeGenerator = codeMap.get entry.charCode
 			if codeGenerator?
 				codeGenerator stack
 

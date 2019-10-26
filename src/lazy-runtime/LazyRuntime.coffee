@@ -2,6 +2,7 @@
 
 
 { findPath } = bef.PathFinder
+S = bef.Symbols
 
 
 LazyRuntime = ->
@@ -24,16 +25,16 @@ LazyRuntime::put = (y, x, v) ->
 		@pathSet.remove path
 		@playfield.removePath path
 
-	@playfield.setAt x, y, (String.fromCharCode v)
+	@playfield.setAt x, y, v
 
 	return
 
 
 LazyRuntime::get = (x, y) ->
-	return 0 if not @playfield.isInside x, y
-
-	char = @playfield.getAt x, y
-	char.charCodeAt 0
+	if @playfield.isInside x, y
+		@playfield.getAt x, y
+	else
+		0
 
 
 LazyRuntime::_registerPath = (path, compiler) ->
@@ -75,14 +76,14 @@ LazyRuntime::_getCurrentPath = (start, compiler) ->
 		newPath.initialPath
 
 
-LazyRuntime::_turn = (pointer, char) ->
+LazyRuntime::_turn = (pointer, charCode) ->
 	dir =
-		if char == '|'
-			if @programState.pop() then '^' else 'v'
-		else if char == '_'
-			if @programState.pop() then '<' else '>'
-		else if char == '?'
-			'^<v>'[Math.random() * 4 | 0]
+		if charCode == S.IFV
+			if @programState.pop() != 0 then S.UP else S.DOWN
+		else if charCode == S.IFH
+			if @programState.pop() != 0 then S.LEFT else S.RIGHT
+		else if charCode == S.RAND
+			[S.UP, S.LEFT, S.DOWN, S.RIGHT][Math.random() * 4 | 0]
 
 	pointer.turn dir
 	
@@ -102,7 +103,7 @@ LazyRuntime::execute = (@playfield, options, input = []) ->
 	@pathSet = new bef.PathSet()
 	@programState = new bef.ProgramState @
 	@programState.setInput input
-	pointer = new bef.Pointer 0, 0, '>', @playfield.getSize()
+	pointer = new bef.Pointer 0, 0, S.RIGHT, @playfield.getSize()
 
 	loop
 		# artificial limit to prevent potentially non-breaking loops
@@ -115,7 +116,7 @@ LazyRuntime::execute = (@playfield, options, input = []) ->
 		# executing the compiled path
 		currentPath.body @programState
 
-		if currentPath.list.length
+		if currentPath.list.length > 0
 			pathEndPoint = currentPath.getEndPoint()
 			pointer.set pathEndPoint.x, pathEndPoint.y, pathEndPoint.dir
 
@@ -123,16 +124,16 @@ LazyRuntime::execute = (@playfield, options, input = []) ->
 				pointer.advance()
 				continue
 
-		currentChar = @playfield.getAt pointer.x, pointer.y
+		charCode = @playfield.getAt pointer.x, pointer.y
 
 		# program ended
-		break if currentChar == '@'
+		break if charCode == S.END
 
-		if currentChar == 'p'
+		if charCode == S.PUT
 			@put @programState.pop(), @programState.pop(), @programState.pop()
 			pointer.advance()
 		else
-			@_turn pointer, currentChar
+			@_turn pointer, charCode
 
 	return
 

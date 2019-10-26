@@ -1,6 +1,7 @@
 'use strict'
 
 List = bef.List
+S = bef.Symbols
 
 
 assemble = (graph, options = {}) ->
@@ -129,14 +130,14 @@ assemble = (graph, options = {}) ->
 				when 1
 					branch = df neighbours[0].to, neighbours[0], newStack
 
-					pBit = if prev?.path.path?.ending.char == 'p'
+					pBit = if prev?.path.path?.ending.charCode == S.PUT
 						{ path } = prev.path
 						{ ending } = path
 						"""
 							var x = programState.pop();
 							var y = programState.pop();
 							var e = programState.pop();
-							programState.put(x, y, e, #{ending.x}, #{ending.y}, '#{ending.dir}', '#{path.from}', '#{path.to}');
+							programState.put(x, y, e, #{ending.x}, #{ending.y}, #{ending.dir}, '#{path.from}', '#{path.to}');
 							if (programState.flags.pathInvalidatedAhead) {
 								return;
 							}

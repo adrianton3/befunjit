@@ -1,30 +1,38 @@
 'use strict'
 
 
+S = bef.Symbols
+
+
 findPath = (playfield, start) ->
 	path = new bef.Path()
 	pointer = start.clone()
 
 	loop
-		currentChar = playfield.getAt pointer.x, pointer.y
+		charCode = playfield.getAt pointer.x, pointer.y
 
 		# processing string
-		if currentChar == '"'
-			path.push pointer.x, pointer.y, pointer.dir, currentChar
+		if charCode == S.QUOT
+			path.push pointer.x, pointer.y, pointer.dir, charCode
+
 			loop
 				pointer.advance()
-				currentChar = playfield.getAt pointer.x, pointer.y
-				if currentChar == '"'
-					path.push pointer.x, pointer.y, pointer.dir, currentChar
+				charCode = playfield.getAt pointer.x, pointer.y
+
+				if charCode == S.QUOT
+					path.push pointer.x, pointer.y, pointer.dir, charCode
 					break
-				path.push pointer.x, pointer.y, pointer.dir, currentChar, true
+
+				path.push pointer.x, pointer.y, pointer.dir, charCode, true
+
 			pointer.advance()
 			continue
 
-		pointer.turn currentChar
+		pointer.turn charCode
 
 		if path.hasNonString pointer.x, pointer.y, pointer.dir
 			splitPosition = (path.getEntryAt pointer.x, pointer.y, pointer.dir).index
+
 			if splitPosition > 0
 				initialPath = path.prefix splitPosition
 				loopingPath = path.suffix splitPosition
@@ -34,6 +42,7 @@ findPath = (playfield, start) ->
 					initialPath: initialPath
 					loopingPath: loopingPath
 				}
+
 			else
 				path.looping = true
 				return {
@@ -41,21 +50,22 @@ findPath = (playfield, start) ->
 					loopingPath: path
 				}
 
-		path.push pointer.x, pointer.y, pointer.dir, currentChar
+		path.push pointer.x, pointer.y, pointer.dir, charCode
 
-		if currentChar in ['|', '_', '?', '@', 'p']
+		if charCode in [S.IFV, S.IFH, S.RAND, S.END, S.PUT]
 			path.ending = {
 				x: pointer.x
 				y: pointer.y
 				dir: pointer.dir
-				char: currentChar
+				charCode: charCode
 			}
+
 			return {
 				type: 'simple'
 				path: path
 			}
 
-		if currentChar == '#'
+		if charCode == S.JUMP
 			pointer.advance()
 
 		pointer.advance()

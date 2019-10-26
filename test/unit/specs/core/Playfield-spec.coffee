@@ -17,41 +17,41 @@ describe 'Playfield', ->
 	describe 'constructor', ->
 		it 'creates a playfield from a stringed field', ->
 			(expect playfield.field).toEqual [
-				('a  s d'.split '')
-				('d sa  '.split '')
-				('      '.split '')
-				('dd hh '.split '')
+				('a  s d'.split '').map (char) -> char.charCodeAt 0
+				('d sa  '.split '').map (char) -> char.charCodeAt 0
+				('      '.split '').map (char) -> char.charCodeAt 0
+				('dd hh '.split '').map (char) -> char.charCodeAt 0
 			]
 
 		it 'pads a playfield with spaces', ->
 			playfield = new Playfield samplePlayefield, { width: 8, height: 5 }
 			(expect playfield.field).toEqual [
-				('a  s d  '.split '')
-				('d sa    '.split '')
-				('        '.split '')
-				('dd hh   '.split '')
-				('        '.split '')
+				('a  s d  '.split '').map (char) -> char.charCodeAt 0
+				('d sa    '.split '').map (char) -> char.charCodeAt 0
+				('        '.split '').map (char) -> char.charCodeAt 0
+				('dd hh   '.split '').map (char) -> char.charCodeAt 0
+				('        '.split '').map (char) -> char.charCodeAt 0
 			]
 
 		it 'trims cells that are outside', ->
 			playfield = new Playfield samplePlayefield, { width: 4, height: 2 }
 			(expect playfield.field).toEqual [
-				('a  s'.split '')
-				('d sa'.split '')
+				('a  s'.split '').map (char) -> char.charCodeAt 0
+				('d sa'.split '').map (char) -> char.charCodeAt 0
 			]
 
 
 	describe 'getAt', ->
 		it 'gets the char at a position', ->
-			(expect playfield.getAt 0, 0).toEqual 'a'
-			(expect playfield.getAt 2, 1).toEqual 's'
-			(expect playfield.getAt 2, 3).toEqual ' '
+			(expect playfield.getAt 0, 0).toEqual ('a'.charCodeAt 0)
+			(expect playfield.getAt 2, 1).toEqual ('s'.charCodeAt 0)
+			(expect playfield.getAt 2, 3).toEqual (' '.charCodeAt 0)
 
 
 	describe 'setAt', ->
 		it 'sets a char at a position', ->
-			expect playfield.setAt 2, 1, 'z'
-			(expect playfield.getAt 2, 1).toEqual 'z'
+			expect playfield.setAt 2, 1, 123
+			(expect playfield.getAt 2, 1).toEqual 123
 
 
 	describe 'addPath', ->

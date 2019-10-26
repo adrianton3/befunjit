@@ -1,11 +1,14 @@
 'use strict'
 
 
+S = bef.Symbols
+
+
 dirTable = new Map [
-	['^', { x:  0, y: -1 }]
-	['<', { x: -1, y:  0 }]
-	['v', { x:  0, y:  1 }]
-	['>', { x:  1, y:  0 }]
+	[S.UP,    { x:  0, y: -1 }]
+	[S.LEFT,  { x: -1, y:  0 }]
+	[S.DOWN,  { x:  0, y:  1 }]
+	[S.RIGHT, { x:  1, y:  0 }]
 ]
 
 

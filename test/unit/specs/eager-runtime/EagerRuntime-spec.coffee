@@ -1,6 +1,7 @@
 describe 'EagerRuntime', ->
 	Playfield = bef.Playfield
 	EagerRuntime = bef.EagerRuntime
+	S = bef.Symbols
 
 	getInterpreter = (string) ->
 		playfield = new Playfield string
@@ -12,7 +13,7 @@ describe 'EagerRuntime', ->
 	describe 'buildGraph', ->
 		buildGraph = (string) ->
 			eagerRuntime = getInterpreter string
-			start = new bef.Pointer 0, 0, '>', eagerRuntime.playfield.getSize()
+			start = new bef.Pointer 0, 0, S.RIGHT, eagerRuntime.playfield.getSize()
 			eagerRuntime.buildGraph start
 
 		it 'builds a graph from a simple path', ->
@@ -131,7 +132,7 @@ describe 'EagerRuntime', ->
 	describe 'compile', ->
 		compile = (string) ->
 			eagerRuntime = getInterpreter string
-			start = new bef.Pointer 0, 0, '>', eagerRuntime.playfield.getSize()
+			start = new bef.Pointer 0, 0, S.RIGHT, eagerRuntime.playfield.getSize()
 			graph = eagerRuntime.buildGraph start
 			eagerRuntime.compile graph, { compiler: bef.OptimizingCompiler }
 

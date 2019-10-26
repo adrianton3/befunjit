@@ -2,16 +2,19 @@ describe 'BasicCompiler', ->
 	Path = bef.Path
 	ProgramState = bef.ProgramState
 	BasicCompiler = bef.BasicCompiler
+	S = bef.Symbols
 
 	getPath = (string) ->
 		path = new Path()
 		stringMode = false
 		(string.split '').forEach (char) ->
-			if char == '"'
+			charCode = char.charCodeAt 0
+
+			if charCode == S.QUOT
 				stringMode = !stringMode
-				path.push 0, 0, '>', char, false
+				path.push 0, 0, S.RIGHT, charCode, false
 			else
-				path.push 0, 0, '>', char, stringMode
+				path.push 0, 0, S.RIGHT, charCode, stringMode
 			return
 		path
 

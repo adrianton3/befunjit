@@ -2,6 +2,7 @@
 
 
 { getDepth } = bef.PathMetrics
+S = bef.Symbols
 
 
 isNumber = (obj) ->
@@ -30,29 +31,29 @@ binaryOperator = (operatorFunction, operatorChar, stringFunction) ->
 
 
 codeMap = new Map [
-	[' ', ->]
+	[S.BLANK, ->]
 
 
-	['0', digitPusher 0]
-	['1', digitPusher 1]
-	['2', digitPusher 2]
-	['3', digitPusher 3]
-	['4', digitPusher 4]
-	['5', digitPusher 5]
-	['6', digitPusher 6]
-	['7', digitPusher 7]
-	['8', digitPusher 8]
-	['9', digitPusher 9]
+	[S.D0, digitPusher 0]
+	[S.D1, digitPusher 1]
+	[S.D2, digitPusher 2]
+	[S.D3, digitPusher 3]
+	[S.D4, digitPusher 4]
+	[S.D5, digitPusher 5]
+	[S.D6, digitPusher 6]
+	[S.D7, digitPusher 7]
+	[S.D8, digitPusher 8]
+	[S.D9, digitPusher 9]
 
 
-	['+', binaryOperator ((o1, o2) -> o2 + o1), '+', (o1, o2) -> "(#{o2} + #{o1})"]
-	['-', binaryOperator ((o1, o2) -> o2 - o1), '-', (o1, o2) -> "(#{o2} - #{o1})"]
-	['*', binaryOperator ((o1, o2) -> o2 * o1), '*', (o1, o2) -> "(#{o2} * #{o1})"]
-	['/', binaryOperator ((o1, o2) -> o2 // o1), '/', (o1, o2) -> "Math.floor(#{o2} / #{o1})"]
-	['%', binaryOperator ((o1, o2) -> o2 % o1), '%', (o1, o2) -> "(#{o2} % #{o1})"]
+	[S.ADD, binaryOperator ((o1, o2) -> o2 + o1), '+', (o1, o2) -> "(#{o2} + #{o1})"]
+	[S.SUB, binaryOperator ((o1, o2) -> o2 - o1), '-', (o1, o2) -> "(#{o2} - #{o1})"]
+	[S.MUL, binaryOperator ((o1, o2) -> o2 * o1), '*', (o1, o2) -> "(#{o2} * #{o1})"]
+	[S.DIV, binaryOperator ((o1, o2) -> o2 // o1), '/', (o1, o2) -> "Math.floor(#{o2} / #{o1})"]
+	[S.MOD, binaryOperator ((o1, o2) -> o2 % o1), '%', (o1, o2) -> "(#{o2} % #{o1})"]
 
 
-	['!', (stack) ->
+	[S.NOT, (stack) ->
 		operand = stack.pop()
 
 		stack.push if isNumber operand
@@ -64,27 +65,27 @@ codeMap = new Map [
 	]
 
 
-	['`', binaryOperator ((o1, o2) -> +(o1 < o2)), '`', (o1, o2) -> "(+(#{o1} < #{o2}))"]
+	[S.GT, binaryOperator ((o1, o2) -> +(o1 < o2)), '`', (o1, o2) -> "(+(#{o1} < #{o2}))"]
 
 
-	['^', ->]
-	['<', ->]
-	['v', ->]
-	['>', ->]
-	['?', ->]
-	['_', ->]
-	['|', ->]
-	['"', ->]
+	[S.UP, ->]
+	[S.LEFT, ->]
+	[S.DOWN, ->]
+	[S.RIGHT, ->]
+	[S.RAND, ->]
+	[S.IFH, ->]
+	[S.IFV, ->]
+	[S.QUOT, ->]
 
 
-	[':', (stack) ->
+	[S.DUP, (stack) ->
 		top = stack.peek()
 		stack.push top
 		return
 	]
 
 
-	['\\', (stack) ->
+	[S.SWAP, (stack) ->
 		e1 = stack.pop()
 		e2 = stack.pop()
 		stack.push e1, e2
@@ -92,49 +93,49 @@ codeMap = new Map [
 	]
 
 
-	['$', (stack) ->
+	[S.DROP, (stack) ->
 		stack.pop()
 		return
 	]
 
 
-	['.', (stack) ->
+	[S.OUTI, (stack) ->
 		stack.out("programState.out(#{stack.pop()})")
 		return
 	]
 
 
-	[',', (stack) ->
+	[S.OUTC, (stack) ->
 		stack.out("programState.out(String.fromCharCode(#{stack.pop()}))")
 		return
 	]
 
 
-	['#', ->]
+	[S.JUMP, ->]
 
 
-	['p', -> '']
+	[S.PUT, -> '']
 
 
-	['g', (stack) ->
+	[S.GET, (stack) ->
 		stack.push "programState.get(#{stack.pop()}, #{stack.pop()})"
 		return
 	]
 
 
-	['&', (stack) ->
+	[S.INI, (stack) ->
 		stack.push stack.next()
 		return
 	]
 
 
-	['~', (stack) ->
+	[S.INC, (stack) ->
 		stack.push stack.nextChar()
 		return
 	]
 
 
-	['@', (stack) ->
+	[S.END, (stack) ->
 		stack.exit()
 		return
 	]
@@ -217,7 +218,7 @@ makeStack = (uid, ending, options = {}) ->
 
 	stackObj.stringify = ->
 		stackChunk =
-			if ending?.char in ['|', '_']
+			if ending?.charCode in [124, 95] # |_
 				if stack.length == 0
 					"branchFlag = #{@pop()};"
 				else if stack.length == 1
@@ -255,9 +256,9 @@ assemble = (path, options) ->
 
 	for entry in charList
 		if entry.string
-			stack.push entry.char.charCodeAt 0
+			stack.push entry.charCode
 		else
-			codeGenerator = codeMap.get entry.char
+			codeGenerator = codeMap.get entry.charCode
 			if codeGenerator?
 				codeGenerator stack
 

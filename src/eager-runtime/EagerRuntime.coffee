@@ -2,6 +2,7 @@
 
 
 { findPath } = bef.PathFinder
+S = bef.Symbols
 
 
 EagerRuntime = ->
@@ -39,7 +40,7 @@ EagerRuntime::put = (x, y, v, currentX, currentY, currentDir, from, to) ->
 		@playfield.removePath path
 
 	# write to the cell
-	@playfield.setAt x, y, (String.fromCharCode v)
+	@playfield.setAt x, y, v
 
 	# figure out if the current path is invalidated
 	if paths.length > 0
@@ -60,10 +61,10 @@ EagerRuntime::put = (x, y, v, currentX, currentY, currentDir, from, to) ->
 
 
 EagerRuntime::get = (x, y) ->
-	return 0 if not @playfield.isInside x, y
-
-	char = @playfield.getAt x, y
-	char.charCodeAt 0
+	if @playfield.isInside x, y
+		@playfield.getAt x, y
+	else
+		0
 
 
 getHash = (pointer) ->
@@ -79,22 +80,22 @@ EagerRuntime::buildGraph = (start) ->
 	graph = {}
 
 	dispatch = (hash, destination) =>
-		currentChar = @playfield.getAt destination.x, destination.y
+		charCode = @playfield.getAt destination.x, destination.y
 		partial = getPointer.bind null, destination, @playfield.getSize()
 
-		switch currentChar
-			when '_'
-				buildEdge hash, partial '<'
-				buildEdge hash, partial '>'
-			when '|'
-				buildEdge hash, partial '^'
-				buildEdge hash, partial 'v'
-			when '?'
-				buildEdge hash, partial '^'
-				buildEdge hash, partial 'v'
-				buildEdge hash, partial '<'
-				buildEdge hash, partial '>'
-			when 'p'
+		switch charCode
+			when S.IFH
+				buildEdge hash, partial S.LEFT
+				buildEdge hash, partial S.RIGHT
+			when S.IFV
+				buildEdge hash, partial S.UP
+				buildEdge hash, partial S.DOWN
+			when S.RAND
+				buildEdge hash, partial S.UP
+				buildEdge hash, partial S.DOWN
+				buildEdge hash, partial S.LEFT
+				buildEdge hash, partial S.RIGHT
+			when S.PUT
 				buildEdge hash, partial destination.dir
 
 		return
@@ -214,7 +215,7 @@ EagerRuntime::execute = (@playfield, options, input = []) ->
 	@programState.setInput input
 	@programState.maxChecks = options.jumpLimit
 
-	start = new bef.Pointer 0, 0, '>', @playfield.getSize()
+	start = new bef.Pointer 0, 0, S.RIGHT, @playfield.getSize()
 
 	loop
 		@stats.compileCalls++

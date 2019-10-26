@@ -6,6 +6,7 @@ module.exports = function (grunt) {
 			all: {
 				files: {
 					'build/befunjit.browser.js': [
+						'src/core/Symbols.coffee',
 						'src/compilers/PathMetrics.coffee',
 						'src/**/*.coffee'
 					]

@@ -1,5 +1,9 @@
 'use strict'
 
+
+S = bef.Symbols
+
+
 idCounter = 0
 
 
@@ -18,16 +22,16 @@ Path = (list = []) ->
 	@looping = false
 
 	for entry in list
-		@push entry.x, entry.y, entry.dir, entry.char, entry.string
+		@push entry.x, entry.y, entry.dir, entry.charCode, entry.string
 
 	return
 
 
-Path::push = (x, y, dir, char, string = false) ->
+Path::push = (x, y, dir, charCode, string = false) ->
 	hash = getHash x, y, dir, string
 
 	@entries[hash] =
-		char: char
+		charCode: charCode
 		index: @list.length
 		string: string
 
@@ -35,7 +39,7 @@ Path::push = (x, y, dir, char, string = false) ->
 		x: x
 		y: y
 		dir: dir
-		char: char
+		charCode: charCode
 		string: string
 
 
@@ -67,15 +71,15 @@ Path::getEntryAt = (x, y, dir) ->
 
 Path::getLastEntryThrough = (x, y) ->
 	possibleEntries = [
-		getHash x, y, '^'
-		getHash x, y, '<'
-		getHash x, y, 'V'
-		getHash x, y, '>'
+		getHash x, y, S.UP
+		getHash x, y, S.LEFT
+		getHash x, y, S.DOWN
+		getHash x, y, S.RIGHT
 
-		getHash x, y, '^', true
-		getHash x, y, '<', true
-		getHash x, y, 'V', true
-		getHash x, y, '>', true
+		getHash x, y, S.UP, true
+		getHash x, y, S.LEFT, true
+		getHash x, y, S.DOWN, true
+		getHash x, y, S.RIGHT, true
 	]
 
 	max = -1

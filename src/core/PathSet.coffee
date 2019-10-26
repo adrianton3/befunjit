@@ -1,6 +1,9 @@
 'use strict'
 
 
+S = bef.Symbols
+
+
 getHashAny = (x, y) ->
 	"#{x}_#{y}"
 
@@ -17,7 +20,7 @@ PathSet = ->
 PathSet::add = (path) ->
 	head = path.list[0]
 
-	hash = if head.char in ['^', '<', 'v', '>']
+	hash = if head.charCode in [S.UP, S.LEFT, S.DOWN, S.RIGHT]
 		getHashAny head.x, head.y
 	else
 		getHashDir head.x, head.y, head.dir
@@ -28,6 +31,7 @@ PathSet::add = (path) ->
 
 PathSet::getStartingFrom = (x, y, dir) ->
 	hashDir = getHashDir x, y, dir
+
 	if @map.has hashDir
 		@map.get hashDir
 	else
@@ -38,7 +42,7 @@ PathSet::getStartingFrom = (x, y, dir) ->
 PathSet::remove = (path) ->
 	head = path.list[0]
 
-	hash = if head.char in ['^', '<', 'v', '>']
+	hash = if head.charCode in [S.UP, S.LEFT, S.DOWN, S.RIGHT]
 		getHashAny head.x, head.y
 	else
 		getHashDir head.x, head.y, head.dir

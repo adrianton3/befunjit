@@ -1,6 +1,9 @@
 'use strict'
 
 
+S = bef.Symbols
+
+
 Playfield = (string, size) ->
 	lines = string.split '\n'
 
@@ -28,11 +31,11 @@ initField = (lines, width, height) ->
 	iLimit = Math.min lines.length, height
 	while i < iLimit
 		line = lines[i]
-		chars = line.split ''
+		chars = Array.from line, (char) -> char.charCodeAt 0
 		chars.splice width, chars.length
 
 		for j in [chars.length...width]
-			chars.push ' '
+			chars.push S.BLANK
 
 		field.push chars
 		i++
@@ -43,7 +46,7 @@ initField = (lines, width, height) ->
 		line = []
 
 		for j in [0...width]
-			line.push ' '
+			line.push S.BLANK
 
 		field.push line
 		i++
@@ -69,8 +72,8 @@ Playfield::getAt = (x, y) ->
 	@field[y][x]
 
 
-Playfield::setAt = (x, y, char) ->
-	@field[y][x] = char
+Playfield::setAt = (x, y, value) ->
+	@field[y][x] = value
 	@
 
 
