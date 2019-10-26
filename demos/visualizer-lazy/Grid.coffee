@@ -1,6 +1,9 @@
 'use strict'
 
 
+S = bef.Symbols
+
+
 colors =
 	background: 'hsl(70, 8%, 15%)'
 	grid: 'hsl(270, 100%, 93%)'
@@ -62,22 +65,26 @@ getArrowImage = (size, angle) ->
 
 
 getArrowImages = (size) ->
-	'^': getArrowImage size, 0
-	'<': getArrowImage size, -Math.PI / 2
-	'v': getArrowImage size, Math.PI
-	'>': getArrowImage size, Math.PI / 2
+	images = {}
+	
+	images[S.UP] = getArrowImage size, 0
+	images[S.LEFT] = getArrowImage size, -Math.PI / 2
+	images[S.DOWN] = getArrowImage size, Math.PI
+	images[S.RIGHT] = getArrowImage size, Math.PI / 2
+
+	images
 
 
 directions = [
-	{ char: '<', offset: { x: 0, y: 1 } }
-	{ char: '^', offset: { x: 1, y: 0 } }
-	{ char: 'v', offset: { x: 1, y: 2 } }
-	{ char: '>', offset: { x: 2, y: 1 } }
+	{ charCode: S.LEFT,  offset: { x: 0, y: 1 } }
+	{ charCode: S.UP,    offset: { x: 1, y: 0 } }
+	{ charCode: S.DOWN,  offset: { x: 1, y: 2 } }
+	{ charCode: S.RIGHT, offset: { x: 2, y: 1 } }
 ]
 
 
-directionsIndexed = directions.reduce (ret, { char, offset }) ->
-		ret.set char, offset
+directionsIndexed = directions.reduce (ret, { charCode, offset }) ->
+		ret.set charCode, offset
 		ret
 	, new Map
 
@@ -99,16 +106,16 @@ Grid::_setupHitRegions = ->
 
 	for i in [0...@playfield.width]
 		for j in [0...@playfield.height]
-			char = @playfield.getAt i, j
+			charCode = @playfield.getAt i, j
 
-			if char in ['^', '<', 'v', '>'] and (@pathSet.getStartingFrom i, j, '')?
-				offset = directionsIndexed.get char
-				@hitRegions.push getCellRegion i, j, offset.x, offset.y, char
+			if charCode in [S.UP, S.LEFT, S.DOWN, S.RIGHT] and (@pathSet.getStartingFrom i, j, '')?
+				offset = directionsIndexed.get charCode
+				@hitRegions.push getCellRegion i, j, offset.x, offset.y, charCode
 			else
 				for dir in directions
-					if (@pathSet.getStartingFrom i, j, dir.char)?
+					if (@pathSet.getStartingFrom i, j, dir.charCode)?
 						offset = dir.offset
-						@hitRegions.push getCellRegion i, j, offset.x, offset.y, dir.char
+						@hitRegions.push getCellRegion i, j, offset.x, offset.y, dir.charCode
 
 	return
 
@@ -168,13 +175,12 @@ Grid::draw = ->
 	@con2d.fillStyle = colors.text
 	for i in [0...@playfield.width]
 		for j in [0...@playfield.height]
-			charRaw = @playfield.getAt i, j
-			charCode = charRaw.charCodeAt 0
+			charCode = @playfield.getAt i, j
 
 			if charCode > 0
 				charPretty = if 32 <= charCode <= 126
 					@con2d.font = fonts.normal
-					charRaw
+					String.fromCharCode charCode
 				else
 					@con2d.font = fonts.small
 					"##{charCode}"
