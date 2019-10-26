@@ -147,6 +147,10 @@ edgeCasesSpecs = [{
 	text: 'does not crash when trying to write outside of the playfield'
 	code: '999p@'
 	outRecord: []
+}, {
+	text: 'can store a negative number on the playfield'
+	code: '05-00p00g.@'
+	outRecord: [-5]
 }]
 
 
