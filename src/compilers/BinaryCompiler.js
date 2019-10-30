@@ -36,9 +36,9 @@
     for (i = 0, len = charList.length; i < len; i++) {
       entry = charList[i];
       if (entry.string) {
-        stack.push(entry.char.charCodeAt(0));
+        stack.push(entry.charCode);
       } else {
-        codeGenerator = codeMap.get(entry.char);
+        codeGenerator = codeMap.get(entry.charCode);
         if (codeGenerator != null) {
           codeGenerator(stack);
         }
