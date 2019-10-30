@@ -36,13 +36,20 @@ ProgramState::peek = ->
 	@stack[@stack.length - 1]
 
 
-ProgramState::out = (e) ->
-	@outRecord.push e
+ProgramState::out = (value) ->
+	@outRecord.push value, ' '
+	return
+
+
+ProgramState::outChar = (char) ->
+	@outRecord.push char
+	return
 
 
 ProgramState::setInput = (values) ->
 	@inputList = values.slice 0
 	@inputPointer = 0
+	return
 
 
 ProgramState::next = ->
@@ -65,6 +72,7 @@ ProgramState::nextChar = ->
 
 ProgramState::put = (y, x, v, currentX, currentY, currentDir, index, from, to) ->
 	@interpreter.put x, y, v, currentX, currentY, currentDir, index, from, to
+	return
 
 
 ProgramState::get = (y, x) ->
@@ -105,6 +113,7 @@ ProgramState::randInt = (max) ->
 
 ProgramState::exit = ->
 	@flags.exitRequest = true
+	return
 
 
 ProgramState::isAlive = ->
