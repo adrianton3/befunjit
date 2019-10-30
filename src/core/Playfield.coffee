@@ -4,24 +4,35 @@
 S = bef.Symbols
 
 
-Playfield = (string, size) ->
+Playfield = (string, options) ->
 	lines = string.split '\n'
 
-	[@width, @height] = initSize lines, size
+	{ @width, @height } = initSize lines, options
 	@field = initField lines, @width, @height
 	@pathPlane = initPathPlane @width, @height
 
 	return
 
 
-initSize = (lines, size) ->
-	if size?
-		[size.width, size.height]
+initSize = (lines, options) ->
+	width = Math.max (lines.map (line) -> line.length)...
+	height = lines.length
+
+	if options?.size == 'standard'
+		{
+			width: 80
+			height: 25
+		}
+	else if options?.size == 'double'
+		{
+			width: width * 2
+			height: height * 2
+		}
 	else
-		[
-			Math.max (lines.map (line) -> line.length)...
-			lines.length
-		]
+		{
+			width
+			height
+		}
 
 
 initField = (lines, width, height) ->

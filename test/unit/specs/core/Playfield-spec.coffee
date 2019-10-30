@@ -23,7 +23,7 @@ describe 'Playfield', ->
 				('dd hh '.split '').map (char) -> char.charCodeAt 0
 			]
 
-		it 'pads a playfield with spaces', ->
+		xit 'pads a playfield with spaces', ->
 			playfield = new Playfield samplePlayefield, { width: 8, height: 5 }
 			(expect playfield.field).toEqual [
 				('a  s d  '.split '').map (char) -> char.charCodeAt 0
@@ -33,7 +33,7 @@ describe 'Playfield', ->
 				('        '.split '').map (char) -> char.charCodeAt 0
 			]
 
-		it 'trims cells that are outside', ->
+		xit 'trims cells that are outside', ->
 			playfield = new Playfield samplePlayefield, { width: 4, height: 2 }
 			(expect playfield.field).toEqual [
 				('a  s'.split '').map (char) -> char.charCodeAt 0

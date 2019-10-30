@@ -46,7 +46,7 @@
 	}
 
 	function run (runtimeConstructor, compiler, source, input) {
-		const playfield = new bef.Playfield(source)
+		const playfield = new bef.Playfield(source, { size: 'double' })
 
 		const runtime = new runtimeConstructor
 		runtime.execute(
