@@ -181,7 +181,7 @@ describe 'EagerRuntime', ->
 			''', [11, 22, 33, 44, 55, 66, 77, 88, 99, 110], 6
 
 			(expect stack).toEqual [11, 22, 33, 44, 55]
-			(expect outRecord).toEqual [110, 99, 88, 77, 66]
+			(expect outRecord).toEqual [110, ' ', 99, ' ', 88, ' ', 77, ' ', 66, ' ']
 
 		it 'executes a composed path indefinitely', ->
 			{ stack, outRecord } = execute '''
@@ -190,13 +190,13 @@ describe 'EagerRuntime', ->
 			''', [11, 22, 33, 44, 55, 66, 77, 88, 99, 110], 6
 
 			(expect stack).toEqual [11, 22, 33, 44, 55]
-			(expect outRecord).toEqual [110, 99, 88, 77, 66]
+			(expect outRecord).toEqual [110, ' ', 99, ' ', 88, ' ', 77, ' ', 66, ' ']
 
 		it 'ping-pongs between 2 nodes indefinitely', ->
 			{ stack, outRecord } = execute '0_._', [1, 11, 0, 22, 1, 33, 0, 44], 4
 
 			(expect stack).toEqual []
-			(expect outRecord).toEqual [44, 33, 22, 11, 0] # 0 ?
+			(expect outRecord).toEqual [44, ' ', 33, ' ', 22, ' ', 11, ' ', 0, ' '] # 0 ?
 
 		it 'changes direction randomly', ->
 			source = '''
@@ -275,7 +275,7 @@ describe 'EagerRuntime', ->
 				'''
 
 			(expect stack).toEqual []
-			(expect outRecord).toEqual [9]
+			(expect outRecord).toEqual [9, ' ']
 			(expect stats.compileCalls).toEqual 1
 
 		it 'does not recompile if altered is on the current path which and is unreachable', ->
@@ -284,7 +284,7 @@ describe 'EagerRuntime', ->
 				'''
 
 			(expect stack).toEqual []
-			(expect outRecord).toEqual [9]
+			(expect outRecord).toEqual [9, ' ']
 			(expect stats.compileCalls).toEqual 1
 
 		it 'recompiles if altered cell is on a reachable path', ->
@@ -294,7 +294,7 @@ describe 'EagerRuntime', ->
 				'''
 
 			(expect stack).toEqual []
-			(expect outRecord).toEqual [9]
+			(expect outRecord).toEqual [9, ' ']
 			(expect stats.compileCalls).toEqual 2
 
 		describe 'strings', ->

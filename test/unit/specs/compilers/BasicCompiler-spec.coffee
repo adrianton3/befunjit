@@ -256,14 +256,14 @@ describe 'BasicCompiler', ->
 				(expect programState.push.calls.count()).toEqual 1
 				(expect programState.pop.calls.count()).toEqual 1
 				(expect programState.stack).toEqual []
-				(expect programState.outRecord).toEqual [1]
+				(expect programState.outRecord).toEqual [1, ' ']
 
 			it 'does not resolve at compile time', ->
 				programState = execute '.', [1]
 				(expect programState.push.calls.count()).toEqual 0
 				(expect programState.pop.calls.count()).toEqual 1
 				(expect programState.stack).toEqual []
-				(expect programState.outRecord).toEqual [1]
+				(expect programState.outRecord).toEqual [1, ' ']
 
 		describe ',', ->
 			it 'resolves at compile time', ->

@@ -1,3 +1,6 @@
+'use strict'
+
+
 describe 'LazyRuntime', ->
 	{ Playfield, LazyRuntime } = bef
 
@@ -28,7 +31,7 @@ describe 'LazyRuntime', ->
 			'''
 
 			(expect stack).toEqual []
-			(expect outRecord).toStartWith [7, 7, 7]
+			(expect outRecord).toStartWith [7, ' ', 7, ' ', 7, ' ']
 
 		it 'does not recompile paths when conditional immediately leads to change of direction', ->
 			{ stats, stack, outRecord } = execute '''
@@ -38,7 +41,7 @@ describe 'LazyRuntime', ->
 			'''
 
 			(expect stack).toEqual [0]
-			(expect outRecord).toEqual [4, 3, 2, 1, 0]
+			(expect outRecord).toEqual [4, ' ', 3, ' ', 2, ' ', 1, ' ', 0, ' ']
 			(expect stats.compileCalls).toEqual 3
 
 		it 'changes direction randomly', ->

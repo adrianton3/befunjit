@@ -35,7 +35,7 @@ run = (editors, compiler) ->
 	editors.js.setValue prettyJs, 1
 
 	stringedStack = runtime.programState.stack.join ' '
-	stringedOutput = runtime.programState.outRecord.join ' '
+	stringedOutput = runtime.programState.outRecord.join ''
 
 	editors.output.setValue "Stack: #{stringedStack}\nOutput: #{stringedOutput}", 1
 

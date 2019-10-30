@@ -10,7 +10,7 @@ describe 'ProgramState', ->
 			programState.out 11
 			programState.out 22
 			programState.out 33
-			(expect programState.outRecord).toEqual [11, 22, 33]
+			(expect programState.outRecord).toEqual [11, ' ', 22, ' ', 33, ' ']
 
 	describe 'next', ->
 		it 'read from input', ->

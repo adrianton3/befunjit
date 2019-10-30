@@ -112,9 +112,9 @@ codeMap = new Map [
 
 	[S.OUTC, (stack) ->
 		if stack.length > 0
-			"/* , */  programState.out(String.fromCharCode(#{stack.pop()}))"
+			"/* , */  programState.outChar(String.fromCharCode(#{stack.pop()}))"
 		else
-			'/* , */  programState.out(String.fromCharCode(programState.pop()))'
+			'/* , */  programState.outChar(String.fromCharCode(programState.pop()))'
 	]
 
 

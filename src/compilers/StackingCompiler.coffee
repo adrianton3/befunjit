@@ -106,7 +106,7 @@ codeMap = new Map [
 
 
 	[S.OUTC, (stack) ->
-		stack.out("programState.out(String.fromCharCode(#{stack.pop()}))")
+		stack.out("programState.outChar(String.fromCharCode(#{stack.pop()}))")
 		return
 	]
 

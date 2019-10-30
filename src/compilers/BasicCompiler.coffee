@@ -33,7 +33,7 @@ codeMap = new Map [
 	[S.SWAP, '/* \\ */  programState.swap()']
 	[S.DROP, '/* $ */  programState.pop()']
 	[S.OUTI, '/* . */  programState.out(programState.pop())']
-	[S.OUTC, '/* , */  programState.out(String.fromCharCode(programState.pop()))']
+	[S.OUTC, '/* , */  programState.outChar(String.fromCharCode(programState.pop()))']
 	[S.JUMP, '/* # */']
 	[S.PUT, '/* p */  /* return */']
 	[S.GET, '/* g */  programState.push(programState.get(programState.pop(), programState.pop()))']

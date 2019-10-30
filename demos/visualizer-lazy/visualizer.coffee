@@ -32,7 +32,7 @@ run = (editors, compiler) ->
 	)
 
 	stringedStack = lazyRuntime.programState.stack.join ' '
-	stringedOutput = lazyRuntime.programState.outRecord.join ' '
+	stringedOutput = lazyRuntime.programState.outRecord.join ''
 
 	editors.output.setValue "Stack: #{stringedStack}\nOutput: #{stringedOutput}", 1
 
