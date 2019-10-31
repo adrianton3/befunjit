@@ -21,7 +21,7 @@ prettify = (code) ->
 run = (editors, compiler) ->
 	saveProgram editors
 
-	playfield = new bef.Playfield editors.source.getValue()
+	playfield = new bef.Playfield editors.source.getValue(), { size: 'standard' }
 
 	runtime = new bef.EagerRuntime()
 	runtime.execute(
@@ -34,7 +34,17 @@ run = (editors, compiler) ->
 
 	editors.js.setValue prettyJs, 1
 
-	stringedStack = runtime.programState.stack.join ' '
+	stringedStack = do ->
+		{ stack } = runtime.programState
+		if stack.length > 512
+			"""
+				#{(stack.slice 0, 256).join ' '}
+				...
+				#{(stack.slice -256).join ' '}
+			"""
+		else
+			stack.join ' '
+
 	stringedOutput = runtime.programState.outRecord.join ''
 
 	editors.output.setValue "Stack: #{stringedStack}\nOutput: #{stringedOutput}", 1
