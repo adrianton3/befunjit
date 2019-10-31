@@ -233,9 +233,6 @@
     if (options.compiler == null) {
       options.compiler = bef.OptimizingCompiler;
     }
-    if (options.fastConditionals == null) {
-      options.fastConditionals = false;
-    }
     this.stats.compileCalls = 0;
     this.stats.jumpsPerformed = 0;
     this.pathSet = new bef.PathSet();

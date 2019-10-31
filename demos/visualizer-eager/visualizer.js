@@ -15,16 +15,25 @@
   run = function(editors, compiler) {
     var playfield, prettyJs, runtime, stringedOutput, stringedStack;
     saveProgram(editors);
-    playfield = new bef.Playfield(editors.source.getValue());
+    playfield = new bef.Playfield(editors.source.getValue(), {
+      size: 'standard'
+    });
     runtime = new bef.EagerRuntime();
     runtime.execute(playfield, {
       jumpLimit: 1000,
-      compiler: compiler,
-      fastConditionals: true
+      compiler: compiler
     }, editors.input.getValue());
     prettyJs = prettify(runtime.code);
     editors.js.setValue(prettyJs, 1);
-    stringedStack = runtime.programState.stack.join(' ');
+    stringedStack = (function() {
+      var stack;
+      stack = runtime.programState.stack;
+      if (stack.length > 512) {
+        return ((stack.slice(0, 256)).join(' ')) + "\n...\n" + ((stack.slice(-256)).join(' '));
+      } else {
+        return stack.join(' ');
+      }
+    })();
     stringedOutput = runtime.programState.outRecord.join('');
     return editors.output.setValue("Stack: " + stringedStack + "\nOutput: " + stringedOutput, 1);
   };
