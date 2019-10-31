@@ -23,7 +23,10 @@
 			compiler: options.has('--stacking') ? bef.StackingCompiler
 				: options.has('--optimizing') ? bef.OptimizingCompiler
 				: options.has('--basic') ? bef.BasicCompiler
-				: bef.BinaryCompiler
+				: bef.BinaryCompiler,
+			playfieldSize: options.has('--minimal') ? 'minimal'
+				: options.has('--double') ? 'double'
+				: 'standard'
 		}
 	}
 
@@ -45,13 +48,13 @@
 		})
 	}
 
-	function run (runtimeConstructor, compiler, source, input) {
-		const playfield = new bef.Playfield(source, { size: 'double' })
+	function run (source, input, options) {
+		const playfield = new bef.Playfield(source, { size: options.playfieldSize })
 
-		const runtime = new runtimeConstructor
+		const runtime = new options.runtimeConstructor
 		runtime.execute(
 			playfield,
-			{ compiler, jumpLimit: Infinity },
+			{ compiler: options.compiler, jumpLimit: Infinity },
 			input
 		)
 
@@ -71,7 +74,7 @@
 				start = process.hrtime()
 			}
 
-			const output = run(args.runtimeConstructor, args.compiler, source, input)
+			const output = run(source, input, args)
 
 			if (args.time) {
 				const diff = process.hrtime(start)
