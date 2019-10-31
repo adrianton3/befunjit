@@ -205,7 +205,6 @@ EagerRuntime::execute = (@playfield, options, input = []) ->
 	options ?= {}
 	options.jumpLimit ?= -1
 	options.compiler ?= bef.OptimizingCompiler
-	options.fastConditionals ?= false
 
 	@stats.compileCalls = 0
 	@stats.jumpsPerformed = 0
