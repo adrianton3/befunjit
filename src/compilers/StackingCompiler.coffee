@@ -49,7 +49,7 @@ codeMap = new Map [
 	[S.ADD, binaryOperator ((o1, o2) -> o2 + o1), '+', (o1, o2) -> "(#{o2} + #{o1})"]
 	[S.SUB, binaryOperator ((o1, o2) -> o2 - o1), '-', (o1, o2) -> "(#{o2} - #{o1})"]
 	[S.MUL, binaryOperator ((o1, o2) -> o2 * o1), '*', (o1, o2) -> "(#{o2} * #{o1})"]
-	[S.DIV, binaryOperator ((o1, o2) -> o2 // o1), '/', (o1, o2) -> "Math.floor(#{o2} / #{o1})"]
+	[S.DIV, binaryOperator ((o1, o2) -> o2 // o1), '/', (o1, o2) -> "((#{o2} / #{o1}) | 0)"]
 	[S.MOD, binaryOperator ((o1, o2) -> o2 % o1), '%', (o1, o2) -> "(#{o2} % #{o1})"]
 
 

@@ -80,7 +80,7 @@ ProgramState::get = (y, x) ->
 
 
 ProgramState::div = (a, b) ->
-	@push b // a
+	@push (b / a) | 0
 	return
 
 
