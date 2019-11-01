@@ -8,19 +8,19 @@
   grid = null;
 
   run = function(editors, compiler) {
-    var lazyRuntime, original, playfield, size, source, stringedOutput, stringedStack;
+    var lazyRuntime, original, playfield, source, stringedOutput, stringedStack;
     saveProgram(editors);
     source = editors.source.getValue();
-    size = {
-      width: 16,
-      height: 10
-    };
-    original = new bef.Playfield(source, size);
-    playfield = new bef.Playfield(source, size);
+    original = new bef.Playfield(source, {
+      size: 'padded'
+    });
+    playfield = new bef.Playfield(source, {
+      size: 'padded'
+    });
     lazyRuntime = new bef.LazyRuntime();
     lazyRuntime.execute(playfield, {
-      jumpLimit: 1000,
-      compiler: compiler
+      compiler: compiler,
+      jumpLimit: 2e308
     }, editors.input.getValue());
     stringedStack = lazyRuntime.programState.stack.join(' ');
     stringedOutput = lazyRuntime.programState.outRecord.join('');

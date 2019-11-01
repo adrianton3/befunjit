@@ -29,6 +29,11 @@
         width: width * 2,
         height: height * 2
       };
+    } else if ((options != null ? options.size : void 0) === 'padded') {
+      return {
+        width: width + 1,
+        height: height + 1
+      };
     } else {
       return {
         width: width,
