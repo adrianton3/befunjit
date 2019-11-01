@@ -26,7 +26,7 @@ run = (editors, compiler) ->
 	runtime = new bef.EagerRuntime()
 	runtime.execute(
 		playfield
-		{ jumpLimit: 1000, compiler }
+		{ compiler, jumpLimit: Infinity }
 		editors.input.getValue()
 	)
 
