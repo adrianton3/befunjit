@@ -18,16 +18,13 @@ run = (editors, compiler) ->
 
 	source = editors.source.getValue()
 
-	size = { width: 16, height: 10 }
-
-	original = new bef.Playfield source, size
-
-	playfield = new bef.Playfield source, size
+	original = new bef.Playfield source, { size: 'padded' }
+	playfield = new bef.Playfield source, { size: 'padded' }
 
 	lazyRuntime = new bef.LazyRuntime()
 	lazyRuntime.execute(
 		playfield
-		{ jumpLimit: 1000, compiler }
+		{ compiler, jumpLimit: Infinity }
 		editors.input.getValue()
 	)
 

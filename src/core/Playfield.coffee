@@ -28,6 +28,11 @@ initSize = (lines, options) ->
 			width: width * 2
 			height: height * 2
 		}
+	else if options?.size == 'padded'
+		{
+			width: width + 1
+			height: height + 1
+		}
 	else
 		{
 			width
