@@ -1,6 +1,14 @@
 changelog
 =========
 
+#### r21 --- 1 nov 2019
+ + fix storing negative or large numbers in the playfield
+ + fix `p` again
+ + fix division
+ + fix missing space after int output
+ + add options for playfield size
+ + trim stack output in the demos
+
 #### r20 --- 7 mar 2017
  + various micro-optimizations
  + stop limiting playfield size in the eager runtime demo
