@@ -20,8 +20,8 @@
     });
     runtime = new bef.EagerRuntime();
     runtime.execute(playfield, {
-      jumpLimit: 1000,
-      compiler: compiler
+      compiler: compiler,
+      jumpLimit: 2e308
     }, editors.input.getValue());
     prettyJs = prettify(runtime.code);
     editors.js.setValue(prettyJs, 1);

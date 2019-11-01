@@ -50,7 +50,7 @@
       S.DIV, binaryOperator((function(o1, o2) {
         return Math.floor(o2 / o1);
       }), '/', function(o1, o2) {
-        return "Math.floor(" + o2 + " / " + o1 + ")";
+        return "((" + o2 + " / " + o1 + ") | 0)";
       })
     ], [
       S.MOD, binaryOperator((function(o1, o2) {
@@ -93,7 +93,13 @@
       }
     ], [
       S.OUTC, function(stack) {
-        stack.out("programState.outChar(String.fromCharCode(" + (stack.pop()) + "))");
+        var value;
+        value = stack.pop();
+        if (isNumber(value)) {
+          stack.out("programState.outChar('\\u{" + (value.toString(16)) + "}')");
+        } else {
+          stack.out("programState.outChar(String.fromCharCode(" + value + "))");
+        }
       }
     ], [S.JUMP, function() {}], [
       S.PUT, function() {

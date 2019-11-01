@@ -86,7 +86,7 @@
   };
 
   ProgramState.prototype.div = function(a, b) {
-    this.push(Math.floor(b / a));
+    this.push((b / a) | 0);
   };
 
   ProgramState.prototype.mod = function(a, b) {
